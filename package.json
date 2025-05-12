@@ -14,7 +14,6 @@
   "dependencies": {
     "@sanity/client": "^7.2.1",
     "@sanity/image-url": "^1.1.0",
-    "@supabase/supabase-js": "^2.39.7",
     "axios": "^1.6.7",
     "clsx": "^2.1.0",
     "embla-carousel-react": "^8.0.0",
@@ -46,3 +45,5 @@
     "vite": "^5.1.4"
   }
 }
+
+

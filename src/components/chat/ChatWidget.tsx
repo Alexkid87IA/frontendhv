@@ -2,13 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import TextareaAutosize from 'react-textarea-autosize';
-import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+// REMOVED: Supabase client initialization and any related functions
+// const supabase = createClient(
+//   import.meta.env.VITE_SUPABASE_URL,
+//   import.meta.env.VITE_SUPABASE_ANON_KEY
+// );
 
 interface Message {
   id: string;
@@ -32,11 +31,11 @@ export const ChatWidget = () => {
     {
       id: '1',
       role: 'assistant',
-      content: "Bonjour ! Je suis l'assistant de Roger. Comment puis-je vous aider aujourd'hui ?",
+      content: "Bonjour ! Je suis l'assistant de Roger. Comment puis-je vous aider aujourd'hui ? (Fonctionnalité de chat IA temporairement indisponible)", // Updated initial message
       timestamp: new Date()
     }
   ]);
-  const [isTyping, setIsTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false); // Kept for UI, but won't be triggered by AI
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -59,39 +58,29 @@ export const ChatWidget = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const sentMessage = message; // Store message before clearing
     setMessage('');
-    setIsTyping(true);
+    // setIsTyping(true); // No AI typing simulation for now
 
-    try {
-      // Send message to Supabase Edge Function for AI processing
-      const { data, error } = await supabase.functions.invoke('chat', {
-        body: { message: message }
-      });
-
-      if (error) throw error;
+    // Simulate a simple response or indicate feature is unavailable
+    // This part replaces the Supabase call
+    setTimeout(() => {
+      let assistantResponseContent = "Merci pour votre message. La fonctionnalité de réponse intelligente est en cours de maintenance. Roger vous contactera bientôt.";
+      if (sentMessage.toLowerCase().includes("coaching")) {
+        assistantResponseContent = "Pour toute question sur le coaching, Roger vous répondra directement. La fonctionnalité de chat IA est temporairement indisponible.";
+      } else if (sentMessage.toLowerCase().includes("session") || sentMessage.toLowerCase().includes("réserver")){
+        assistantResponseContent = "Pour réserver une session, veuillez contacter Roger directement. La fonctionnalité de chat IA est temporairement indisponible.";
+      }
 
       const assistantMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant' as const,
-        content: data.response,
+        content: assistantResponseContent,
         timestamp: new Date()
       };
-
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Error processing message:', error);
-      
-      const errorMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant' as const,
-        content: "Désolé, j'ai rencontré une erreur. Veuillez réessayer plus tard.",
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsTyping(false);
-    }
+      // setIsTyping(false);
+    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -103,6 +92,39 @@ export const ChatWidget = () => {
 
   const handleQuickReply = (reply: string) => {
     setMessage(reply);
+    // Automatically send the quick reply as if the user typed and sent it.
+    // This provides a more interactive feel even without AI.
+    const userMessage = {
+      id: Date.now().toString(),
+      role: 'user' as const,
+      content: reply,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, userMessage]);
+    setMessage(''); // Clear the input field
+
+    // Simulate a simple response for quick replies
+    setTimeout(() => {
+      let assistantResponseContent = "Merci pour votre question. La fonctionnalité de réponse intelligente est en cours de maintenance. Roger vous contactera bientôt.";
+      if (reply.toLowerCase().includes("coaching")) {
+        assistantResponseContent = "Pour toute question sur le coaching, Roger vous répondra directement. La fonctionnalité de chat IA est temporairement indisponible.";
+      } else if (reply.toLowerCase().includes("session") || reply.toLowerCase().includes("réserver")){
+        assistantResponseContent = "Pour réserver une session, veuillez contacter Roger directement. La fonctionnalité de chat IA est temporairement indisponible.";
+      } else if (reply.toLowerCase().includes("tarifs")){
+        assistantResponseContent = "Concernant les tarifs, Roger vous fournira les informations. La fonctionnalité de chat IA est temporairement indisponible.";
+      } else if (reply.toLowerCase().includes("créer du contenu")){
+        assistantResponseContent = "Pour créer du contenu avec Roger, veuillez le contacter. La fonctionnalité de chat IA est temporairement indisponible.";
+      }
+
+      const assistantMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant' as const,
+        content: assistantResponseContent,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+    }, 1000);
+
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -211,7 +233,7 @@ export const ChatWidget = () => {
             )}
 
             {/* Quick Replies */}
-            {!isMinimized && messages.length === 1 && (
+            {!isMinimized && messages.length <= 2 && (
               <div className="p-4 grid grid-cols-2 gap-2">
                 {quickReplies.map((reply, index) => (
                   <button
