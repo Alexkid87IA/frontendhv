@@ -32,13 +32,14 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
     visible: (i:number) => ({
       opacity: 1,
       x: 0,
-      transition: { delay: i * 0.1 + (imageUrl ? 0.3 : 0), duration: 0.4, ease: "easeOut" } // Ajout d'un délai si image présente
+      transition: { delay: i * 0.1 + (imageUrl ? 0.3 : 0), duration: 0.4, ease: "easeOut" } 
     })
   };
 
   return (
+    // AJOUT TEMPORAIRE POUR TEST : FOND ROUGE
     <motion.header 
-      className="mb-10 md:mb-16 pt-6 md:pt-10 text-white"
+      className="mb-10 md:mb-16 pt-6 md:pt-10 text-white bg-red-500"
       initial="hidden"
       animate="visible"
       variants={headerVariants}
@@ -59,7 +60,6 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
         </motion.div>
       )}
 
-      {/* Conteneur pour le titre et les métadonnées */} 
       <div className={`max-w-3xl mx-auto text-center ${imageUrl ? 'relative z-10 -mt-20 sm:-mt-24 md:-mt-32 lg:-mt-40' : ''}`}>
         <div className={`${imageUrl ? 'bg-background-dark/80 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-lg shadow-xl' : ''}`}>
           
