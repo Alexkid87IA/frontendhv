@@ -1,16 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Play, ChevronLeft, ChevronRight } from "lucide-react";
-import { getAmuseBouches } from "../../utils/sanityAPI"; // Adapter le chemin
-import type { SanityArticle, SanityImage } from "../../pages/ArticlePage"; // Réutiliser les types
+import { getAmuseBouches } from "../../utils/sanityAPI";
+import type { SanityArticle, SanityImage } from "../../pages/ArticlePage";
+import imageUrlBuilder from "@sanity/image-url";
+import { sanityClient } from "../../utils/sanityClient";
 
-// Simuler urlFor pour l'instant, à remplacer par une vraie implémentation
+const builder = imageUrlBuilder(sanityClient);
+
 const urlFor = (source: SanityImage | string | undefined): string => {
   if (!source) return "https://via.placeholder.com/280x498?text=Image+non+disponible";
-  if (typeof source === "string") return source;
-  // Vraie implémentation avec @sanity/image-url
-  // Exemple: return `https://cdn.sanity.io/images/YOUR_PROJECT_ID/YOUR_DATASET/${source.asset._ref.replace("image-", "").replace("-jpg", ".jpg")}`;
-  return "https://via.placeholder.com/280x498?text=Image+Sanity";
+  // Si c'est déjà une URL complète (par exemple, un placeholder externe ou une URL stockée directement)
+  if (typeof source === "string" && (source.startsWith('http://') || source.startsWith('https://'))) return source;
+  // Si c'est une chaîne mais pas une URL valide, c'est peut-être une ancienne valeur placeholder, on retourne un placeholder par défaut
+  if (typeof source === "string") return "https://via.placeholder.com/280x498?text=Source+invalide";
+  
+  // Assumant que 'source' est un objet SanityImage valide
+  if (source && typeof source === 'object' && (source as SanityImage).asset) {
+    return builder.image(source).auto('format').fit('crop').width(280).height(498).url();
+  }
+  // Fallback pour tout autre cas non géré
+  return "https://via.placeholder.com/280x498?text=Erreur+Image";
 };
 
 interface AmuseBoucheSectionProps {

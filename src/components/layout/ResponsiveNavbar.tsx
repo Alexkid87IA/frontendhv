@@ -71,29 +71,32 @@ export const ResponsiveNavbar = () => {
         </Link>
         
         {/* Navigation and Actions - Desktop */}
-        <div className="hidden lg:flex items-center space-x-6">
-          {/* Liens de menu */}
-          <div className="flex items-center space-x-1">
-            {menuItems.map((item) => {
-              const isActive = location.pathname.startsWith(item.path) || (item.path === '/emissions' && location.pathname === '/emissions');
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`group flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200 text-sm font-medium ${
-                    isActive 
-                      ? 'text-hv-turquoise bg-hv-blue/20' 
-                      : 'text-neutral-300 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <Icon size={16} className={`transition-colors duration-200 ${
-                    isActive ? 'text-hv-turquoise' : 'text-neutral-400 group-hover:text-hv-turquoise'
-                  }`} />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
+        <div className="hidden lg:flex flex-1 items-center justify-between ml-6">
+          {/* Conteneur pour centrer le bloc compact des liens de menu */}
+          <div className="flex-1 flex justify-center">
+            {/* Bloc compact des liens de menu */}
+            <div className="flex items-center space-x-1">
+              {menuItems.map((item) => {
+                const isActive = location.pathname.startsWith(item.path) || (item.path === '/emissions' && location.pathname === '/emissions');
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`group flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200 text-sm font-medium ${
+                      isActive 
+                        ? 'text-hv-turquoise bg-hv-blue/20' 
+                        : 'text-neutral-300 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <Icon size={16} className={`transition-colors duration-200 ${
+                      isActive ? 'text-hv-turquoise' : 'text-neutral-400 group-hover:text-hv-turquoise'
+                    }`} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
 
           {/* Boutons d'action */} 
