@@ -46,12 +46,11 @@ export const ResponsiveNavbar = () => {
     setIsOpen(false);
   }, [location.pathname]);
 
-  return (
-    <motion.nav
+  return    <motion.nav
       initial={{ y: 0 }}
       animate={{ y: visible ? 0 : -150 }} // Ajusté pour la hauteur de la navbar
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-hv-dark/80 border-b border-white/10 shadow-md"
+      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-hv-card-bg/80 border-b border-hv-card-border shadow-md"
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
@@ -61,9 +60,9 @@ export const ResponsiveNavbar = () => {
           onClick={handleLogoClick}
         >
           <motion.img 
-            src={getCurrentLogo()}
+            src={getCurrentLogo()} // Assurez-vous que ce logo est adapté ou provient de Sanity
             alt="High Value Media Logo"
-            className="h-10 md:h-12 w-auto object-contain" // Hauteur fixe, largeur auto
+            className="h-10 md:h-12 w-auto object-contain" 
             animate={isAnimating ? { scale: [1, 1.05, 1], filter: ["brightness(1)", "brightness(1.1)", "brightness(1)"] } : {}}
             transition={{ duration: 0.5, ease: "easeInOut" }}
             whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
@@ -77,7 +76,7 @@ export const ResponsiveNavbar = () => {
             {/* Bloc compact des liens de menu */}
             <div className="flex items-center space-x-1">
               {menuItems.map((item) => {
-                const isActive = location.pathname.startsWith(item.path) || (item.path === '/emissions' && location.pathname === '/emissions');
+                const isActive = location.pathname.startsWith(item.path) || (item.path === "/emissions" && location.pathname === "/emissions");
                 const Icon = item.icon;
                 return (
                   <Link
@@ -85,12 +84,12 @@ export const ResponsiveNavbar = () => {
                     to={item.path}
                     className={`group flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200 text-sm font-medium ${
                       isActive 
-                        ? 'text-hv-turquoise bg-hv-blue/20' 
-                        : 'text-neutral-300 hover:text-white hover:bg-white/5'
+                        ? "text-hv-blue-accent bg-hv-blue-accent/10" 
+                        : "text-hv-text-primary-maquette hover:text-hv-blue-accent hover:bg-hv-blue-accent/5"
                     }`}
                   >
                     <Icon size={16} className={`transition-colors duration-200 ${
-                      isActive ? 'text-hv-turquoise' : 'text-neutral-400 group-hover:text-hv-turquoise'
+                      isActive ? "text-hv-blue-accent" : "text-hv-text-secondary-maquette group-hover:text-hv-blue-accent"
                     }`} />
                     <span>{item.label}</span>
                   </Link>
@@ -104,10 +103,10 @@ export const ResponsiveNavbar = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/coaching"
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap ${
-                  location.pathname === '/coaching' 
-                  ? 'bg-hv-blue text-white shadow-lg'
-                  : 'bg-neutral-700/50 hover:bg-neutral-600/70 text-neutral-200 hover:text-white border border-transparent hover:border-hv-blue/50'
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap border ${
+                  location.pathname === "/coaching" 
+                  ? "bg-hv-blue-accent text-hv-text-white border-hv-blue-accent shadow-lg"
+                  : "bg-hv-card-bg/50 hover:bg-hv-blue-accent/10 text-hv-text-primary-maquette hover:text-hv-blue-accent border-hv-card-border hover:border-hv-blue-accent/50"
                 }`}
               >
                 Coaching
@@ -116,10 +115,10 @@ export const ResponsiveNavbar = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/create-with-roger"
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap shadow-md ${
-                  location.pathname === '/create-with-roger'
-                  ? 'bg-gradient-to-r from-hv-turquoise to-hv-blue text-white ring-2 ring-hv-turquoise'
-                  : 'bg-gradient-to-r from-hv-blue to-hv-turquoise hover:from-hv-turquoise hover:to-hv-blue text-white'
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap shadow-md border border-transparent ${
+                  location.pathname === "/create-with-roger"
+                  ? "bg-gradient-to-r from-hv-blue-accent to-accent-turquoise text-hv-text-white ring-2 ring-hv-blue-accent"
+                  : "bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-hv-blue-accent hover:to-accent-turquoise text-hv-text-white"
                 }`}
               >
                 <Sparkles className="w-4 h-4" />
@@ -128,7 +127,6 @@ export const ResponsiveNavbar = () => {
             </motion.div>
           </div>
         </div>
-
         {/* Mobile Menu Button */} 
         <div className="lg:hidden flex items-center">
           <button

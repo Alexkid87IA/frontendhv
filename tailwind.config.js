@@ -5,20 +5,29 @@ export default {
     extend: {
       colors: {
         // Base colors
-        primary: '#000000',      // Noir pur
+        primary: '#030712', // Fond général très sombre (presque noir)
         secondary: '#FFFFFF',    // Blanc pur
         tertiary: '#D1D5DB',    // Gris clair pour texte courant
 
         // Semantic colors
-        background: '#000000',
-        foreground: '#FFFFFF',
-        muted: '#1F2937',
-        'muted-foreground': '#D1D5DB',
-        border: '#374151',
+        background: '#030712', // Fond général très sombre
+        foreground: '#F9FAFB', // Texte principal (blanc cassé)
+        muted: '#111827', // Fond des cartes (noir/gris très foncé)
+        'muted-foreground': '#9CA3AF', // Texte secondaire (gris moyen)
+        border: '#374151', // Bordure par défaut (sera surchargée pour les cartes)
         input: '#1F2937',
-        ring: '#00A4F9',
+        ring: '#2563EB', // Bleu pour les anneaux de focus, à ajuster si besoin
 
-        // Accent colors
+        // Accent colors from maquette
+        'hv-blue-accent': '#00A4F9', // Bleu vif/turquoise pour accents et survol (utilisé dans la maquette)
+        'hv-card-bg': '#0A0F1E', // Fond des cartes (plus précis, un bleu très sombre)
+        'hv-card-border': 'rgba(255, 255, 255, 0.1)', // Bordure fine et claire pour les cartes
+        'hv-text-white': '#FFFFFF',
+        'hv-text-primary-maquette': '#E5E7EB', // Texte principal sur fond sombre (gris très clair)
+        'hv-text-secondary-maquette': '#9CA3AF', // Texte secondaire sur fond sombre (gris)
+        'hv-text-accent': '#00A4F9', // Texte accentué (bleu vif)
+
+        // Anciennes couleurs (à conserver ou migrer si besoin)
         accent: {
           blue: '#00A4F9',      // Bleu accent
           turquoise: '#63FDFD', // Turquoise accent
