@@ -200,5 +200,4 @@ export const ResponsiveNavbar = () => {
         )}
       </AnimatePresence>
     </motion.nav>
-  );
 };
