@@ -3,19 +3,21 @@ import { SanityAuthor, SanityArticle } from '../../pages/ArticlePage'; // Ajuste
 import { urlFor } from '../../utils/sanityImage';
 import { Link } from 'react-router-dom';
 import { RelatedArticles } from './RelatedArticles'; // Assurez-vous que ce composant est adapté
+import { Heart, Bookmark, Share2, UserCircle, Edit3, BarChart2 } from 'lucide-react'; // Utilisation de Lucide pour les icônes
 
 interface ArticleSidebarProps {
   author?: SanityAuthor | null;
   relatedArticles?: SanityArticle[];
 }
 
-const ActionButton: React.FC<{ icon: string; label: string; count?: number; onClick?: () => void, isActive?: boolean }> = ({ icon, label, count, onClick, isActive }) => (
+const ActionButton: React.FC<{ icon: React.ReactNode; label: string; count?: number | string; onClick?: () => void, isActive?: boolean }> = ({ icon, label, count, onClick, isActive }) => (
   <button 
     onClick={onClick} 
-    className={`flex flex-col items-center text-xs transition-colors duration-200 ease-in-out group ${isActive ? 'text-accent-violet' : 'text-gray-400 hover:text-white'}`}>
-    {/* Utilisation de vraies icônes Lucide-React ou SVG serait mieux ici que des noms de classes material-icons */}
-    <span className="material-icons-outlined text-2xl mb-1 group-hover:scale-110 transition-transform">{icon}</span> 
-    <span>{label}</span>
+    className={`flex flex-col items-center justify-center text-xs transition-colors duration-200 ease-in-out group w-20 h-20 sm:w-24 sm:h-24 rounded-lg ${isActive ? 'text-accent-violet bg-accent-violet/10' : 'text-gray-400 hover:text-white hover:bg-gray-700/50'}`}>
+    <div className="mb-1 group-hover:scale-110 transition-transform">
+      {icon}
+    </div>
+    <span className="text-center block leading-tight">{label}</span>
     {count !== undefined && <span className="text-sm font-medium mt-0.5">{count}</span>}
   </button>
 );
@@ -50,37 +52,42 @@ export const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ author, relatedA
   ];
 
   return (
-    <aside className="w-full lg:w-1/3 space-y-8 sticky top-24 lg:top-28 h-auto lg:h-[calc(100vh-7rem)] lg:overflow-y-auto pb-10 lg:pr-2 custom-scrollbar">
+    <aside className="w-full lg:w-80 xl:w-96 space-y-8 sticky top-24 lg:top-28 h-auto lg:h-[calc(100vh-7rem)] lg:overflow-y-auto pb-10 lg:pr-2 custom-scrollbar">
       {authorData && (
-        <div className="bg-gradient-to-br from-gray-800/70 to-gray-900/50 p-5 sm:p-6 rounded-xl shadow-2xl border border-gray-700/50">
-          <div className="flex flex-col items-center text-center mb-5">
+        <div className="bg-gradient-to-br from-gray-800/70 to-gray-900/50 p-6 rounded-xl shadow-2xl border border-gray-700/50">
+          <div className="flex flex-col items-center text-center mb-6">
             {authorData.image && (
               <img 
-                src={urlFor(authorData.image).width(100).height(100).fit('crop').auto('format').url()} 
+                src={urlFor(authorData.image).width(120).height(120).fit('crop').auto('format').url()} 
                 alt={authorData.name} 
-                className="w-24 h-24 rounded-full mb-4 object-cover border-4 border-accent-violet shadow-lg transform group-hover:scale-105 transition-transform duration-300"
+                className="w-28 h-28 sm:w-32 sm:h-32 rounded-full mb-5 object-cover border-4 border-accent-violet shadow-lg transform group-hover:scale-105 transition-transform duration-300"
               />
             )}
-            <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">{authorData.name}</h3>
-            <p className="text-xs sm:text-sm text-accent-violet font-medium">{authorData.role}</p>
+            <h3 className="text-2xl font-bold text-white mb-1.5">{authorData.name}</h3>
+            <p className="text-sm text-accent-violet font-medium mb-4">{authorData.role}</p>
           </div>
-          <div className="flex justify-around text-center my-5 sm:my-6 py-3 sm:py-4 bg-gray-700/60 rounded-lg shadow-inner">
-            {[ { label: "Articles", value: authorData.stats.articles }, { label: "Podcasts", value: authorData.stats.podcasts }, { label: "Followers", value: authorData.stats.followers }].map(stat => (
-              <div key={stat.label} className="px-1">
-                <p className="text-xl sm:text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider">{stat.label}</p>
+          <div className="flex justify-around text-center mb-6 py-4 bg-gray-700/60 rounded-lg shadow-inner">
+            {[ 
+              { label: "Articles", value: authorData.stats.articles, icon: <Edit3 size={20} className="mb-1" /> }, 
+              { label: "Podcasts", value: authorData.stats.podcasts, icon: <UserCircle size={20} className="mb-1" /> }, // Remplacer par une icône plus appropriée si disponible
+              { label: "Followers", value: authorData.stats.followers, icon: <BarChart2 size={20} className="mb-1" /> } // Remplacer par une icône plus appropriée si disponible
+            ].map(stat => (
+              <div key={stat.label} className="px-2 flex flex-col items-center">
+                {stat.icon}
+                <p className="text-xl font-bold text-white">{stat.value}</p>
+                <p className="text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">{stat.label}</p>
               </div>
             ))}
           </div>
           {authorData.bio && (
-            <p className="text-sm text-gray-300 mb-5 sm:mb-6 leading-relaxed text-center px-1 sm:px-2">
+            <p className="text-sm text-gray-300 mb-6 leading-relaxed text-center px-2">
               {typeof authorData.bio === 'string' ? authorData.bio : 'Bio à configurer dans Sanity.'}
             </p>
           )}
           {authorData.slug && (
             <Link 
               to={`/auteur/${authorData.slug}`}
-              className="block w-full text-center bg-accent-violet hover:bg-accent-violet-dark focus:ring-4 focus:ring-accent-violet/50 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg text-sm sm:text-base"
+              className="block w-full text-center bg-accent-violet hover:bg-accent-violet-dark focus:ring-4 focus:ring-accent-violet/50 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg text-base"
             >
               Voir le profil
             </Link>
@@ -88,26 +95,25 @@ export const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ author, relatedA
         </div>
       )}
 
-      <div className="bg-gradient-to-br from-gray-800/70 to-gray-900/50 p-5 rounded-xl shadow-2xl border border-gray-700/50">
-        <h4 className="text-lg sm:text-xl font-semibold text-white mb-4 text-center">Actions Rapides</h4>
-        <div className="flex justify-around items-center">
-          {/* Remplacer par de vraies icônes Lucide-React ou SVG pour un meilleur rendu */}
-          <ActionButton icon="favorite" label="Aimer" count={128} onClick={() => console.log('Like action')} />
-          <ActionButton icon="bookmark" label="Sauver" onClick={() => console.log('Bookmark action')} />
-          <ActionButton icon="share" label="Partager" onClick={() => console.log('Share action')} />
+      <div className="bg-gradient-to-br from-gray-800/70 to-gray-900/50 p-6 rounded-xl shadow-2xl border border-gray-700/50">
+        <h4 className="text-xl font-semibold text-white mb-5 text-center">Actions Rapides</h4>
+        <div className="flex justify-around items-center space-x-2 sm:space-x-4">
+          <ActionButton icon={<Heart size={24} />} label="Aimer" count={128} onClick={() => console.log('Like action')} />
+          <ActionButton icon={<Bookmark size={24} />} label="Sauver" onClick={() => console.log('Bookmark action')} />
+          <ActionButton icon={<Share2 size={24} />} label="Partager" onClick={() => console.log('Share action')} />
         </div>
       </div>
       
       {tableOfContents.length > 0 && (
-        <div className="bg-gradient-to-br from-gray-800/70 to-gray-900/50 p-5 rounded-xl shadow-2xl border border-gray-700/50">
-          <h4 className="text-lg sm:text-xl font-semibold text-white mb-4">Sur cette page</h4>
+        <div className="bg-gradient-to-br from-gray-800/70 to-gray-900/50 p-6 rounded-xl shadow-2xl border border-gray-700/50">
+          <h4 className="text-xl font-semibold text-white mb-5">Sur cette page</h4>
           <nav>
-            <ul className="space-y-1.5 sm:space-y-2">
+            <ul className="space-y-2">
               {tableOfContents.map((item) => (
-                <li key={item.id} className={`ml-${(item.level - 1) * 3} sm:ml-${(item.level - 1) * 4}`}> 
+                <li key={item.id} className={`ml-${(item.level - 1) * 4}`}> 
                   <a 
                     href={`#${item.id}`} 
-                    className="block text-xs sm:text-sm text-gray-400 hover:text-accent-violet hover:translate-x-1 transition-all duration-200 ease-in-out py-1 rounded"
+                    className="block text-sm text-gray-400 hover:text-accent-violet hover:translate-x-1 transition-all duration-200 ease-in-out py-1.5 rounded"
                   >
                     {item.title}
                   </a>
@@ -119,8 +125,8 @@ export const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ author, relatedA
       )}
 
       {relatedArticlesData.length > 0 && (
-        <div className="bg-gradient-to-br from-gray-800/70 to-gray-900/50 p-5 rounded-xl shadow-2xl border border-gray-700/50">
-          <h4 className="text-lg sm:text-xl font-semibold text-white mb-5 text-center">À lire aussi</h4>
+        <div className="bg-gradient-to-br from-gray-800/70 to-gray-900/50 p-6 rounded-xl shadow-2xl border border-gray-700/50">
+          <h4 className="text-xl font-semibold text-white mb-6 text-center">À lire aussi</h4>
           <RelatedArticles articles={relatedArticlesData} />
         </div>
       )}

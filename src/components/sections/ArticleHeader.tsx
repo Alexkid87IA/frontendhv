@@ -32,14 +32,13 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
     visible: (i:number) => ({
       opacity: 1,
       x: 0,
-      transition: { delay: i * 0.1 + (imageUrl ? 0.3 : 0), duration: 0.4, ease: "easeOut" } 
+      transition: { delay: i * 0.1 + (imageUrl ? 0.4 : 0.1), duration: 0.4, ease: "easeOut" } 
     })
   };
 
   return (
-    // AJOUT TEMPORAIRE POUR TEST : FOND ROUGE
     <motion.header 
-      className="mb-10 md:mb-16 pt-6 md:pt-10 text-white bg-red-500"
+      className="mb-10 md:mb-16 pt-6 md:pt-10 text-white"
       initial="hidden"
       animate="visible"
       variants={headerVariants}
@@ -60,8 +59,9 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
         </motion.div>
       )}
 
-      <div className={`max-w-3xl mx-auto text-center ${imageUrl ? 'relative z-10 -mt-20 sm:-mt-24 md:-mt-32 lg:-mt-40' : ''}`}>
-        <div className={`${imageUrl ? 'bg-background-dark/80 backdrop-blur-md p-4 sm:p-6 md:p-8 rounded-lg shadow-xl' : ''}`}>
+      {/* Conteneur pour le titre et les métadonnées */} 
+      <div className={`max-w-4xl mx-auto text-center px-4 ${imageUrl ? 'relative z-10 -mt-24 sm:-mt-28 md:-mt-36 lg:-mt-44' : 'pt-8'}`}>
+        <div className={`${imageUrl ? 'bg-background-dark/80 backdrop-blur-md p-6 sm:p-8 md:p-10 rounded-lg shadow-xl' : ''}`}>
           
           <motion.div 
             className="flex items-center justify-center gap-x-3 gap-y-2 flex-wrap mb-4 md:mb-6"
@@ -69,7 +69,7 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
             custom={1}
           >
             {article.category && article.category !== "Non catégorisé" && (
-              <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-accent-violet bg-accent-violet/10 px-3 py-1 rounded-full">
+              <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-accent-violet bg-accent-violet/10 px-3 py-1.5 rounded-full">
                 <Tag size={14} />
                 {article.category}
               </span>
@@ -84,7 +84,7 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
           </motion.div>
 
           <motion.h1 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white mb-4 md:mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white mb-5 md:mb-8"
             variants={metaItemVariants}
             custom={2}
           >
@@ -93,7 +93,7 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
           
           {article.description && (
             <motion.p 
-              className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 md:mb-8 leading-relaxed"
+              className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 md:mb-10 leading-relaxed max-w-2xl mx-auto"
               variants={metaItemVariants}
               custom={3}
             >
@@ -102,19 +102,19 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
           )}
 
           <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4 py-4 sm:border-t sm:border-b border-gray-700/50 mt-4 sm:mt-0"
+            className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4 py-4 border-t border-b border-gray-700/50 mt-6 md:mt-8"
             variants={metaItemVariants}
             custom={4}
           >
-            <div className="inline-flex items-center gap-2 text-xs sm:text-sm text-gray-400">
-              <CalendarDays size={14} />
+            <div className="inline-flex items-center gap-2 text-sm text-gray-400">
+              <CalendarDays size={16} />
               <time>{article.date}</time>
             </div>
             <button 
-              className="inline-flex items-center gap-2 rounded-lg bg-gray-700/60 hover:bg-gray-600/75 px-4 py-2.5 text-xs sm:text-sm font-medium text-white transition-colors duration-200 focus:ring-2 focus:ring-accent-violet/50 shadow-md hover:shadow-lg"
+              className="inline-flex items-center gap-2 rounded-lg bg-gray-700/60 hover:bg-gray-600/75 px-5 py-3 text-sm font-medium text-white transition-colors duration-200 focus:ring-2 focus:ring-accent-violet/50 shadow-md hover:shadow-lg"
               onClick={() => navigator.clipboard.writeText(window.location.href).then(() => alert('Lien copié !'))}
             >
-              <Share2 size={14} />
+              <Share2 size={16} />
               Partager l'article
             </button>
           </motion.div>
