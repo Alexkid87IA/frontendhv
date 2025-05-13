@@ -80,7 +80,6 @@ export const ArticlePage = () => {
 
   useEffect(() => {
     const loadArticle = async () => {
-      console.log("Slug en cours de chargement:", slug); // <--- AJOUT 1: Voir le slug utilisé
       if (!slug) {
         setError("Slug de l'article manquant.");
         setIsLoading(false);
@@ -90,21 +89,18 @@ export const ArticlePage = () => {
         setIsLoading(true);
         setError(null);
         const fetchedArticle = await getArticleBySlug(slug);
-        console.log("Article récupéré par getArticleBySlug:", fetchedArticle); // <--- AJOUT 2: Voir l'article complet récupéré
-
         if (!fetchedArticle) {
           setError("Article non trouvé");
           setArticle(null);
         } else {
           setArticle(fetchedArticle);
-          console.log("Contenu du body de l'article mis dans l'état:", fetchedArticle.body); // <--- AJOUT 3: Voir le body spécifique
           const allArticles = await getAllArticles();
           setRelatedArticles(
             allArticles.filter((a: SanityArticle) => a._id !== fetchedArticle._id).slice(0, 3)
           );
         }
       } catch (err) {
-        console.error("Erreur lors du chargement de l'article spécifique:", err); // <--- AJOUT 4: Pour voir les erreurs de getArticleBySlug
+        console.error("Error loading article:", err);
         setError("Une erreur est survenue lors du chargement de l'article.");
         setArticle(null);
       } finally {
@@ -129,12 +125,6 @@ export const ArticlePage = () => {
         />
       </div>
     );
-  }
-  
-  // Juste avant le return de la fonction ArticlePage:
-  console.log("État 'article' avant le rendu:", article); // <--- AJOUT 5: Voir l'état de l'article avant le rendu
-  if (article) {
-    console.log("Contenu 'article.body' passé à ArticleContent:", article.body); // <--- AJOUT 6: Voir ce qui est réellement passé au composant ArticleContent
   }
 
   const headerData = {
