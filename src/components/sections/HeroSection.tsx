@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Quote as QuoteIcon } from "lucide-react";
 import { getAllArticles, getLatestQuote } from "../../utils/sanityAPI";
-import type { SanityArticle, SanityImage } from "../../pages/ArticlePage";
+import type { SanityArticle, SanityImage, SanityCategory } from "../../pages/ArticlePage";
 import imageUrlBuilder from "@sanity/image-url";
 import { sanityClient } from "../../utils/sanityClient";
 
@@ -13,14 +13,21 @@ function urlFor(source: SanityImage | string | undefined) {
   if (!source) {
     return "https://via.placeholder.com/800x450?text=Image+non+disponible";
   }
-  if (typeof source === 'string'){
-    // Si c'est une URL complète, on la retourne
-    if (source.startsWith('http://') || source.startsWith('https://')) return source;
-    // Sinon, c'est une chaîne invalide, on retourne un placeholder
+  if (typeof source === 'string
+'){
+    if (source.startsWith(
+'http://
+') || source.startsWith(
+'https://
+')) return source;
     return "https://via.placeholder.com/800x450?text=Source+invalide";
   }
   if ((source as SanityImage).asset) {
-    return builder.image(source).auto('format').fit('max').url();
+    return builder.image(source).auto(
+'format'
+).fit(
+'max'
+).url();
   }
   return "https://via.placeholder.com/800x450?text=Source+image+invalide";
 }
@@ -52,12 +59,11 @@ export const HeroSection = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const articles = await getAllArticles(); // Récupère tous les articles triés par date de publication
+        const articles = await getAllArticles();
         const quote = await getLatestQuote();
 
         if (articles && articles.length > 0) {
-          setMainArticle(articles[0]); // L'article le plus récent comme article principal
-          // Les 3 articles suivants pour la colonne "Derniers articles", en excluant le principal
+          setMainArticle(articles[0]);
           setLatestArticles(articles.slice(1, 4)); 
         } else {
           setMainArticle(null);
@@ -93,27 +99,35 @@ export const HeroSection = () => {
 
   return (
     <section className="pt-24 md:pt-32 pb-16 container mx-auto px-4">
-      {/* Ligne supérieure: Article principal et Citation */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
-        {/* Colonne Article Principal (plus large) */}
         {mainArticle && (
           <div className="lg:col-span-7 xl:col-span-8">
             <article className="group h-full flex flex-col bg-hv-card-bg p-0 rounded-xl overflow-hidden shadow-lg border border-hv-card-border transition-all duration-300 hover:border-hv-blue-accent">
-              <Link to={`/article/${mainArticle.slug?.current || '#'}`} className="block">
-                <div className="relative aspect-video w-full overflow-hidden">
-                  <img
-                    src={urlFor(mainArticle.mainImage)}
-                    alt={mainArticle.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-                  {mainArticle.category?.title && (
-                    <span className="absolute top-4 left-4 bg-hv-blue-accent px-3 py-1 text-xs font-semibold text-hv-text-white rounded-md">
-                      {mainArticle.category.title}
-                    </span>
-                  )}
-                </div>
-                <div className="p-6 flex-grow flex flex-col">
+              <div className="relative">
+                <Link to={`/article/${mainArticle.slug?.current || '#'}`} className="block">
+                  <div className="relative aspect-video w-full overflow-hidden">
+                    <img
+                      src={urlFor(mainArticle.mainImage)}
+                      alt={mainArticle.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                  </div>
+                </Link>
+                {mainArticle.categories && mainArticle.categories.length > 0 && (
+                  <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
+                    {mainArticle.categories.map((category: SanityCategory) => (
+                      category.slug?.current && (
+                        <Link key={category.slug.current} to={`/rubrique/${category.slug.current}`} className="bg-hv-blue-accent px-3 py-1 text-xs font-semibold text-hv-text-white rounded-md hover:bg-hv-blue-accent-dark transition-colors">
+                          {category.title}
+                        </Link>
+                      )
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="p-6 flex-grow flex flex-col">
+                <Link to={`/article/${mainArticle.slug?.current || '#'}`} className="block">
                   <h2 className="text-2xl lg:text-3xl font-bold tracking-tight leading-tight mb-3 text-hv-text-primary-maquette group-hover:text-hv-blue-accent transition-colors">
                     {mainArticle.title}
                   </h2>
@@ -129,13 +143,12 @@ export const HeroSection = () => {
                       <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </span>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             </article>
           </div>
         )}
 
-        {/* Colonne Citation du Jour (plus étroite) */}
         {quoteOfTheDay && (
           <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
             <div className="bg-hv-card-bg p-6 rounded-xl shadow-lg flex flex-col h-full border border-hv-card-border">
@@ -166,7 +179,6 @@ export const HeroSection = () => {
         )}
       </div>
 
-      {/* Ligne inférieure: Derniers Articles (pleine largeur) */}
       {latestArticles.length > 0 && (
         <div className="bg-hv-card-bg p-6 rounded-xl shadow-lg border border-hv-card-border">
           <h3 className="text-xl font-semibold mb-6 pb-4 border-b border-hv-card-border text-hv-text-primary-maquette">
@@ -175,25 +187,33 @@ export const HeroSection = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {latestArticles.map((article) => (
               <article key={article._id} className="group">
-                <Link to={`/article/${article.slug?.current || '#'}`} className="block p-3 hover:bg-hv-card-bg/50 rounded-lg transition-colors h-full flex flex-col border border-transparent hover:border-hv-blue-accent/30">
+                <div className="p-3 hover:bg-hv-card-bg/50 rounded-lg transition-colors h-full flex flex-col border border-transparent hover:border-hv-blue-accent/30">
                   <div className="flex flex-col flex-grow">
-                    {article.category?.title && (
-                      <span className="inline-block bg-hv-blue-accent px-2 py-0.5 text-xs font-medium text-hv-text-white rounded mb-2 self-start">
-                        {article.category.title}
-                      </span>
+                    {article.categories && article.categories.length > 0 && (
+                       <div className="flex flex-wrap gap-1 mb-2 self-start">
+                        {article.categories.map((category: SanityCategory) => (
+                          category.slug?.current && (
+                            <Link key={category.slug.current} to={`/rubrique/${category.slug.current}`} className="inline-block bg-hv-blue-accent px-2 py-0.5 text-xs font-medium text-hv-text-white rounded hover:bg-hv-blue-accent-dark transition-colors">
+                              {category.title}
+                            </Link>
+                          )
+                        ))}
+                      </div>
                     )}
-                    <h4 className="text-md font-semibold mb-2 text-hv-text-primary-maquette group-hover:text-hv-blue-accent transition-colors line-clamp-2 flex-grow">
-                      {article.title}
-                    </h4>
+                    <Link to={`/article/${article.slug?.current || '#'}`} className="block">
+                      <h4 className="text-md font-semibold mb-2 text-hv-text-primary-maquette group-hover:text-hv-blue-accent transition-colors line-clamp-2 flex-grow">
+                        {article.title}
+                      </h4>
+                    </Link>
                     <div className="flex items-center justify-between mt-auto pt-2 border-t border-hv-card-border/50">
                       <span className="text-xs text-hv-text-secondary-maquette">{formatDate(article.publishedAt)}</span>
-                      <span className="text-xs text-hv-blue-accent group-hover:text-hv-text-white transition-colors flex items-center opacity-0 group-hover:opacity-100">
+                      <Link to={`/article/${article.slug?.current || '#'}`} className="text-xs text-hv-blue-accent group-hover:text-hv-text-white transition-colors flex items-center opacity-0 group-hover:opacity-100">
                         Lire
                         <ArrowRight className="ml-1 w-3 h-3" />
-                      </span>
+                      </Link>
                     </div>
                   </div>
-                </Link>
+                </div>
               </article>
             ))}
           </div>

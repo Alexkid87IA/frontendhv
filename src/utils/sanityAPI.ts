@@ -10,7 +10,7 @@ export async function getAllArticles() {
     mainImage,
     excerpt,
     publishedAt,
-    "category": category->{title, slug},
+    "categories": categories[]->{title, slug},
     "author": author->{name, slug, image},
     "tags": tags[]->{title, slug}
   } | order(publishedAt desc)`;
@@ -32,7 +32,7 @@ export async function getArticleBySlug(slug: string) {
     excerpt,
     body,
     publishedAt,
-    "category": category->{title, slug},
+    "categories": categories[]->{title, slug},
     "author": author->{name, slug, image, bio},
     "tags": tags[]->{title, slug}
   }`;
@@ -74,7 +74,7 @@ export async function getAllPodcasts() {
     duration,
     views,
     publishedAt,
-    "category": category->{title, slug},
+    "categories": categories[]->{title, slug},
     "tags": tags[]->{title, slug}
   } | order(publishedAt desc)`;
   try {
@@ -111,7 +111,7 @@ export async function getAmuseBouches(limit = 5) {
     mainImage,
     excerpt,
     publishedAt,
-    "category": category->{title, slug}
+    "categories": categories[]->{title, slug}
   } | order(publishedAt desc)[0...$limit]`;
   try {
     const articles = await sanityClient.fetch(query, { limit });

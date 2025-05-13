@@ -53,7 +53,7 @@ export interface SanityArticle {
   excerpt?: string;
   body?: any[]; // Portable Text
   publishedAt?: string;
-  category?: SanityCategory;
+  categories?: SanityCategory[];
   author?: SanityAuthor;
   tags?: SanityTag[];
   // Ajoutez d'autres champs si nécessaire
