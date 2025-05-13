@@ -126,9 +126,7 @@ export const AmuseBoucheSection = ({
       >
         {videos.map((video) => (
           <div key={video._id} className="flex-none w-[280px]">
-            <Link to={`/article/${video.slug?.current || 
-'#
-'}`} className="group h-full block">
+            <Link to={`/article/${video.slug?.current || '#'}`} className="group h-full block">
               <div className="h-full bg-hv-card-bg rounded-xl border border-hv-card-border overflow-hidden transition-all duration-300 hover:border-hv-blue-accent">
                 <div className="relative aspect-[9/16] w-full overflow-hidden">
                   <img
