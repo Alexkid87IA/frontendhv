@@ -17,8 +17,7 @@ const customComponents: Partial<PortableTextComponents> = {
       return (
         <figure className="my-8 md:my-10 transform transition-all duration-300 ease-out hover:scale-[1.02]">
           <img
-            src={urlFor(value).fit('max').auto('format').url()}
-            alt={value.alt || 'Image de l'article'}
+            src={urlFor(value).fit('max').auto('format').url()}            alt={value.alt || "Image de l'article"}
             className="rounded-lg shadow-xl mx-auto max-h-[600px] object-contain"
             loading="lazy"
           />
