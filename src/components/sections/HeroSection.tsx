@@ -51,7 +51,7 @@ export const HeroSection = () => {
       try {
         setIsLoading(true);
         const articles = await getAllArticles();
-        console.log("Articles fetched in HeroSection:", articles); // Log pour débogage
+        console.log("Articles fetched in HeroSection (veuillez inspecter le champ 'categories'):", articles); // Log pour débogage
         const quote = await getLatestQuote();
 
         if (articles && articles.length > 0) {
@@ -118,7 +118,7 @@ export const HeroSection = () => {
                       </div>
                     ))
                   ) : (
-                    <span className="bg-red-500 text-white p-1 text-xs rounded">Aucune catégorie</span>
+                    <span className="bg-red-500 text-white p-1 text-xs rounded">Aucune catégorie (mainArticle)</span>
                   )}
                 </div>
               </div>
@@ -145,9 +145,33 @@ export const HeroSection = () => {
           </div>
         )}
 
+        {/* Colonne Citation du Jour (plus étroite) - Rétablissement de cette section */}
         {quoteOfTheDay && (
           <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
-            {/* ... reste de la section citation ... */}
+            <div className="bg-hv-card-bg p-6 rounded-xl shadow-lg flex flex-col h-full border border-hv-card-border">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold mb-2 flex items-center gap-2 text-hv-text-primary-maquette">
+                  <QuoteIcon className="w-5 h-5 text-hv-blue-accent" />
+                  Citation du Jour
+                </h3>
+                <div className="w-10 h-0.5 bg-hv-blue-accent rounded-full"></div>
+              </div>
+              <blockquote className="flex-grow flex flex-col justify-center mb-4">
+                <p className="text-xl font-medium leading-relaxed text-hv-text-primary-maquette mb-4">
+                  "{quoteOfTheDay.text}"
+                </p>
+                <footer>
+                  <cite className="not-italic">
+                    <span className="block text-md font-semibold text-hv-blue-accent">
+                      {quoteOfTheDay.author}
+                    </span>
+                    {quoteOfTheDay.role && (
+                      <span className="text-sm text-hv-text-secondary-maquette">{quoteOfTheDay.role}</span>
+                    )}
+                  </cite>
+                </footer>
+              </blockquote>
+            </div>
           </div>
         )}
       </div>
@@ -174,7 +198,7 @@ export const HeroSection = () => {
                           </div>
                         ))
                       ) : (
-                        <span className="bg-red-500 text-white p-1 text-xs rounded">Aucune catégorie</span>
+                        <span className="bg-red-500 text-white p-1 text-xs rounded">Aucune catégorie (latestArticle)</span>
                       )}
                     </div>
                     <Link to={`/article/${article.slug?.current || '#'}`} className="block">
