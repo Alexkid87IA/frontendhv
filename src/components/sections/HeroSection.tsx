@@ -13,21 +13,12 @@ function urlFor(source: SanityImage | string | undefined) {
   if (!source) {
     return "https://via.placeholder.com/800x450?text=Image+non+disponible";
   }
-  if (typeof source === 'string
-'){
-    if (source.startsWith(
-'http://
-') || source.startsWith(
-'https://
-')) return source;
+  if (typeof source === 'string'){
+    if (source.startsWith('http://') || source.startsWith('https://')) return source;
     return "https://via.placeholder.com/800x450?text=Source+invalide";
   }
   if ((source as SanityImage).asset) {
-    return builder.image(source).auto(
-'format'
-).fit(
-'max'
-).url();
+    return builder.image(source).auto('format').fit('max').url();
   }
   return "https://via.placeholder.com/800x450?text=Source+image+invalide";
 }
