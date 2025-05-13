@@ -9,7 +9,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['@portabletext/react'],
+      external: [], // On retire @portabletext/react d'ici
     },
   },
 });
