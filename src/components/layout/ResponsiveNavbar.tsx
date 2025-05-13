@@ -42,6 +42,10 @@ export const ResponsiveNavbar = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isOpen]);
 
+<<<<<<< HEAD
+=======
+  // Close menu on route change
+>>>>>>> 8ef315911edefda08a42ffe216705685d3bb47a5
   React.useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
