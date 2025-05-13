@@ -83,7 +83,7 @@ export const ArticlePage = () => {
     const loadArticle = async () => {
       console.log("Slug en cours de chargement:", slug); // <--- AJOUT 1: Voir le slug utilisé
       if (!slug) {
-        setError("Slug de l'article manquant.");
+        setError("Slug de l\'article manquant.");
         setIsLoading(false);
         return;
       }
@@ -91,22 +91,22 @@ export const ArticlePage = () => {
         setIsLoading(true);
         setError(null);
         const fetchedArticle = await getArticleBySlug(slug);
-        console.log("Article récupéré par getArticleBySlug:", fetchedArticle); // <--- AJOUT 2: Voir l'article complet récupéré
+        console.log("Article récupéré par getArticleBySlug:", fetchedArticle); // <--- AJOUT 2: Voir l\'article complet récupéré
 
         if (!fetchedArticle) {
           setError("Article non trouvé");
           setArticle(null);
         } else {
           setArticle(fetchedArticle);
-          console.log("Contenu du body de l'article mis dans l'état:", fetchedArticle.body); // <--- AJOUT 3: Voir le body spécifique
+          console.log("Contenu DÉTAILLÉ du body de l\'article mis dans l\'état:", JSON.stringify(fetchedArticle.body, null, 2)); // <--- MODIFIÉ AVEC JSON.stringify
           const allArticles = await getAllArticles();
           setRelatedArticles(
             allArticles.filter((a: SanityArticle) => a._id !== fetchedArticle._id).slice(0, 3)
           );
         }
       } catch (err) {
-        console.error("Erreur lors du chargement de l'article spécifique:", err); // <--- AJOUT 4: Pour voir les erreurs de getArticleBySlug
-        setError("Une erreur est survenue lors du chargement de l'article.");
+        console.error("Erreur lors du chargement de l\'article spécifique:", err); // <--- AJOUT 4: Pour voir les erreurs de getArticleBySlug
+        setError("Une erreur est survenue lors du chargement de l\'article.");
         setArticle(null);
       } finally {
         setIsLoading(false);
@@ -126,16 +126,16 @@ export const ArticlePage = () => {
       <div className="container mx-auto py-20 min-h-screen bg-background-dark">
         <ErrorMessage
           title={error === "Article non trouvé" ? "Article non trouvé" : "Erreur"}
-          message={error || "L'article n'a pas pu être chargé."}
+          message={error || "L\'article n\'a pas pu être chargé."}
         />
       </div>
     );
   }
   
   // Juste avant le return de la fonction ArticlePage:
-  console.log("État 'article' avant le rendu:", article); // <--- AJOUT 5: Voir l'état de l'article avant le rendu
+  console.log("État \'article\' avant le rendu:", article); // <--- AJOUT 5: Voir l\'état de l\'article avant le rendu
   if (article) {
-    console.log("Contenu 'article.body' passé à ArticleContent:", article.body); // <--- AJOUT 6: Voir ce qui est réellement passé au composant ArticleContent
+    console.log("Contenu DÉTAILLÉ \'article.body\' passé à ArticleContent:", JSON.stringify(article.body, null, 2)); // <--- MODIFIÉ AVEC JSON.stringify
   }
 
   const headerData = {
