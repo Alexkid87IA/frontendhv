@@ -5,7 +5,7 @@ import { Building2, Users, TrendingUp, Target, Calendar, Clock } from 'lucide-re
 import { SEO } from '../components/common/SEO';
 import { NewsletterForm } from '../components/common/NewsletterForm';
 import { ArticleProgress } from '../components/sections/ArticleProgress';
-import { ArticleContent } from '../components/sections/ArticleContent';
+import ArticleContent from '../components/sections/ArticleContent';
 import { ShareButtons } from '../components/common/ShareButtons';
 import { RelatedArticles } from '../components/sections/RelatedArticles';
 
