@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Filter, ArrowRight } from "lucide-react"; // Clock, Calendar retirés car dates gérées par Sanity
+import { Search, Filter, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { CategoryFilter } from "../common/CategoryFilter";
 import { ArticleCard } from "../common/ArticleCard";
-import { getAllArticles, getAllCategories } from "../../utils/sanityAPI"; // Adapter le chemin
-import type { SanityArticle, SanityCategory, SanityImage } from "../../pages/ArticlePage"; // Réutiliser les types
-
-// Simuler urlFor pour l'instant, à remplacer par une vraie implémentation
-const urlFor = (source: SanityImage | string | undefined): string => {
-  if (!source) return "https://via.placeholder.com/400x225?text=Image+non+disponible";
-  if (typeof source === 'string') return source;
-  // Vraie implémentation avec @sanity/image-url
-  return "https://via.placeholder.com/400x225?text=Image+Sanity";
-};
+import { sanityClient, urlFor } from "../../lib/sanityClient"; // Importer le vrai client Sanity et urlFor
+import type { SanityArticle, SanityCategory, SanityImage } from "../../pages/ArticlePage";
 
 const formatDate = (dateString?: string): string => {
   if (!dateString) return "Date inconnue";
@@ -27,7 +19,7 @@ const formatDate = (dateString?: string): string => {
 interface UICategory {
   id: string;
   name: string;
-  color: string; // Garder pour l'UI si besoin, sinon simplifier
+  color: string;
 }
 
 export const HomeArticlesSection = () => {
@@ -37,26 +29,46 @@ export const HomeArticlesSection = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategoryId, setSelectedCategoryId] = useState("all"); // Utiliser l'ID de la catégorie Sanity ou "all"
-  const [sortBy, setSortBy] = useState("publishedAt"); // "publishedAt" ou "views" (si views est implémenté)
+  const [selectedCategoryId, setSelectedCategoryId] = useState("all");
+  const [sortBy, setSortBy] = useState("publishedAt");
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchArticles = async () => {
       try {
         setIsLoading(true);
+        
+        // Requête GROQ pour récupérer les articles avec les détails de mainImage.asset
+        const articlesQuery = `*[_type == "article"] | order(publishedAt desc) {
+          _id,
+          title,
+          slug,
+          excerpt,
+          publishedAt,
+          mainImage { asset-> },
+          "category": category->{_id, title}
+        }`;
+        
+        // Requête GROQ pour récupérer les catégories
+        const categoriesQuery = `*[_type == "category"] {
+          _id,
+          title
+        }`;
+        
+        // Exécuter les deux requêtes en parallèle
         const [fetchedArticles, fetchedCategories] = await Promise.all([
-          getAllArticles(),
-          getAllCategories(),
+          sanityClient.fetch(articlesQuery),
+          sanityClient.fetch(categoriesQuery)
         ]);
 
+        console.log("Articles récupérés:", fetchedArticles);
         setArticles(fetchedArticles || []);
         
+        // Formater les catégories pour l'UI
         const uiCategories: UICategory[] = [
           { id: "all", name: "Tous les articles", color: "bg-accent-violet" },
           ...(fetchedCategories?.map((cat: SanityCategory, index: number) => ({
-            id: cat._id, // Utiliser _id de Sanity comme identifiant unique
+            id: cat._id,
             name: cat.title,
-            // Logique de couleur à revoir si nécessaire, pour l'instant cycle simple
             color: ["bg-accent-fuchsia", "bg-accent-cyan", "bg-accent-pink", "bg-emerald-500"][index % 4],
           })) || []),
         ];
@@ -69,7 +81,8 @@ export const HomeArticlesSection = () => {
         setIsLoading(false);
       }
     };
-    fetchData();
+    
+    fetchArticles();
   }, []);
 
   const filteredArticles = articles
@@ -85,12 +98,9 @@ export const HomeArticlesSection = () => {
       if (sortBy === "publishedAt") {
         return new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime();
       }
-      // Trier par "views" nécessiterait un champ views dans SanityArticle
-      // Pour l'instant, on ne trie que par date
       return 0;
     });
 
-  // Logique pour l'article mis en avant (ex: le premier après filtrage/tri)
   const featuredArticle = filteredArticles.length > 0 ? filteredArticles[0] : null;
   const regularArticles = filteredArticles.length > 1 ? filteredArticles.slice(1) : [];
 
@@ -124,7 +134,7 @@ export const HomeArticlesSection = () => {
             </p>
           </div>
           <Link
-            to="/articles" // Assurez-vous que cette route existe et est gérée
+            to="/articles"
             className="flex items-center gap-2 text-accent-fuchsia hover:text-accent-cyan transition-colors"
           >
             <span>Tous les articles</span>
@@ -146,8 +156,8 @@ export const HomeArticlesSection = () => {
 
           <div className="flex-1">
             <CategoryFilter
-              categories={categories} // Passer les catégories formatées pour l'UI
-              selectedCategory={selectedCategoryId} // Utiliser l'ID de la catégorie
+              categories={categories}
+              selectedCategory={selectedCategoryId}
               onSelect={setSelectedCategoryId}
             />
           </div>
@@ -160,7 +170,6 @@ export const HomeArticlesSection = () => {
               className="bg-neutral-900/30 backdrop-blur-sm border border-white/5 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-violet"
             >
               <option value="publishedAt">Plus récents</option>
-              {/* <option value="popular">Plus populaires</option> */}
             </select>
           </div>
         </div>
@@ -176,7 +185,9 @@ export const HomeArticlesSection = () => {
             <Link to={`/article/${featuredArticle.slug?.current}`} className="group block">
               <div className="relative aspect-video rounded-2xl overflow-hidden mb-6">
                 <img
-                  src={urlFor(featuredArticle.mainImage)}
+                  src={featuredArticle.mainImage && featuredArticle.mainImage.asset 
+                    ? urlFor(featuredArticle.mainImage).width(800).height(450).fit("crop").url() 
+                    : "https://via.placeholder.com/800x450?text=Image+Indisponible"}
                   alt={featuredArticle.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -189,11 +200,6 @@ export const HomeArticlesSection = () => {
                             {featuredArticle.category.title}
                         </span>
                     }
-                    {/* Reading time à calculer ou ajouter à Sanity */}
-                    {/* <div className="flex items-center gap-2 text-sm text-gray-300">
-                      <Clock size={14} />
-                      <span>8 min</span> 
-                    </div> */}
                   </div>
                   <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 text-white group-hover:text-accent-fuchsia transition-colors">
                     {featuredArticle.title}
@@ -207,7 +213,9 @@ export const HomeArticlesSection = () => {
                     {featuredArticle.author && (
                         <div className="flex items-center gap-3">
                         <img
-                            src={urlFor(featuredArticle.author.image)}
+                            src={featuredArticle.author.image && featuredArticle.author.image.asset
+                              ? urlFor(featuredArticle.author.image).width(32).height(32).fit("crop").url()
+                              : "https://via.placeholder.com/32x32?text=A"}
                             alt={featuredArticle.author.name}
                             className="w-8 h-8 rounded-full object-cover"
                         />
@@ -236,7 +244,9 @@ export const HomeArticlesSection = () => {
               <Link to={`/article/${article.slug?.current}`} className="group flex gap-4 p-2 -mx-2 rounded-lg hover:bg-white/5">
                 <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
                   <img
-                    src={urlFor(article.mainImage)}
+                    src={article.mainImage && article.mainImage.asset 
+                      ? urlFor(article.mainImage).width(96).height(96).fit("crop").url() 
+                      : "https://via.placeholder.com/96x96?text=Image+Indisponible"}
                     alt={article.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -248,9 +258,6 @@ export const HomeArticlesSection = () => {
                             {article.category.title}
                         </span>
                     }
-                    {/* <span className="text-xs text-tertiary">
-                      6 min 
-                    </span> */}
                   </div>
                   <h4 className="text-sm font-semibold mb-2 text-white line-clamp-2 group-hover:text-accent-fuchsia transition-colors">
                     {article.title}
@@ -258,7 +265,9 @@ export const HomeArticlesSection = () => {
                   {article.author && (
                     <div className="flex items-center gap-2">
                         <img
-                        src={urlFor(article.author.image)}
+                        src={article.author.image && article.author.image.asset
+                          ? urlFor(article.author.image).width(20).height(20).fit("crop").url()
+                          : "https://via.placeholder.com/20x20?text=A"}
                         alt={article.author.name}
                         className="w-5 h-5 rounded-full"
                         />
@@ -284,7 +293,6 @@ export const HomeArticlesSection = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  {/* Le composant ArticleCard doit être adapté pour accepter SanityArticle */}
                   <ArticleCard article={article} />
                 </motion.div>
               ))}
@@ -295,5 +303,3 @@ export const HomeArticlesSection = () => {
     </section>
   );
 };
-
-
