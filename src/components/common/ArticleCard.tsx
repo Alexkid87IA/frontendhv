@@ -51,30 +51,30 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
           />
         </div>
         <div className="mt-4">
-          {/* Affichage des badges de catégories */}
+          {/* Affichage des badges de catégories avec couleurs Tailwind standard */}
           <div className="flex flex-wrap gap-2 mb-3">
             {article.categories && article.categories.length > 0 ? (
               article.categories.map((category, index) => (
                 <span 
                   key={category._id} 
                   className={`px-2 py-1 text-xs font-medium rounded-full text-white ${
-                    ["bg-accent-violet", "bg-accent-fuchsia", "bg-accent-cyan", "bg-accent-pink"][index % 4]
+                    ["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][index % 4]
                   }`}
                 >
                   {category.title}
                 </span>
               ))
             ) : (
-              <span className="text-accent-violet text-sm font-inter uppercase tracking-wider">
+              <span className="text-purple-400 text-sm font-inter uppercase tracking-wider">
                 Sans catégorie
               </span>
             )}
           </div>
           
-          <h3 className="mt-2 text-xl font-montserrat font-bold line-clamp-2 text-white group-hover:text-accent-fuchsia transition-colors">
+          <h3 className="mt-2 text-xl font-montserrat font-bold line-clamp-2 text-white group-hover:text-pink-500 transition-colors">
             {article.title}
           </h3>
-          <p className="mt-2 text-tertiary line-clamp-3 text-gray-300">
+          <p className="mt-2 text-gray-300 line-clamp-3">
             {article.excerpt || ''}
           </p>
         </div>

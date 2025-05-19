@@ -66,11 +66,11 @@ export const HomeArticlesSection = () => {
         
         // Formater les catégories pour l'UI
         const uiCategories: UICategory[] = [
-          { id: "all", name: "Tous les articles", color: "bg-accent-violet" },
+          { id: "all", name: "Tous les articles", color: "bg-purple-600" },
           ...(fetchedCategories?.map((cat: SanityCategory, index: number) => ({
             id: cat._id,
             name: cat.title,
-            color: ["bg-accent-fuchsia", "bg-accent-cyan", "bg-accent-pink", "bg-emerald-500"][index % 4],
+            color: ["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][index % 4],
           })) || []),
         ];
         setCategories(uiCategories);
@@ -129,18 +129,18 @@ export const HomeArticlesSection = () => {
             <motion.span
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-block px-4 py-2 bg-accent-violet/20 text-accent-violet rounded-full text-sm font-medium mb-6"
+              className="inline-block px-4 py-2 bg-purple-600/20 text-purple-400 rounded-full text-sm font-medium mb-6"
             >
               Articles
             </motion.span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Explorer nos articles</h2>
-            <p className="text-hv-white/80 text-lg">
+            <p className="text-gray-300 text-lg">
               Découvrez nos derniers articles sur l'entrepreneuriat, l'innovation et le développement personnel
             </p>
           </div>
           <Link
             to="/articles"
-            className="flex items-center gap-2 text-accent-fuchsia hover:text-accent-cyan transition-colors"
+            className="flex items-center gap-2 text-pink-500 hover:text-blue-400 transition-colors"
           >
             <span>Tous les articles</span>
             <ArrowRight size={18} />
@@ -154,7 +154,7 @@ export const HomeArticlesSection = () => {
               placeholder="Rechercher un article..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-neutral-900/30 backdrop-blur-sm border border-white/5 rounded-lg px-4 py-2 pl-10 text-white placeholder-neutral-500 focus:outline-none focus:border-accent-violet"
+              className="w-full bg-neutral-900/30 backdrop-blur-sm border border-white/5 rounded-lg px-4 py-2 pl-10 text-white placeholder-neutral-500 focus:outline-none focus:border-purple-500"
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500" size={18} />
           </div>
@@ -168,11 +168,11 @@ export const HomeArticlesSection = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Filter size={18} className="text-hv-white/80" />
+            <Filter size={18} className="text-gray-300" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-neutral-900/30 backdrop-blur-sm border border-white/5 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-violet"
+              className="bg-neutral-900/30 backdrop-blur-sm border border-white/5 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
             >
               <option value="publishedAt">Plus récents</option>
             </select>
@@ -203,13 +203,13 @@ export const HomeArticlesSection = () => {
                     {featuredArticle.categories && featuredArticle.categories.map((category, index) => (
                       <span 
                         key={category._id} 
-                        className={`px-3 py-1 ${["bg-accent-violet", "bg-accent-fuchsia", "bg-accent-cyan", "bg-accent-pink"][index % 4]} text-white text-sm font-medium rounded-full`}
+                        className={`px-3 py-1 ${["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][index % 4]} text-white text-sm font-medium rounded-full`}
                       >
                         {category.title}
                       </span>
                     ))}
                   </div>
-                  <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 text-white group-hover:text-accent-fuchsia transition-colors">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 text-white group-hover:text-pink-500 transition-colors">
                     {featuredArticle.title}
                   </h3>
                   {featuredArticle.excerpt && 
@@ -264,13 +264,13 @@ export const HomeArticlesSection = () => {
                     {article.categories && article.categories.map((category, index) => (
                       <span 
                         key={category._id} 
-                        className={`text-xs font-medium ${["text-accent-violet", "text-accent-fuchsia", "text-accent-cyan", "text-accent-pink"][index % 4]}`}
+                        className={`text-xs font-medium ${["text-purple-400", "text-pink-400", "text-blue-400", "text-green-400"][index % 4]}`}
                       >
                         {category.title}
                       </span>
                     ))}
                   </div>
-                  <h4 className="text-sm font-semibold mb-2 text-white line-clamp-2 group-hover:text-accent-fuchsia transition-colors">
+                  <h4 className="text-sm font-semibold mb-2 text-white line-clamp-2 group-hover:text-pink-500 transition-colors">
                     {article.title}
                   </h4>
                   {article.author && (
@@ -282,7 +282,7 @@ export const HomeArticlesSection = () => {
                         alt={article.author.name}
                         className="w-5 h-5 rounded-full"
                         />
-                        <span className="text-xs text-hv-white/80 truncate">
+                        <span className="text-xs text-gray-400 truncate">
                         {article.author.name}
                         </span>
                     </div>
