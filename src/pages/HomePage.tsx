@@ -14,7 +14,7 @@ import { RogerSaidSection } from '../components/sections/RogerSaidSection';
 import { CulturalSection } from '../components/sections/CulturalSection';
 import { NewsletterSection } from '../components/sections/NewsletterSection';
 import { AboutSection } from '../components/sections/AboutSection';
-import { HomeBusinessIdeasSection } from '../components/sections/HomeBusinessIdeasSection';
+//import { HomeBusinessIdeasSection } from '../components/sections/HomeBusinessIdeasSection';
 import { HomeCaseStudiesSection } from '../components/sections/HomeCaseStudiesSection';
 import ContentSection from '../components/sections/ContentSection';
 
@@ -51,7 +51,7 @@ export const HomePage = () => {
             description="Parcours inspirants d'entrepreneurs qui ont réussi à concrétiser leur vision"
             sectionType="success-story"
           />
-          <HomeBusinessIdeasSection />
+//          <HomeBusinessIdeasSection />
           <DebateSection />
           <AboutRogerSection />
           <EditorialSection />
