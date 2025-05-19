@@ -1,16 +1,52 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+
+// SVG Icons components
+const BookIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+  </svg>
+);
+
+const BriefcaseIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+  </svg>
+);
+
+const BrainIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-1.04Z"></path>
+    <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-1.04Z"></path>
+  </svg>
+);
+
+const UsersIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+    <circle cx="9" cy="7" r="4"></circle>
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+  </svg>
+);
+
+const ArrowRightIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 12h14"></path>
+    <path d="m12 5 7 7-7 7"></path>
+  </svg>
+);
 
 // Définition des univers éditoriaux
 const universes = [
   {
-    icon: '📚', // Emoji pour remplacer BookOpen
+    icon: BookIcon,
     name: 'Story',
     description: 'Des récits inspirants qui redéfinissent le possible',
-    color: 'from-orange-400 to-pink-500',
-    textColor: 'text-orange-300',
-    hoverColor: 'group-hover:text-orange-300',
+    bgColor: 'bg-[#3D2A26]',
+    textColor: 'text-white',
     bgText: 'story',
     path: '/rubrique/story',
     stats: {
@@ -19,12 +55,11 @@ const universes = [
     }
   },
   {
-    icon: '💼', // Emoji pour remplacer Briefcase
+    icon: BriefcaseIcon,
     name: 'Business',
     description: 'Décryptage des tendances et innovations',
-    color: 'from-blue-400 to-cyan-500',
-    textColor: 'text-blue-300',
-    hoverColor: 'group-hover:text-blue-300',
+    bgColor: 'bg-[#1F3A4F]',
+    textColor: 'text-white',
     bgText: 'business',
     path: '/rubrique/business',
     stats: {
@@ -33,12 +68,11 @@ const universes = [
     }
   },
   {
-    icon: '🧠', // Emoji pour remplacer Brain
+    icon: BrainIcon,
     name: 'Mental',
     description: 'Développez une psychologie de champion',
-    color: 'from-violet-400 to-purple-500',
-    textColor: 'text-violet-300',
-    hoverColor: 'group-hover:text-violet-300',
+    bgColor: 'bg-[#3A2A4F]',
+    textColor: 'text-white',
     bgText: 'mental',
     path: '/rubrique/psychologie',
     stats: {
@@ -47,12 +81,11 @@ const universes = [
     }
   },
   {
-    icon: '👥', // Emoji pour remplacer Users
+    icon: UsersIcon,
     name: 'Society',
     description: 'Les mutations qui façonnent notre époque',
-    color: 'from-emerald-400 to-teal-500',
-    textColor: 'text-emerald-300',
-    hoverColor: 'group-hover:text-emerald-300',
+    bgColor: 'bg-[#1F3F3A]',
+    textColor: 'text-white',
     bgText: 'society',
     path: '/rubrique/societe',
     stats: {
@@ -94,55 +127,51 @@ export const EditorialSection = () => {
           {universes.map((universe, index) => (
             <div
               key={index}
-              className="group relative h-[500px] md:h-[600px] rounded-2xl overflow-hidden transition-transform duration-300 hover:scale-[1.02] hover:shadow-xl"
+              className={`group relative rounded-2xl overflow-hidden transition-transform duration-300 hover:scale-[1.02] hover:shadow-xl ${universe.bgColor}`}
             >
               <Link href={universe.path} className="block h-full">
                 {/* Background Text */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-[180px] font-bold text-white/5 select-none">
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                  <span className="text-[120px] font-bold text-white select-none">
                     {universe.bgText}
                   </span>
                 </div>
                 
                 {/* Card Container */}
-                <div className="relative h-full rounded-2xl overflow-hidden backdrop-blur-sm bg-navy-800/70">
-                  {/* Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-b ${universe.color} opacity-20 mix-blend-overlay transition-opacity duration-300 group-hover:opacity-30`} />
-                  
-                  {/* Content */}
-                  <div className="relative h-full p-8 flex flex-col">
-                    {/* Top Section */}
-                    <div className="flex items-start justify-between">
-                      <div className="w-14 h-14 bg-white/10 backdrop-blur-xl rounded-xl flex items-center justify-center">
-                        <span className="text-2xl">{universe.icon}</span>
-                      </div>
-                      <div className="px-4 py-2 bg-white/10 backdrop-blur-xl rounded-full">
-                        <span className="text-sm font-medium text-white">{universe.stats.articles} articles</span>
+                <div className="relative p-8 flex flex-col h-full min-h-[500px]">
+                  {/* Top Section */}
+                  <div className="flex items-start justify-between">
+                    <div className="w-14 h-14 bg-white/10 backdrop-blur-xl rounded-xl flex items-center justify-center text-white">
+                      <universe.icon />
+                    </div>
+                    <div className="px-4 py-2 bg-white/10 backdrop-blur-xl rounded-full">
+                      <span className="text-sm font-medium text-white">{universe.stats.articles} articles</span>
+                    </div>
+                  </div>
+
+                  {/* Bottom Section */}
+                  <div className="mt-auto">
+                    {/* Stats */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="px-3 py-1 bg-white/10 backdrop-blur-xl rounded-full">
+                        <span className="text-sm text-white">{universe.stats.reads} lectures</span>
                       </div>
                     </div>
 
-                    {/* Bottom Section */}
-                    <div className="mt-auto">
-                      {/* Stats */}
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="px-3 py-1 bg-white/10 backdrop-blur-xl rounded-full">
-                          <span className="text-sm text-white">{universe.stats.reads} lectures</span>
-                        </div>
-                      </div>
+                    {/* Title & Description */}
+                    <h3 className="text-3xl font-bold text-white mb-3 transition-colors">
+                      {universe.name}
+                    </h3>
+                    <p className="text-gray-300 text-lg mb-6">
+                      {universe.description}
+                    </p>
 
-                      {/* Title & Description */}
-                      <h3 className={`text-3xl font-bold text-white mb-3 ${universe.hoverColor} transition-colors`}>
-                        {universe.name}
-                      </h3>
-                      <p className="text-gray-300 text-lg mb-6">
-                        {universe.description}
-                      </p>
-
-                      {/* CTA */}
-                      <div className={`inline-flex items-center gap-2 text-white ${universe.hoverColor} transition-colors`}>
-                        <span className="font-medium">Explorer l'univers</span>
-                        <span className="transform group-hover:translate-x-1 transition-transform">&#10142;</span>
-                      </div>
+                    {/* CTA */}
+                    <div className="inline-flex items-center gap-2 text-white transition-colors">
+                      <span className="font-medium">Explorer l'univers</span>
+                      <span className="transform group-hover:translate-x-1 transition-transform">
+                        <ArrowRightIcon />
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -154,3 +183,5 @@ export const EditorialSection = () => {
     </section>
   );
 };
+
+export default EditorialSection;
