@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 // SVG Icons components
 const InstagramIcon = () => (
@@ -8,20 +8,20 @@ const InstagramIcon = () => (
     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
   </svg>
-);
+ );
 
 const YoutubeIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
     <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
   </svg>
-);
+ );
 
 const TwitterIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
   </svg>
-);
+ );
 
 const LinkedinIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -29,20 +29,20 @@ const LinkedinIcon = () => (
     <rect x="2" y="9" width="4" height="12"></rect>
     <circle cx="4" cy="4" r="2"></circle>
   </svg>
-);
+ );
 
 const FacebookIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
   </svg>
-);
+ );
 
 const ArrowRightIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M5 12h14"></path>
     <path d="m12 5 7 7-7 7"></path>
   </svg>
-);
+ );
 
 export const Footer = () => {
   return (
@@ -52,7 +52,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand and Social */}
           <div className="lg:col-span-2">
-            <Link href="/" className="inline-block mb-4">
+            <Link to="/" className="inline-block mb-4">
               <span className="text-2xl font-semibold tracking-tighter text-white">
                 High Value
               </span>
@@ -67,7 +67,7 @@ export const Footer = () => {
                 { icon: <TwitterIcon />, href: "https://twitter.com" },
                 { icon: <LinkedinIcon />, href: "https://linkedin.com" },
                 { icon: <FacebookIcon />, href: "https://facebook.com" }
-              ].map((social, index) => (
+              ].map((social, index ) => (
                 <a
                   key={index}
                   href={social.href}
@@ -93,7 +93,7 @@ export const Footer = () => {
                 { label: "Émission", href: "/emission" }
               ].map((item) => (
                 <li key={item.label}>
-                  <Link href={item.href} className="text-gray-300 hover:text-blue-400 transition-colors">
+                  <Link to={item.href} className="text-gray-300 hover:text-blue-400 transition-colors">
                     {item.label}
                   </Link>
                 </li>
@@ -113,7 +113,7 @@ export const Footer = () => {
                 { label: "À propos", href: "/a-propos" }
               ].map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-gray-300 hover:text-blue-400 transition-colors">
+                  <Link to={link.href} className="text-gray-300 hover:text-blue-400 transition-colors">
                     {link.label}
                   </Link>
                 </li>
