@@ -106,12 +106,16 @@ export const HeroSection = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                   </div>
                 </Link>
-                {/* Affichage normal des badges de catégories */}
+                {/* Badges de catégories avec couleurs Tailwind standard */}
                 {mainArticle.categories && mainArticle.categories.length > 0 && (
                   <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
-                    {mainArticle.categories.map((category: SanityCategory) => (
+                    {mainArticle.categories.map((category: SanityCategory, index: number) => (
                       category.slug?.current && (
-                        <Link key={category.slug.current} to={`/rubrique/${category.slug.current}`} className="bg-hv-blue-accent px-3 py-1 text-xs font-semibold text-hv-text-white rounded-md hover:bg-hv-blue-accent-dark transition-colors">
+                        <Link 
+                          key={category.slug.current} 
+                          to={`/rubrique/${category.slug.current}`} 
+                          className={`${["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][index % 4]} px-3 py-1 text-xs font-semibold text-white rounded-md hover:opacity-90 transition-opacity`}
+                        >
                           {category.title}
                         </Link>
                       )
@@ -182,12 +186,16 @@ export const HeroSection = () => {
               <article key={article._id} className="group">
                 <div className="p-3 hover:bg-hv-card-bg/50 rounded-lg transition-colors h-full flex flex-col border border-transparent hover:border-hv-blue-accent/30">
                   <div className="flex flex-col flex-grow">
-                    {/* Affichage normal des badges de catégories */}
+                    {/* Badges de catégories avec couleurs Tailwind standard */}
                     {article.categories && article.categories.length > 0 && (
                        <div className="flex flex-wrap gap-1 mb-2 self-start">
-                        {article.categories.map((category: SanityCategory) => (
+                        {article.categories.map((category: SanityCategory, index: number) => (
                           category.slug?.current && (
-                            <Link key={category.slug.current} to={`/rubrique/${category.slug.current}`} className="inline-block bg-hv-blue-accent px-2 py-0.5 text-xs font-medium text-hv-text-white rounded hover:bg-hv-blue-accent-dark transition-colors">
+                            <Link 
+                              key={category.slug.current} 
+                              to={`/rubrique/${category.slug.current}`} 
+                              className={`inline-block ${["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][index % 4]} px-2 py-0.5 text-xs font-medium text-white rounded hover:opacity-90 transition-opacity`}
+                            >
                               {category.title}
                             </Link>
                           )
@@ -218,4 +226,3 @@ export const HeroSection = () => {
 };
 
 export default HeroSection;
-
