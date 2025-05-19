@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createClient } from '@sanity/client';
-import Image from 'next/image';
 import Link from 'next/link';
 
 // Configuration du client Sanity
@@ -140,6 +139,20 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
     return `https://cdn.sanity.io/images/z9wsynas/production/${id}-${dimensionString}.${format}`;
   };
 
+  // Fonction pour obtenir le texte du CTA selon le type de section
+  const getCtaText = (type: string) => {
+    switch (type) {
+      case 'emission':
+        return 'Regarder la vidéo';
+      case 'business-idea':
+        return 'Découvrir l\'idée';
+      case 'success-story':
+        return 'Lire l\'histoire';
+      default:
+        return 'Lire l\'article';
+    }
+  };
+
   if (loading) {
     return <div className="py-8 text-center">Chargement des articles...</div>;
   }
@@ -185,78 +198,73 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
         >
           {articles.map((article) => (
             <div key={article._id} className="flex-none w-80 md:w-96">
-              <div className="bg-navy-800 rounded-lg overflow-hidden">
-                <div className="relative h-48 md:h-56">
-                  {article.mainImage ? (
-                    <img 
-                      src={getImageUrl(article.mainImage)} 
-                      alt={article.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-                      <span className="text-gray-400">Image non disponible</span>
-                    </div>
-                  )}
-                  
-                  {/* Bouton Play uniquement pour la section Émission */}
-                  {sectionType === 'emission' && article.videoUrl && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Link href={article.videoUrl} className="p-4 rounded-full bg-blue-500 bg-opacity-80 hover:bg-opacity-100 transition-all transform hover:scale-110">
-                        <div className="w-8 h-8 flex items-center justify-center text-white">
-                          &#9658; {/* Caractère Unicode pour triangle play */}
-                        </div>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="p-4">
-                  <h3 className="text-xl font-bold mb-2">
-                    <Link href={`/article/${article.slug.current}`} className="hover:text-blue-400 transition-colors">
-                      {article.title}
-                    </Link>
-                  </h3>
-                  
-                  {article.excerpt && (
-                    <p className="text-gray-300 text-sm mb-4 line-clamp-2">{article.excerpt}</p>
-                  )}
-                  
-                  <div className="flex justify-between items-center text-sm text-gray-400">
-                    <div className="flex items-center">
-                      {article.author?.name && (
-                        <span>{article.author.name}</span>
-                      )}
-                    </div>
+              <Link href={`/article/${article.slug.current}`} className="block">
+                <div className="bg-navy-800 rounded-lg overflow-hidden transition-transform hover:scale-[1.02] hover:shadow-lg">
+                  <div className="relative h-48 md:h-56">
+                    {article.mainImage ? (
+                      <img 
+                        src={getImageUrl(article.mainImage)} 
+                        alt={article.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+                        <span className="text-gray-400">Image non disponible</span>
+                      </div>
+                    )}
                     
-                    <div className="flex items-center space-x-2">
-                      {sectionType === 'emission' && article.duration && (
-                        <span>{article.duration}</span>
-                      )}
-                      
-                      {sectionType === 'emission' && article.views && (
-                        <span>{formatViews(article.views)}</span>
-                      )}
-                      
-                      {article.publishedAt && (
-                        <span>{formatDate(article.publishedAt)}</span>
-                      )}
-                    </div>
+                    {/* Bouton Play uniquement pour la section Émission */}
+                    {sectionType === 'emission' && article.videoUrl && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="p-4 rounded-full bg-blue-500 bg-opacity-80 hover:bg-opacity-100 transition-all transform hover:scale-110">
+                          <div className="w-8 h-8 flex items-center justify-center text-white">
+                            &#9658; {/* Caractère Unicode pour triangle play */}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
-                  {sectionType !== 'emission' && (
-                    <div className="mt-4">
-                      <Link 
-                        href={`/article/${article.slug.current}`}
-                        className="text-blue-400 hover:text-blue-300 transition-colors flex items-center"
-                      >
-                        Lire l'article
-                        <span className="ml-1">&#10095;</span> {/* Caractère Unicode pour flèche droite */}
-                      </Link>
+                  <div className="p-4">
+                    <h3 className="text-xl font-bold mb-2 hover:text-blue-400 transition-colors">
+                      {article.title}
+                    </h3>
+                    
+                    {article.excerpt && (
+                      <p className="text-gray-300 text-sm mb-4 line-clamp-2">{article.excerpt}</p>
+                    )}
+                    
+                    <div className="flex justify-between items-center text-sm text-gray-400">
+                      <div className="flex items-center">
+                        {article.author?.name && (
+                          <span>{article.author.name}</span>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        {sectionType === 'emission' && article.duration && (
+                          <span>{article.duration}</span>
+                        )}
+                        
+                        {sectionType === 'emission' && article.views && (
+                          <span>{formatViews(article.views)}</span>
+                        )}
+                        
+                        {article.publishedAt && (
+                          <span>{formatDate(article.publishedAt)}</span>
+                        )}
+                      </div>
                     </div>
-                  )}
+                    
+                    <div className="mt-4">
+                      <span className="text-blue-400 hover:text-blue-300 transition-colors flex items-center">
+                        {getCtaText(sectionType)}
+                        <span className="ml-1">&#10095;</span> {/* Caractère Unicode pour flèche droite */}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>
