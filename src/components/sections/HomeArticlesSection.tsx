@@ -37,7 +37,7 @@ export const HomeArticlesSection = () => {
       try {
         setIsLoading(true);
         
-        // Requête GROQ pour récupérer les articles avec les détails de mainImage.asset
+        // Requête GROQ modifiée pour récupérer toutes les catégories associées à chaque article
         const articlesQuery = `*[_type == "article"] | order(publishedAt desc) {
           _id,
           title,
@@ -45,8 +45,8 @@ export const HomeArticlesSection = () => {
           excerpt,
           publishedAt,
           mainImage { asset-> },
-          "category": category->{_id, title},
-          "author": author->{name, image}
+          "author": author->{name, image},
+          "categories": categories[]->{ _id, title }
         }`;
         
         // Requête GROQ pour récupérer les catégories
@@ -88,11 +88,15 @@ export const HomeArticlesSection = () => {
 
   const filteredArticles = articles
     .filter((article) => {
+      // Modification pour filtrer par catégorie en utilisant le tableau de catégories
       const matchesCategory =
-        selectedCategoryId === "all" || article.category?._id === selectedCategoryId;
+        selectedCategoryId === "all" || 
+        (article.categories && article.categories.some(cat => cat._id === selectedCategoryId));
+      
       const matchesSearch =
         article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (article.excerpt || "").toLowerCase().includes(searchTerm.toLowerCase());
+      
       return matchesCategory && matchesSearch;
     })
     .sort((a, b) => {
@@ -104,18 +108,6 @@ export const HomeArticlesSection = () => {
 
   const featuredArticle = filteredArticles.length > 0 ? filteredArticles[0] : null;
   const regularArticles = filteredArticles.length > 1 ? filteredArticles.slice(1) : [];
-  
-  // Identifiants des articles déjà affichés dans le hero (article à la une + derniers articles)
-  const heroArticleIds = new Set<string>();
-  if (featuredArticle) {
-    heroArticleIds.add(featuredArticle._id);
-  }
-  regularArticles.slice(0, 4).forEach(article => {
-    heroArticleIds.add(article._id);
-  });
-  
-  // Articles complémentaires (non affichés dans le hero)
-  const complementaryArticles = articles.filter(article => !heroArticleIds.has(article._id));
 
   if (isLoading) {
     return <div className="container mx-auto px-4 py-20 text-center"><p>Chargement des articles...</p></div>;
@@ -207,12 +199,15 @@ export const HomeArticlesSection = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
-                  <div className="flex items-center gap-4 mb-4">
-                    {featuredArticle.category?.title &&
-                        <span className="px-3 py-1 bg-accent-violet text-white text-sm font-medium rounded-full">
-                            {featuredArticle.category.title}
-                        </span>
-                    }
+                  <div className="flex items-center gap-2 flex-wrap mb-4">
+                    {featuredArticle.categories && featuredArticle.categories.map((category, index) => (
+                      <span 
+                        key={category._id} 
+                        className={`px-3 py-1 ${["bg-accent-violet", "bg-accent-fuchsia", "bg-accent-cyan", "bg-accent-pink"][index % 4]} text-white text-sm font-medium rounded-full`}
+                      >
+                        {category.title}
+                      </span>
+                    ))}
                   </div>
                   <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 text-white group-hover:text-accent-fuchsia transition-colors">
                     {featuredArticle.title}
@@ -265,12 +260,15 @@ export const HomeArticlesSection = () => {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    {article.category?.title && 
-                        <span className="text-xs font-medium text-accent-violet">
-                            {article.category.title}
-                        </span>
-                    }
+                  <div className="flex items-center gap-2 flex-wrap mb-2">
+                    {article.categories && article.categories.map((category, index) => (
+                      <span 
+                        key={category._id} 
+                        className={`text-xs font-medium ${["text-accent-violet", "text-accent-fuchsia", "text-accent-cyan", "text-accent-pink"][index % 4]}`}
+                      >
+                        {category.title}
+                      </span>
+                    ))}
                   </div>
                   <h4 className="text-sm font-semibold mb-2 text-white line-clamp-2 group-hover:text-accent-fuchsia transition-colors">
                     {article.title}
@@ -295,11 +293,11 @@ export const HomeArticlesSection = () => {
           ))}
         </div>
 
-        {complementaryArticles.length > 0 && (
+        {regularArticles.length > 4 && (
           <div className="col-span-12 mt-12">
             <h3 className="text-lg font-semibold mb-8 text-white">Plus d'articles</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {complementaryArticles.map((article, index) => (
+              {regularArticles.slice(4).map((article, index) => (
                 <motion.div
                   key={article._id}
                   initial={{ opacity: 0, y: 20 }}

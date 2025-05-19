@@ -2,39 +2,80 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
-interface ArticleCardProps {
-  slug: string;
-  image: string;
+interface Category {
+  _id: string;
   title: string;
-  tag: string;
-  summary: string;
 }
 
-export const ArticleCard = ({ slug, image, title, tag, summary }: ArticleCardProps) => {
+interface ArticleCardProps {
+  article: {
+    slug?: { current: string };
+    mainImage?: any;
+    title: string;
+    categories?: Category[];
+    excerpt?: string;
+  };
+}
+
+export const ArticleCard = ({ article }: ArticleCardProps) => {
+  // Fonction pour obtenir l'URL de l'image avec urlFor si disponible
+  const getImageUrl = () => {
+    if (!article.mainImage) return "https://via.placeholder.com/400x300?text=Image+Indisponible";
+    
+    // Si urlFor est disponible dans le contexte
+    if (typeof window !== 'undefined' && window.urlFor) {
+      return window.urlFor(article.mainImage).width(400).height(300).fit("crop").url();
+    }
+    
+    // Fallback si urlFor n'est pas disponible
+    if (article.mainImage.asset && article.mainImage.asset.url) {
+      return article.mainImage.asset.url;
+    }
+    
+    return "https://via.placeholder.com/400x300?text=Image+Indisponible";
+  };
+
   return (
     <motion.article
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       className="group cursor-pointer"
     >
-      <Link to={`/article/${slug}`}>
+      <Link to={`/article/${article.slug?.current || ''}`}>
         <div className="overflow-hidden rounded-lg">
           <img
-            src={image}
-            alt={title}
+            src={getImageUrl()}
+            alt={article.title}
             className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
             loading="lazy"
             decoding="async"
           />
         </div>
         <div className="mt-4">
-          <span className="text-accent-violet text-sm font-inter uppercase tracking-wider">
-            {tag}
-          </span>
-          <h3 className="mt-2 text-xl font-montserrat font-bold line-clamp-2">
-            {title}
+          {/* Affichage des badges de catégories */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            {article.categories && article.categories.length > 0 ? (
+              article.categories.map((category, index) => (
+                <span 
+                  key={category._id} 
+                  className={`px-2 py-1 text-xs font-medium rounded-full text-white ${
+                    ["bg-accent-violet", "bg-accent-fuchsia", "bg-accent-cyan", "bg-accent-pink"][index % 4]
+                  }`}
+                >
+                  {category.title}
+                </span>
+              ))
+            ) : (
+              <span className="text-accent-violet text-sm font-inter uppercase tracking-wider">
+                Sans catégorie
+              </span>
+            )}
+          </div>
+          
+          <h3 className="mt-2 text-xl font-montserrat font-bold line-clamp-2 text-white group-hover:text-accent-fuchsia transition-colors">
+            {article.title}
           </h3>
-          <p className="mt-2 text-tertiary line-clamp-3">
-            {summary}
+          <p className="mt-2 text-tertiary line-clamp-3 text-gray-300">
+            {article.excerpt || ''}
           </p>
         </div>
       </Link>
