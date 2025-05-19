@@ -49,7 +49,7 @@ export const ArticlesGridSection = ({
           // Prévoyez une image de remplacement si mainImage n'est pas définie
           const imageUrl = article.mainImage 
             ? urlFor(article.mainImage).width(400).height(300).fit("crop").url() 
-            : "/path/to/default-placeholder-image.jpg"; // REMPLACEZ par une vraie URL d'image placeholder
+            : "https://via.placeholder.com/400x300?text=Image+Indisponible";
 
           return (
             <ArticleCard
