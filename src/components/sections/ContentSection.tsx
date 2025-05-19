@@ -14,7 +14,8 @@ const sanityClient = createClient({
 // Types pour TypeScript
 interface SanityImage {
   asset: {
-    url: string;
+    _ref: string;
+    url?: string;
   };
 }
 
@@ -70,19 +71,11 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
           title,
           slug,
           excerpt,
-          mainImage {
-            asset-> {
-              url
-            }
-          },
+          mainImage,
           publishedAt,
           "author": author-> {
             name,
-            image {
-              asset-> {
-                url
-              }
-            }
+            image
           },
           "categories": categories[]-> {
             _id,
@@ -133,6 +126,20 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
     return `${views} vues`;
   };
 
+  // Fonction pour construire l'URL de l'image Sanity
+  const getImageUrl = (image: SanityImage) => {
+    if (!image || !image.asset || !image.asset._ref) return '';
+    
+    // Format de _ref: "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg"
+    const ref = image.asset._ref;
+    const [, id, dimensionString, format] = ref.split('-');
+    
+    if (!id) return '';
+    
+    // Construire l'URL de l'image
+    return `https://cdn.sanity.io/images/z9wsynas/production/${id}-${dimensionString}.${format}`;
+  };
+
   if (loading) {
     return <div className="py-8 text-center">Chargement des articles...</div>;
   }
@@ -180,12 +187,11 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
             <div key={article._id} className="flex-none w-80 md:w-96">
               <div className="bg-navy-800 rounded-lg overflow-hidden">
                 <div className="relative h-48 md:h-56">
-                  {article.mainImage?.asset?.url ? (
-                    <Image 
-                      src={article.mainImage.asset.url} 
+                  {article.mainImage ? (
+                    <img 
+                      src={getImageUrl(article.mainImage)} 
                       alt={article.title}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-700 flex items-center justify-center">
