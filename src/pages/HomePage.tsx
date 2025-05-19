@@ -16,6 +16,7 @@ import { NewsletterSection } from '../components/sections/NewsletterSection';
 import { AboutSection } from '../components/sections/AboutSection';
 import { HomeBusinessIdeasSection } from '../components/sections/HomeBusinessIdeasSection';
 import { HomeCaseStudiesSection } from '../components/sections/HomeCaseStudiesSection';
+import ContentSection from '../components/sections/ContentSection';
 
 export const HomePage = () => {
   return (
@@ -35,6 +36,21 @@ export const HomePage = () => {
           <HeroSection />
           <AmuseBoucheSection /> {/* Ajout de la section Amuse-bouches ici */}
           <HomeArticlesSection />
+          <ContentSection 
+            title="L'émission"
+            description="Des conversations authentiques avec ceux qui façonnent le monde de demain"
+            sectionType="emission"
+          />
+          <ContentSection 
+            title="Business Idea"
+            description="Découvrez les stratégies et idées qui transforment le monde des affaires"
+            sectionType="business-idea"
+          />
+          <ContentSection 
+            title="Success Story"
+            description="Parcours inspirants d'entrepreneurs qui ont réussi à concrétiser leur vision"
+            sectionType="success-story"
+          />
           <HomeBusinessIdeasSection />
           <DebateSection />
           <AboutRogerSection />
