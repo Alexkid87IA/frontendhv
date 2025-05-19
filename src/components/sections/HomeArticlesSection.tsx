@@ -45,7 +45,8 @@ export const HomeArticlesSection = () => {
           excerpt,
           publishedAt,
           mainImage { asset-> },
-          "category": category->{_id, title}
+          "category": category->{_id, title},
+          "author": author->{name, image}
         }`;
         
         // Requête GROQ pour récupérer les catégories
@@ -103,6 +104,18 @@ export const HomeArticlesSection = () => {
 
   const featuredArticle = filteredArticles.length > 0 ? filteredArticles[0] : null;
   const regularArticles = filteredArticles.length > 1 ? filteredArticles.slice(1) : [];
+  
+  // Identifiants des articles déjà affichés dans le hero (article à la une + derniers articles)
+  const heroArticleIds = new Set<string>();
+  if (featuredArticle) {
+    heroArticleIds.add(featuredArticle._id);
+  }
+  regularArticles.slice(0, 4).forEach(article => {
+    heroArticleIds.add(article._id);
+  });
+  
+  // Articles complémentaires (non affichés dans le hero)
+  const complementaryArticles = articles.filter(article => !heroArticleIds.has(article._id));
 
   if (isLoading) {
     return <div className="container mx-auto px-4 py-20 text-center"><p>Chargement des articles...</p></div>;
@@ -282,11 +295,11 @@ export const HomeArticlesSection = () => {
           ))}
         </div>
 
-        {regularArticles.length > 4 && (
+        {complementaryArticles.length > 0 && (
           <div className="col-span-12 mt-12">
             <h3 className="text-lg font-semibold mb-8 text-white">Plus d'articles</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {regularArticles.slice(4).map((article, index) => (
+              {complementaryArticles.map((article, index) => (
                 <motion.div
                   key={article._id}
                   initial={{ opacity: 0, y: 20 }}
