@@ -2,7 +2,7 @@ import React from 'react';
 import { SEO } from '../components/common/SEO';
 import { staticSEO } from '../utils/seo.config';
 import { HeroSection } from '../components/sections/HeroSection';
-import { AmuseBoucheSection } from '../components/sections/AmuseBoucheSection'; // Ajout de l'import
+import { AmuseBoucheSection } from '../components/sections/AmuseBoucheSection';
 import { HomeArticlesSection } from '../components/sections/HomeArticlesSection';
 import { EditorialSection } from '../components/sections/EditorialSection';
 import { MediaSection } from '../components/sections/MediaSection';
@@ -14,7 +14,6 @@ import { RogerSaidSection } from '../components/sections/RogerSaidSection';
 import { CulturalSection } from '../components/sections/CulturalSection';
 import { NewsletterSection } from '../components/sections/NewsletterSection';
 import { AboutSection } from '../components/sections/AboutSection';
-//import { HomeBusinessIdeasSection } from '../components/sections/HomeBusinessIdeasSection';
 import { HomeCaseStudiesSection } from '../components/sections/HomeCaseStudiesSection';
 import ContentSection from '../components/sections/ContentSection';
 
@@ -34,7 +33,7 @@ export const HomePage = () => {
         {/* Content */}
         <div className="relative space-y-16 md:space-y-24 lg:space-y-32">
           <HeroSection />
-          <AmuseBoucheSection /> {/* Ajout de la section Amuse-bouches ici */}
+          <AmuseBoucheSection />
           <HomeArticlesSection />
           <ContentSection 
             title="L'émission"
@@ -51,7 +50,6 @@ export const HomePage = () => {
             description="Parcours inspirants d'entrepreneurs qui ont réussi à concrétiser leur vision"
             sectionType="success-story"
           />
-//          <HomeBusinessIdeasSection />
           <DebateSection />
           <AboutRogerSection />
           <EditorialSection />
