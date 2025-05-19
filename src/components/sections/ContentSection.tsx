@@ -1,17 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useClient } from 'next-sanity';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import { PlayIcon } from '@heroicons/react/24/solid';
+import { createClient } from '@sanity/client';
 import Image from 'next/image';
 import Link from 'next/link';
 
 // Configuration du client Sanity
-const client = {
+const sanityClient = createClient({
   projectId: 'z9wsynas',
   dataset: 'production',
   apiVersion: '2023-05-03',
   useCdn: true,
-};
+});
 
 // Types pour TypeScript
 interface SanityImage {
@@ -60,7 +58,6 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const sanityClient = useClient(client);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -108,7 +105,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
     };
 
     fetchArticles();
-  }, [sectionType, sanityClient]);
+  }, [sectionType]);
 
   const scrollLeft = () => {
     if (carouselRef.current) {
@@ -162,14 +159,14 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
               className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
               aria-label="Précédent"
             >
-              <ChevronLeftIcon className="w-5 h-5" />
+              &#10094; {/* Caractère Unicode pour flèche gauche */}
             </button>
             <button 
               onClick={scrollRight}
               className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
               aria-label="Suivant"
             >
-              <ChevronRightIcon className="w-5 h-5" />
+              &#10095; {/* Caractère Unicode pour flèche droite */}
             </button>
           </div>
         </div>
@@ -200,7 +197,9 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                   {sectionType === 'emission' && article.videoUrl && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <Link href={article.videoUrl} className="p-4 rounded-full bg-blue-500 bg-opacity-80 hover:bg-opacity-100 transition-all transform hover:scale-110">
-                        <PlayIcon className="w-8 h-8 text-white" />
+                        <div className="w-8 h-8 flex items-center justify-center text-white">
+                          &#9658; {/* Caractère Unicode pour triangle play */}
+                        </div>
                       </Link>
                     </div>
                   )}
@@ -246,7 +245,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                         className="text-blue-400 hover:text-blue-300 transition-colors flex items-center"
                       >
                         Lire l'article
-                        <ChevronRightIcon className="w-4 h-4 ml-1" />
+                        <span className="ml-1">&#10095;</span> {/* Caractère Unicode pour flèche droite */}
                       </Link>
                     </div>
                   )}
