@@ -5,16 +5,7 @@ import { HeroSection } from '../components/sections/HeroSection';
 import { AmuseBoucheSection } from '../components/sections/AmuseBoucheSection';
 import { HomeArticlesSection } from '../components/sections/HomeArticlesSection';
 import { EditorialSection } from '../components/sections/EditorialSection';
-import { MediaSection } from '../components/sections/MediaSection';
 import { DebateSection } from '../components/sections/DebateSection';
-import { AboutRogerSection } from '../components/sections/AboutRogerSection';
-import { WritersSection } from '../components/sections/WritersSection';
-import { CreateWithRogerSection } from '../components/sections/CreateWithRogerSection';
-import { RogerSaidSection } from '../components/sections/RogerSaidSection';
-import { CulturalSection } from '../components/sections/CulturalSection';
-import { NewsletterSection } from '../components/sections/NewsletterSection';
-import { AboutSection } from '../components/sections/AboutSection';
-import { HomeCaseStudiesSection } from '../components/sections/HomeCaseStudiesSection';
 import ContentSection from '../components/sections/ContentSection';
 
 export const HomePage = () => {
@@ -35,6 +26,7 @@ export const HomePage = () => {
           <HeroSection />
           <AmuseBoucheSection />
           <HomeArticlesSection />
+          <EditorialSection />
           <ContentSection 
             title="L'émission"
             description="Des conversations authentiques avec ceux qui façonnent le monde de demain"
@@ -51,16 +43,6 @@ export const HomePage = () => {
             sectionType="success-story"
           />
           <DebateSection />
-          <AboutRogerSection />
-          <EditorialSection />
-          <HomeCaseStudiesSection />
-          <WritersSection />
-          <MediaSection />
-          <CreateWithRogerSection />
-          <RogerSaidSection />
-          <CulturalSection />
-          <NewsletterSection />
-          <AboutSection />
         </div>
       </div>
     </>
