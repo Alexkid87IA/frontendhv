@@ -1,3 +1,4 @@
+import SimpleFooter from './components/layout/SimpleFooter';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ResponsiveNavbar } from './components/layout/ResponsiveNavbar';
@@ -66,11 +67,12 @@ function App() {
             <Footer />
             <Analytics />
             <ChatWidget />
+            <SimpleFooter />
           </div>
         </div>
       </ErrorBoundary>
     </Router>
-  );
+  )
 }
 
 export default App;
