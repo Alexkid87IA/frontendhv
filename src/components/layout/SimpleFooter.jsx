@@ -1,4 +1,3 @@
-// src/components/layout/SimpleFooter.jsx
 import React from 'react';
 
 const SimpleFooter = () => {
