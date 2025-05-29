@@ -7,6 +7,7 @@ import { HomeArticlesSection } from '../components/sections/HomeArticlesSection'
 import { EditorialSection } from '../components/sections/EditorialSection';
 import { DebateSection } from '../components/sections/DebateSection';
 import ContentSection from '../components/sections/ContentSection';
+import SimpleFooter from '../components/layout/SimpleFooter';
 
 export const HomePage = () => {
   return (
@@ -46,6 +47,9 @@ export const HomePage = () => {
         
         {/* Espace supplémentaire pour garantir que le footer est visible */}
         <div className="h-16"></div>
+        
+        {/* Ajout explicite du SimpleFooter directement dans la HomePage */}
+        <SimpleFooter />
       </div>
     </>
   );
