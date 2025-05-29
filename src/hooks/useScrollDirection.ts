@@ -1,31 +1,23 @@
 import { useState, useEffect } from 'react';
 
 export function useScrollDirection() {
-  const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const controlNavbar = () => {
+    const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      const scrollingDown = currentScrollY > lastScrollY;
+      const scrollDifference = Math.abs(currentScrollY - lastScrollY);
       
-      // Toujours visible dans les 50 premiers pixels
-      if (currentScrollY < 50) {
-        setVisible(true);
+      if (scrollDifference > 10) {
+        setVisible(!scrollingDown || currentScrollY < 50);
         setLastScrollY(currentScrollY);
-        return;
       }
-
-      // Cacher la navbar quand on scroll vers le bas
-      // Montrer la navbar quand on scroll vers le haut
-      setVisible(currentScrollY < lastScrollY);
-      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', controlNavbar);
-    
-    return () => {
-      window.removeEventListener('scroll', controlNavbar);
-    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
   return { visible };
