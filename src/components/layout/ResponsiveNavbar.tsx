@@ -4,6 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
 
+// Import des logos
+import logoHVMedia from '../../assets/logos/LOGO_HV MEDIA.svg';
+import logoHVStory from '../../assets/logos/LOGO_HV STORY.svg';
+import logoHVBusiness from '../../assets/logos/LOGO_HV BUSINESS.svg';
+import logoHVPsycho from '../../assets/logos/LOGO_HV PSYCHO.svg';
+import logoHVSociety from '../../assets/logos/LOGO_HV SOCIETY.svg';
+
 export const ResponsiveNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -26,12 +33,24 @@ export const ResponsiveNavbar = () => {
   };
 
   const getCurrentLogo = () => {
-    return "https://26.staticbtf.eno.do/v1/24-default/c6447f1810fadbb886029b7c212d9d98/media.jpg";
+    // Logique pour afficher le bon logo selon la page active
+    if (location.pathname.startsWith('/rubrique/story')) {
+      return logoHVStory;
+    } else if (location.pathname.startsWith('/rubrique/business')) {
+      return logoHVBusiness;
+    } else if (location.pathname.startsWith('/rubrique/mental')) {
+      return logoHVPsycho;
+    } else if (location.pathname.startsWith('/rubrique/society')) {
+      return logoHVSociety;
+    } else {
+      // Logo par défaut pour homepage, émissions et autres pages
+      return logoHVMedia;
+    }
   };
 
-  useEffect(( ) => {
-    const handleClickOutside = (e) => {
-      const target = e.target;
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
       if (isOpen && !target.closest('#mobile-menu') && !target.closest('#menu-button')) {
         setIsOpen(false);
       }
@@ -59,7 +78,7 @@ export const ResponsiveNavbar = () => {
         >
           <motion.img 
             src={getCurrentLogo()}
-            alt="High Value Media Logo"
+            alt="High Value Logo"
             className="h-10 md:h-12 w-auto object-contain" 
             animate={isAnimating ? { scale: [1, 1.05, 1], filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"] } : {}}
             transition={{ duration: 0.5, ease: "easeInOut" }}
