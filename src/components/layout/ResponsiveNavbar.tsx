@@ -11,12 +11,13 @@ export const ResponsiveNavbar = () => {
   const { visible } = useScrollDirection();
 
   const menuItems = [
-    { label: 'Story', path: '/rubrique/story', icon: BookOpen },
-    { label: 'Business', path: '/rubrique/business', icon: Briefcase },
-    { label: 'Psychologie', path: '/rubrique/psychologie', icon: Brain },
-    { label: 'Société', path: '/rubrique/societe', icon: Users },
-    { label: 'Émissions', path: '/emissions', icon: Film }
+    { label: 'Story', path: '/rubrique/story', icon: BookOpen, slug: 'story' },
+    { label: 'Business', path: '/rubrique/business', icon: Briefcase, slug: 'business' },
+    { label: 'Mental', path: '/rubrique/mental', icon: Brain, slug: 'mental' },
+    { label: 'Society', path: '/rubrique/society', icon: Users, slug: 'society' },
+    { label: 'Émissions', path: '/emissions', icon: Film, slug: 'emissions' } // Supprimez l'accolade supplémentaire ici
   ];
+  
 
   const handleLogoClick = () => {
     if (!isAnimating) {
