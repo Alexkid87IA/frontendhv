@@ -23,6 +23,7 @@ import { CoachingPage } from './pages/CoachingPage';
 import { BusinessIdeasPage } from './pages/BusinessIdeasPage';
 import { BusinessIdeaPage } from './pages/BusinessIdeaPage';
 import { NotFound } from './pages/NotFound';
+import HomePageWithFooter from './pages/HomePageWithFooter';
 
 function App() {
   return (
@@ -42,8 +43,8 @@ function App() {
             <ResponsiveNavbar />
             <main className="flex-grow">
               <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/articles" element={<AllArticlesPage />} />
+              <Route path="/" element={<HomePageWithFooter />} />
+              <Route path="/articles" element={<AllArticlesPage />} />
                 <Route path="/article/:slug" element={<ArticlePage />} />
                 <Route path="/business-ideas" element={<BusinessIdeasPage />} />
                 <Route path="/business-idea/:slug" element={<BusinessIdeaPage />} />
