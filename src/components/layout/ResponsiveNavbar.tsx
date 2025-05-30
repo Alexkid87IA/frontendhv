@@ -1,108 +1,215 @@
-import React, { useState } from 'react';
-import { Menu, X, Sparkles, BookOpen, Briefcase, Brain, Users, Film } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Menu, X, Sparkles, BookOpen, Briefcase, Brain, Users, Film, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
 
 export const ResponsiveNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false); // Pour l'animation du logo
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const location = useLocation();
   const { visible } = useScrollDirection();
 
   const menuItems = [
-    { label: 'Story', path: '/rubrique/story', icon: BookOpen, slug: 'story' },
-    { label: 'Business', path: '/rubrique/business', icon: Briefcase, slug: 'business' },
-    { label: 'Mental', path: '/rubrique/mental', icon: Brain, slug: 'mental' },
-    { label: 'Society', path: '/rubrique/society', icon: Users, slug: 'society' },
-    { label: 'Émissions', path: '/emissions', icon: Film, slug: 'emissions' }
+    { 
+      label: 'Story', 
+      path: '/rubrique/story', 
+      icon: BookOpen, 
+      slug: 'story',
+      dropdown: [
+        { label: 'Success Stories', path: '/rubrique/story/success-stories' },
+        { label: 'Portraits', path: '/rubrique/story/portraits' },
+        { label: 'Transformations', path: '/rubrique/story/transformations' }
+      ]
+    },
+    { 
+      label: 'Business', 
+      path: '/rubrique/business', 
+      icon: Briefcase, 
+      slug: 'business',
+      dropdown: [
+        { label: 'Innovation', path: '/rubrique/business/innovation' },
+        { label: 'Stratégie', path: '/rubrique/business/strategie' },
+        { label: 'Leadership', path: '/rubrique/business/leadership' }
+      ]
+    },
+    { 
+      label: 'Mental', 
+      path: '/rubrique/mental', 
+      icon: Brain, 
+      slug: 'mental',
+      dropdown: [
+        { label: 'Développement personnel', path: '/rubrique/mental/developpement' },
+        { label: 'Résilience', path: '/rubrique/mental/resilience' },
+        { label: 'Productivité', path: '/rubrique/mental/productivite' }
+      ]
+    },
+    { 
+      label: 'Society', 
+      path: '/rubrique/society', 
+      icon: Users, 
+      slug: 'society',
+      dropdown: [
+        { label: 'Tendances', path: '/rubrique/society/tendances' },
+        { label: 'Impact', path: '/rubrique/society/impact' },
+        { label: 'Culture', path: '/rubrique/society/culture' }
+      ]
+    },
+    { 
+      label: 'Émissions', 
+      path: '/emissions', 
+      icon: Film, 
+      slug: 'emissions',
+      dropdown: [
+        { label: 'Podcasts', path: '/podcasts' },
+        { label: 'Vidéos', path: '/emissions/videos' },
+        { label: 'Interviews', path: '/emissions/interviews' }
+      ]
+    }
   ];
 
   const handleLogoClick = () => {
     if (!isAnimating) {
       setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 600); // Durée de l'animation
+      setTimeout(() => setIsAnimating(false), 600);
     }
   };
 
-  const getCurrentLogo = () => {
-    return "https://26.staticbtf.eno.do/v1/24-default/c6447f1810fadbb886029b7c212d9d98/media.jpg"; // Logo par défaut
+  const handleDropdownToggle = (label: string) => {
+    setActiveDropdown(activeDropdown === label ? null : label);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (isOpen && !target.closest('#mobile-menu') && !target.closest('#menu-button')) {
         setIsOpen(false);
       }
+      if (activeDropdown && !target.closest('.dropdown-menu') && !target.closest('.dropdown-trigger')) {
+        setActiveDropdown(null);
+      }
     };
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
-  }, [isOpen]);
+  }, [isOpen, activeDropdown]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setIsOpen(false);
+    setActiveDropdown(null);
   }, [location.pathname]);
 
-  return    <motion.nav
+  return (
+    <motion.nav
       initial={{ y: 0 }}
       animate={{ y: visible ? 0 : -150 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-hv-card-bg/80 border-b border-hv-card-border shadow-md"
+      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/70 border-b border-white/10 shadow-lg"
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
+        {/* Logo */}
         <Link 
           to="/" 
           className="flex-shrink-0 flex items-center" 
           onClick={handleLogoClick}
         >
-          <motion.img 
-            src={getCurrentLogo()}
-            alt="High Value Media Logo"
-            className="h-10 md:h-12 w-auto object-contain" 
-            animate={isAnimating ? { scale: [1, 1.05, 1], filter: ["brightness(1)", "brightness(1.1)", "brightness(1)"] } : {}}
+          <motion.div
+            animate={isAnimating ? { 
+              scale: [1, 1.05, 1], 
+              filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"] 
+            } : {}}
             transition={{ duration: 0.5, ease: "easeInOut" }}
             whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-          />
+            className="relative h-10 md:h-12"
+          >
+            <img 
+              src="https://26.staticbtf.eno.do/v1/24-default/c6447f1810fadbb886029b7c212d9d98/media.jpg"
+              alt="Roger Ormières"
+              className="h-full w-auto object-contain" 
+            />
+            <motion.div 
+              className="absolute inset-0 bg-gradient-to-r from-accent-blue/20 via-accent-turquoise/20 to-transparent rounded-full"
+              animate={{ opacity: [0, 0.5, 0] }}
+              transition={{ duration: 1.5, ease: "easeInOut", repeat: isAnimating ? 1 : 0 }}
+            />
+          </motion.div>
         </Link>
         
+        {/* Desktop Navigation */}
         <div className="hidden lg:flex flex-1 items-center justify-between ml-6">
           <div className="flex-1 flex justify-center">
             <div className="flex items-center space-x-1">
               {menuItems.map((item) => {
-                // Pour les rubriques, l'activité est basée sur le slug de la catégorie dans l'URL
-                const isActive = item.path.startsWith('/rubrique/') 
-                  ? location.pathname === `/rubrique/${item.slug}` 
-                  : location.pathname.startsWith(item.path);
+                const isActive = location.pathname === item.path || 
+                                location.pathname.startsWith(`/rubrique/${item.slug}`);
                 const Icon = item.icon;
+                
                 return (
-                  <Link
-                    key={item.path} // La clé peut rester item.path si les paths sont uniques
-                    to={item.path} // Le path utilisé pour la navigation
-                    className={`group flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200 text-sm font-medium ${
-                      isActive 
-                        ? "text-hv-blue-accent bg-hv-blue-accent/10" 
-                        : "text-hv-text-primary-maquette hover:text-hv-blue-accent hover:bg-hv-blue-accent/5"
-                    }`}
-                  >
-                    <Icon size={16} className={`transition-colors duration-200 ${
-                      isActive ? "text-hv-blue-accent" : "text-hv-text-secondary-maquette group-hover:text-hv-blue-accent"
-                    }`} />
-                    <span>{item.label}</span>
-                  </Link>
+                  <div key={item.path} className="relative group">
+                    <button
+                      className={`group dropdown-trigger flex items-center gap-1.5 px-4 py-3 rounded-md transition-all duration-200 text-sm font-medium ${
+                        isActive 
+                          ? "text-accent-blue bg-accent-blue/10" 
+                          : "text-white hover:text-accent-blue hover:bg-accent-blue/5"
+                      }`}
+                      onClick={() => handleDropdownToggle(item.label)}
+                      aria-expanded={activeDropdown === item.label}
+                    >
+                      <Icon size={16} className={`transition-colors duration-200 ${
+                        isActive ? "text-accent-blue" : "text-gray-400 group-hover:text-accent-blue"
+                      }`} />
+                      <span>{item.label}</span>
+                      {item.dropdown && (
+                        <ChevronDown 
+                          size={14} 
+                          className={`ml-1 transition-transform duration-200 ${
+                            activeDropdown === item.label ? "rotate-180" : ""
+                          }`} 
+                        />
+                      )}
+                    </button>
+                    
+                    {/* Dropdown Menu */}
+                    {item.dropdown && (
+                      <AnimatePresence>
+                        {activeDropdown === item.label && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                            className="dropdown-menu absolute left-0 mt-1 w-56 rounded-md shadow-lg bg-black/90 backdrop-blur-xl border border-white/10 overflow-hidden z-50"
+                          >
+                            <div className="py-1">
+                              {item.dropdown.map((subItem) => (
+                                <Link
+                                  key={subItem.path}
+                                  to={subItem.path}
+                                  className="block px-4 py-2.5 text-sm text-gray-200 hover:bg-accent-blue/10 hover:text-accent-blue transition-colors"
+                                >
+                                  {subItem.label}
+                                </Link>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    )}
+                  </div>
                 );
               })}
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          {/* CTA Buttons */}
+          <div className="flex items-center space-x-4">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/coaching"
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap border ${
+                className={`px-4 py-2.5 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap border ${
                   location.pathname === "/coaching" 
-                  ? "bg-hv-blue-accent text-hv-text-white border-hv-blue-accent shadow-lg"
-                  : "bg-hv-card-bg/50 hover:bg-hv-blue-accent/10 text-hv-text-primary-maquette hover:text-hv-blue-accent border-hv-card-border hover:border-hv-blue-accent/50"
+                  ? "bg-accent-blue text-white border-accent-blue shadow-lg shadow-accent-blue/20"
+                  : "bg-transparent hover:bg-accent-blue/10 text-white hover:text-accent-blue border-white/20 hover:border-accent-blue/50"
                 }`}
               >
                 Coaching
@@ -111,32 +218,36 @@ export const ResponsiveNavbar = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/create-with-roger"
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap shadow-md border border-transparent ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap shadow-md ${
                   location.pathname === "/create-with-roger"
-                  ? "bg-gradient-to-r from-hv-blue-accent to-accent-turquoise text-hv-text-white ring-2 ring-hv-blue-accent"
-                  : "bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-hv-blue-accent hover:to-accent-turquoise text-hv-text-white"
+                  ? "bg-gradient-to-r from-accent-blue to-accent-turquoise text-white ring-2 ring-accent-blue/50"
+                  : "bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-accent-blue hover:to-accent-turquoise text-white"
                 }`}
               >
                 <Sparkles className="w-4 h-4" />
-                Votre histoire
+                <span>Votre histoire</span>
               </Link>
             </motion.div>
           </div>
         </div>
+
+        {/* Mobile Menu Button */}
         <div className="lg:hidden flex items-center">
           <button
             id="menu-button"
-            className="p-2 text-neutral-300 hover:text-white hover:bg-white/10 rounded-md transition-colors"
+            className="p-2 rounded-full text-white hover:bg-white/10 transition-colors"
             onClick={() => setIsOpen(!isOpen)}
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
             aria-label="Menu principal"
           >
+            <span className="sr-only">{isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}</span>
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -145,28 +256,65 @@ export const ResponsiveNavbar = () => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="lg:hidden fixed inset-x-0 top-20 bottom-0 bg-hv-dark/95 backdrop-blur-xl border-t border-white/10 z-40 overflow-y-auto pb-6"
+            className="lg:hidden fixed inset-x-0 top-20 bottom-0 bg-black/95 backdrop-blur-xl border-t border-white/10 z-40 overflow-y-auto pb-6"
           >
-            <div className="px-4 pt-6 pb-4 space-y-3">
+            <div className="px-4 pt-6 pb-4 space-y-1">
               {menuItems.map((item) => {
-                const isActive = item.path.startsWith('/rubrique/') 
-                  ? location.pathname === `/rubrique/${item.slug}` 
-                  : location.pathname.startsWith(item.path);
+                const isActive = location.pathname === item.path || 
+                                location.pathname.startsWith(`/rubrique/${item.slug}`);
                 const Icon = item.icon;
+                
                 return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 text-base font-medium ${
-                      isActive 
-                        ? 'text-hv-turquoise bg-hv-blue/20' 
-                        : 'text-neutral-200 hover:text-white hover:bg-white/10'
-                    }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Icon size={20} className={isActive ? 'text-hv-turquoise' : 'text-neutral-400'} />
-                    <span>{item.label}</span>
-                  </Link>
+                  <div key={item.path} className="mb-2">
+                    <button
+                      className={`flex items-center justify-between w-full p-3 rounded-lg transition-all duration-200 text-base font-medium ${
+                        isActive 
+                          ? 'text-accent-blue bg-accent-blue/10' 
+                          : 'text-white hover:text-accent-blue hover:bg-white/5'
+                      }`}
+                      onClick={() => handleDropdownToggle(item.label)}
+                      aria-expanded={activeDropdown === item.label}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon size={20} className={isActive ? 'text-accent-blue' : 'text-gray-400'} />
+                        <span>{item.label}</span>
+                      </div>
+                      {item.dropdown && (
+                        <ChevronDown 
+                          size={18} 
+                          className={`transition-transform duration-200 ${
+                            activeDropdown === item.label ? "rotate-180" : ""
+                          }`} 
+                        />
+                      )}
+                    </button>
+                    
+                    {/* Mobile Dropdown */}
+                    {item.dropdown && (
+                      <AnimatePresence>
+                        {activeDropdown === item.label && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="pl-10 pr-4 mt-1 space-y-1"
+                          >
+                            {item.dropdown.map((subItem) => (
+                              <Link
+                                key={subItem.path}
+                                to={subItem.path}
+                                className="block py-2.5 px-3 text-sm text-gray-300 hover:text-accent-blue hover:bg-accent-blue/5 rounded-md transition-colors"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                {subItem.label}
+                              </Link>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -176,8 +324,8 @@ export const ResponsiveNavbar = () => {
                 to="/coaching"
                 className={`block w-full text-center px-4 py-3 rounded-lg font-medium transition-all duration-200 text-base ${
                   location.pathname === '/coaching' 
-                  ? 'bg-hv-blue text-white shadow-lg'
-                  : 'bg-neutral-700/70 hover:bg-neutral-600 text-neutral-100 hover:text-white'
+                  ? 'bg-accent-blue text-white shadow-lg shadow-accent-blue/20'
+                  : 'bg-white/5 hover:bg-white/10 text-white hover:text-white'
                 }`}
                 onClick={() => setIsOpen(false)}
               >
@@ -185,7 +333,7 @@ export const ResponsiveNavbar = () => {
               </Link>
               <Link
                 to="/create-with-roger"
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-hv-blue to-hv-turquoise hover:from-hv-turquoise hover:to-hv-blue text-white w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 text-base shadow-md"
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-accent-turquoise hover:to-accent-blue text-white w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 text-base shadow-md"
                 onClick={() => setIsOpen(false)}
               >
                 <Sparkles className="w-5 h-5" />
@@ -196,7 +344,7 @@ export const ResponsiveNavbar = () => {
         )}
       </AnimatePresence>
     </motion.nav>
+  );
 };
-
 
 export default ResponsiveNavbar;
