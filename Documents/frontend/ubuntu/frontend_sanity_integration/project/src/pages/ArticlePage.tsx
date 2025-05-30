@@ -1,3 +1,4 @@
+// FORCER REBUILD AVEC LOGS - 13 Mai 23:01
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -5,42 +6,41 @@ import { SEO } from "../components/common/SEO";
 import { NewsletterForm } from "../components/common/NewsletterForm";
 import { ArticleProgress } from "../components/sections/ArticleProgress";
 import { ArticleHeader } from "../components/sections/ArticleHeader";
-import { ArticleContent } from "../components/sections/ArticleContent";
-import { AuthorBox } from "../components/common/AuthorBox";
-import { RelatedArticles } from "../components/sections/RelatedArticles";
+import ArticleContent from "../components/sections/ArticleContent"; // <--- MODIFIÉ ICI: Import par défaut
 import { ExploreArticlesSection } from "../components/sections/ExploreArticlesSection";
-import { ArticleActions } from "../components/sections/ArticleActions";
 import { LoadingSpinner } from "../components/common/LoadingSpinner";
 import { ErrorMessage } from "../components/common/ErrorMessage";
-import { getArticleBySlug, getAllArticles } from "../utils/sanityAPI"; // Remplacer par Sanity
+import { getArticleBySlug, getAllArticles } from "../utils/sanityAPI";
+import { ArticleSidebar } from "../components/sections/ArticleSidebar"; 
+import { urlFor } from "../utils/sanityImage"; 
 
-// Définir les types pour les données Sanity (à affiner selon vos schémas)
-interface SanityImage {
+export interface SanityImage {
   _type: "image";
   asset: {
     _ref: string;
     _type: "reference";
   };
+  alt?: string; 
 }
 
-interface SanitySlug {
+export interface SanitySlug {
   _type: "slug";
   current: string;
 }
 
-interface SanityAuthor {
+export interface SanityAuthor {
   name: string;
   slug: SanitySlug;
-  image?: SanityImage; // Supposant que vous avez un champ image pour l'auteur
-  bio?: any; // Portable Text ou string
+  image?: SanityImage;
+  bio?: any; 
 }
 
-interface SanityCategory {
+export interface SanityCategory {
   title: string;
   slug: SanitySlug;
 }
 
-interface SanityTag {
+export interface SanityTag {
   title: string;
   slug: SanitySlug;
 }
@@ -51,13 +51,25 @@ export interface SanityArticle {
   slug: SanitySlug;
   mainImage?: SanityImage;
   excerpt?: string;
-  body?: any[]; // Portable Text
+  body?: any[]; 
   publishedAt?: string;
-  category?: SanityCategory;
+  categories?: SanityCategory[];
   author?: SanityAuthor;
   tags?: SanityTag[];
-  // Ajoutez d'autres champs si nécessaire
 }
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.2,
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  }),
+};
 
 export const ArticlePage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -65,148 +77,154 @@ export const ArticlePage = () => {
   const [relatedArticles, setRelatedArticles] = useState<SanityArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [likes, setLikes] = useState(128); // Logique de like à revoir/connecter
-  const [hasLiked, setHasLiked] = useState(false);
-  const [showComments, setShowComments] = useState(false);
+  const [showComments, setShowComments] = useState(false); // State pour afficher/cacher les commentaires
 
   useEffect(() => {
     const loadArticle = async () => {
+      console.log("Slug en cours de chargement:", slug); // <--- AJOUT 1: Voir le slug utilisé
       if (!slug) {
-        setError("Slug de l'article manquant.");
+        setError("Slug de l\\'article manquant.");
         setIsLoading(false);
         return;
       }
       try {
         setIsLoading(true);
         setError(null);
-
         const fetchedArticle = await getArticleBySlug(slug);
+        console.log("Article récupéré par getArticleBySlug:", fetchedArticle); // <--- AJOUT 2: Voir l\\'article complet récupéré
 
         if (!fetchedArticle) {
           setError("Article non trouvé");
           setArticle(null);
         } else {
           setArticle(fetchedArticle);
-          // Charger les articles liés (exemple simple : tous les autres articles pour l'instant)
-          // Vous devrez affiner cette logique pour des articles réellement "liés"
+          console.log("Contenu DÉTAILLÉ du body de l\\'article mis dans l\\'état:", JSON.stringify(fetchedArticle.body, null, 2)); // <--- MODIFIÉ AVEC JSON.stringify
           const allArticles = await getAllArticles();
           setRelatedArticles(
             allArticles.filter((a: SanityArticle) => a._id !== fetchedArticle._id).slice(0, 3)
           );
         }
       } catch (err) {
-        console.error("Error loading article:", err);
-        setError("Une erreur est survenue lors du chargement de l'article.");
+        console.error("Erreur lors du chargement de l\\'article spécifique:", err); // <--- AJOUT 4: Pour voir les erreurs de getArticleBySlug
+        setError("Une erreur est survenue lors du chargement de l\\'article.");
         setArticle(null);
       } finally {
         setIsLoading(false);
       }
     };
-
     loadArticle();
   }, [slug]);
 
   if (isLoading) {
     return (
-      <div className="container py-20"><LoadingSpinner /></div>
+      <div className="container mx-auto py-20 flex justify-center items-center min-h-screen bg-background-dark"><LoadingSpinner /></div>
     );
   }
 
   if (error || !article) {
     return (
-      <div className="container py-20">
+      <div className="container mx-auto py-20 min-h-screen bg-background-dark">
         <ErrorMessage
           title={error === "Article non trouvé" ? "Article non trouvé" : "Erreur"}
-          message={error || "L'article n'a pas pu être chargé."}
+          message={error || "L\\'article n\\'a pas pu être chargé."}
         />
       </div>
     );
   }
+  
+  // Juste avant le return de la fonction ArticlePage:
+  console.log("État \'article\' avant le rendu:", article); // <--- AJOUT 5: Voir l\\'état de l\\'article avant le rendu
+  if (article) {
+    console.log("Contenu DÉTAILLÉ \'article.body\' passé à ArticleContent:", JSON.stringify(article.body, null, 2)); // <--- MODIFIÉ AVEC JSON.stringify
+  }
 
-  // Adapter les données pour les composants enfants
   const headerData = {
     title: article.title,
     description: article.excerpt || "",
     date: article.publishedAt ? new Date(article.publishedAt).toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }) : "Date inconnue",
-    readingTime: "10 min", // À calculer dynamiquement
-    category: article.category?.title || "Non catégorisé",
-    image: article.mainImage // Transmettre l'objet image Sanity, le composant ArticleHeader devra utiliser urlFor
+    readingTime: "~" + Math.ceil((article.body?.length || 200 * 5) / 200 / 5) + " min", // Estimation basique
+    category: article.categories && article.categories.length > 0 ? article.categories[0].title : "Non catégorisé", 
+    image: article.mainImage 
   };
-
-  const authorData = article.author ? {
-    name: article.author.name,
-    role: "Auteur", // Ou un champ spécifique si vous l'avez
-    image: article.author.image, // Transmettre l'objet image Sanity
-    bio: article.author.bio || ""
-  } : null;
   
-  const relatedArticlesData = relatedArticles.map(relArt => ({
-    slug: relArt.slug?.current || "#",
-    title: relArt.title,
-    image: relArt.mainImage, // Transmettre l'objet image Sanity
-    summary: relArt.excerpt || "",
-    date: relArt.publishedAt ? new Date(relArt.publishedAt).toLocaleDateString("fr-FR") : ""
-  }));
-
-  const handleLike = () => {
-    setHasLiked(!hasLiked);
-    setLikes(prev => hasLiked ? prev - 1 : prev + 1);
-  };
+  const seoImageUrl = article.mainImage ? urlFor(article.mainImage).width(1200).height(630).fit("crop").auto("format").url() : undefined;
 
   return (
     <>
       <SEO
         title={article.title}
         description={article.excerpt}
-        // image={article.mainImage} // Adapter pour obtenir l'URL de l'image Sanity
+        image={seoImageUrl}
       />
-      <div className="relative pb-32">
+      <div className="relative pb-16 md:pb-24 text-white bg-background-dark overflow-x-hidden">
         <ArticleProgress />
 
-        <div className="container relative">
-          <div className="flex gap-12">
-            <div className="flex-1 max-w-3xl mx-auto">
-              <ArticleHeader article={headerData} />
-              {/* Le composant ArticleContent devra être adapté pour rendre le Portable Text de Sanity */}
-              <ArticleContent content={article.body} /> 
-              {authorData && <AuthorBox {...authorData} />}
+        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 pt-0">
+          {/* ArticleHeader est déjà animé en interne */}
+          <ArticleHeader article={headerData} />
+
+          <div className="flex flex-col lg:flex-row lg:gap-x-12 xl:gap-x-16">
+            <motion.main 
+              className="w-full lg:w-2/3 lg:max-w-3xl xl:max-w-4xl"
+              custom={1} // Délai pour apparaître après le header (qui a son propre délai interne)
+              initial="hidden"
+              animate="visible"
+              variants={sectionVariants}
+            >
+              <ArticleContent content={article.body || []} />
+
               
-              {relatedArticlesData.length > 0 && (
-                <RelatedArticles articles={relatedArticlesData} />
-              )}
-              
-              <ExploreArticlesSection />
+              <motion.div 
+                className="mt-12 md:mt-16"
+                custom={2}
+                initial="hidden"
+                animate="visible"
+                variants={sectionVariants}
+              >
+                <ExploreArticlesSection />
+              </motion.div>
 
               {showComments && (
-                <div className="mt-12 border-t border-white/5 pt-8">
+                <motion.div 
+                  className="mt-12 border-t border-white/10 pt-8"
+                  custom={3}
+                  initial="hidden"
+                  animate="visible"
+                  variants={sectionVariants}
+                >
                   <h3 className="text-2xl font-bold mb-6">Discussion</h3>
-                  {/* Composant de commentaires à implémenter */}
-                </div>
+                  <p className="text-gray-400">Les commentaires seront bientôt disponibles.</p>
+                </motion.div>
               )}
-
-              <section className="container mt-20">
+              <motion.section 
+                className="mt-16 md:mt-20"
+                custom={showComments ? 4 : 3} // Ajuster le délai si les commentaires sont affichés
+                initial="hidden"
+                animate="visible"
+                variants={sectionVariants}
+              >
                 <NewsletterForm />
-              </section>
-            </div>
+              </motion.section>
+            </motion.main>
+
+            <motion.div 
+              className="w-full lg:w-1/3 mt-12 lg:mt-0"
+              custom={1.5} // Délai pour la sidebar, pour qu\'elle apparaisse en même temps ou juste après le contenu principal
+              initial="hidden"
+              animate="visible"
+              variants={sectionVariants}
+            >
+              <ArticleSidebar 
+                author={article.author} 
+                relatedArticles={relatedArticles} 
+              />
+            </motion.div>
           </div>
         </div>
-
-        <ArticleActions
-          title={article.title}
-          likes={likes}
-          hasLiked={hasLiked}
-          isBookmarked={isBookmarked}
-          onLike={handleLike}
-          onBookmark={() => setIsBookmarked(!isBookmarked)}
-          onShowComments={() => setShowComments(!showComments)}
-        />
       </div>
     </>
   );
 };
 
 export default ArticlePage;
-
 

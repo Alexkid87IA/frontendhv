@@ -1,161 +1,188 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { NewsletterForm } from '../components/common/NewsletterForm';
-import { ArticleCard } from '../components/common/ArticleCard';
-import { CategoryFilter } from '../components/common/CategoryFilter';
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { sanityClient } from "../utils/sanityClient"; // Assurez-vous que le chemin est correct
+import groq from "groq";
+import type { SanityArticle, SanityImage, SanityCategory } from "./ArticlePage"; // Réutiliser les types existants
+import imageUrlBuilder from "@sanity/image-url";
+import { LoadingSpinner } from "../components/common/LoadingSpinner";
+import { ErrorMessage } from "../components/common/ErrorMessage";
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
+const builder = imageUrlBuilder(sanityClient);
+
+function urlFor(source: SanityImage | string | undefined) {
+  if (!source) {
+    return "https://via.placeholder.com/300x200?text=Image+non+disponible";
+  }
+  if (typeof source === 'string'){
+    if (source.startsWith('http://') || source.startsWith('https://')) return source;
+    return "https://via.placeholder.com/300x200?text=Source+invalide";
+  }
+  if ((source as SanityImage).asset) {
+    return builder.image(source).auto('format').fit('max').url();
+  }
+  return "https://via.placeholder.com/300x200?text=Source+image+invalide";
+}
+
+const formatDate = (dateString?: string): string => {
+  if (!dateString) return "Date inconnue";
+  return new Date(dateString).toLocaleDateString("fr-FR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 };
 
-// Mock category data
-const categories = {
-  mindset: {
-    title: "Mindset & Développement personnel",
-    description: "Explorez les clés du développement personnel et les stratégies mentales des leaders d'aujourd'hui.",
-    color: "bg-accent-violet",
-  },
-  recits: {
-    title: "Récits inspirants",
-    description: "Des histoires authentiques qui inspirent et transforment notre vision du possible.",
-    color: "bg-accent-fuchsia",
-  },
-  culture: {
-    title: "Culture & Société",
-    description: "Décryptage des tendances et des mutations qui façonnent notre société.",
-    color: "bg-accent-pink",
-  },
-  innovation: {
-    title: "Innovation & Technologie",
-    description: "Les dernières avancées et réflexions sur l'innovation qui transforme notre monde.",
-    color: "bg-accent-cyan",
-  },
-};
+// Fonction à ajouter dans utils/sanityAPI.ts si elle n'existe pas
+async function getArticlesByCategorySlug(categorySlug: string) {
+  const query = groq`*[_type == "article" && $categorySlug in categories[]->slug.current]{
+    _id,
+    title,
+    slug,
+    mainImage,
+    excerpt,
+    publishedAt,
+    "categories": categories[]->{title, slug},
+    "author": author->{name, slug, image}
+  } | order(publishedAt desc)`;
+  try {
+    const articles = await sanityClient.fetch(query, { categorySlug });
+    return articles;
+  } catch (error) {
+    console.error(`Erreur lors de la récupération des articles pour la catégorie ${categorySlug}:`, error);
+    return [];
+  }
+}
 
-const contentTypes = [
-  { id: 'all', name: 'Tous les contenus' },
-  { id: 'articles', name: 'Articles longs' },
-  { id: 'capsules', name: 'Capsules' },
-  { id: 'tribunes', name: 'Tribunes' },
-  { id: 'podcasts', name: 'Podcasts' },
-];
-
-// Mock articles data
-const generateMockArticles = (category: string) => {
-  return Array.from({ length: 9 }, (_, i) => ({
-    slug: `${category}-article-${i + 1}`,
-    image: `https://images.unsplash.com/photo-${1500000000000 + i}?auto=format&fit=crop&q=80`,
-    title: `${categories[category as keyof typeof categories]?.title} - Article ${i + 1}`,
-    tag: category,
-    summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    type: contentTypes[i % contentTypes.length].id,
-  }));
-};
+async function getCategoryDetails(categorySlug: string) {
+  const query = groq`*[_type == "category" && slug.current == $categorySlug][0]{
+    title,
+    description
+  }`;
+  try {
+    const category = await sanityClient.fetch(query, { categorySlug });
+    return category;
+  } catch (error) {
+    console.error(`Erreur lors de la récupération des détails de la catégorie ${categorySlug}:`, error);
+    return null;
+  }
+}
 
 export const CategoryPage = () => {
-  const { category } = useParams<{ category: string }>();
-  const [selectedType, setSelectedType] = useState('all');
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 6;
+  const { categorySlug } = useParams<{ categorySlug: string }>();
+  const [articles, setArticles] = useState<SanityArticle[]>([]);
+  const [categoryDetails, setCategoryDetails] = useState<SanityCategory | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const categoryData = categories[category as keyof typeof categories];
-  const articles = generateMockArticles(category || '');
+  useEffect(() => {
+    const loadCategoryData = async () => {
+      if (!categorySlug) {
+        setError("Slug de catégorie manquant.");
+        setIsLoading(false);
+        return;
+      }
+      try {
+        setIsLoading(true);
+        setError(null);
+        const [fetchedArticles, fetchedCategoryDetails] = await Promise.all([
+          getArticlesByCategorySlug(categorySlug),
+          getCategoryDetails(categorySlug)
+        ]);
+
+        if (!fetchedCategoryDetails) {
+            setError(`Catégorie "${categorySlug}" non trouvée.`);
+        } else {
+            setCategoryDetails(fetchedCategoryDetails);
+        }
+        setArticles(fetchedArticles);
+
+      } catch (err) {
+        console.error("Error loading category page data:", err);
+        setError("Une erreur est survenue lors du chargement des articles de la catégorie.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCategoryData();
+  }, [categorySlug]);
+
+  if (isLoading) {
+    return <div className="container mx-auto px-4 py-20 min-h-[60vh] flex justify-center items-center"><LoadingSpinner /></div>;
+  }
+
+  if (error) {
+    return <div className="container mx-auto px-4 py-20 min-h-[60vh]"><ErrorMessage title="Erreur de catégorie" message={error} /></div>;
+  }
   
-  const filteredArticles = selectedType === 'all'
-    ? articles
-    : articles.filter(article => article.type === selectedType);
-
-  const paginatedArticles = filteredArticles.slice(0, page * itemsPerPage);
-  const hasMore = paginatedArticles.length < filteredArticles.length;
-
-  // Update document title for SEO
-  React.useEffect(() => {
-    if (categoryData) {
-      document.title = `${categoryData.title} | Roger Ormières`;
-    }
-  }, [categoryData]);
-
-  if (!categoryData) {
-    return <div className="container py-20">Catégorie non trouvée</div>;
+  if (!categoryDetails) { // Vérification supplémentaire si la catégorie n'est pas trouvée mais pas d'erreur technique
+    return <div className="container mx-auto px-4 py-20 min-h-[60vh]"><ErrorMessage title="Catégorie non trouvée" message={`La catégorie avec le slug "${categorySlug}" n'existe pas.`} /></div>;
   }
 
   return (
-    <div className="pb-20">
-      {/* Category Header */}
-      <motion.header
-        initial="initial"
-        animate="animate"
-        variants={fadeInUp}
-        className="container pt-12 pb-8"
-      >
-        <span className={`inline-block px-3 py-1 ${categoryData.color} text-white text-sm font-inter rounded-full mb-6`}>
-          {categoryData.title}
-        </span>
-        <h1 className="text-4xl md:text-5xl font-montserrat font-bold leading-tight mb-4">
-          {categoryData.title}
+    <section className="pt-24 md:pt-32 pb-16 container mx-auto px-4">
+      <div className="mb-12 text-center">
+        <h1 className="text-4xl lg:text-5xl font-bold tracking-tight text-hv-text-primary-maquette mb-4">
+          Catégorie : {categoryDetails?.title || categorySlug}
         </h1>
-        <p className="text-tertiary text-lg max-w-3xl">
-          {categoryData.description}
-        </p>
-      </motion.header>
+        {categoryDetails?.description && (
+          <p className="text-lg text-hv-text-secondary-maquette max-w-2xl mx-auto">
+            {categoryDetails.description}
+          </p>
+        )}
+      </div>
 
-      {/* Content Type Filter */}
-      <section className="container mb-12">
-        <CategoryFilter
-          categories={contentTypes}
-          selectedCategory={selectedType}
-          onSelect={setSelectedType}
-        />
-      </section>
+      {articles.length === 0 && !isLoading && (
+         <div className="text-center py-10">
+            <p className="text-xl text-hv-text-secondary-maquette">Aucun article trouvé dans cette catégorie pour le moment.</p>
+        </div>
+      )}
 
-      {/* Articles Grid */}
-      <motion.section
-        initial="initial"
-        animate="animate"
-        variants={fadeInUp}
-        className="container"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {paginatedArticles.map((article, index) => (
-            <motion.div
-              key={article.slug}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <ArticleCard {...article} />
-            </motion.div>
+      {articles.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {articles.map((article) => (
+            <article key={article._id} className="group bg-hv-card-bg rounded-xl overflow-hidden shadow-lg border border-hv-card-border transition-all duration-300 hover:border-hv-blue-accent flex flex-col">
+              <Link to={`/article/${article.slug?.current || '#'}`} className="block h-full flex flex-col">
+                {article.mainImage && (
+                  <div className="relative aspect-video w-full overflow-hidden">
+                    <img
+                      src={urlFor(article.mainImage)}
+                      alt={article.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                     {/* Affichage des catégories de l'article, même sur la page de catégorie principale */}
+                    {article.categories && article.categories.length > 0 && (
+                        <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+                        {article.categories.map((cat) => (
+                            <span key={cat.slug?.current || cat.title} className={`text-xs font-semibold px-2 py-0.5 rounded-md ${cat.slug?.current === categorySlug ? 'bg-hv-blue-accent-dark text-white' : 'bg-hv-grey-accent text-hv-text-primary-maquette'}`}>
+                            {cat.title}
+                            </span>
+                        ))}
+                        </div>
+                    )}
+                  </div>
+                )}
+                <div className="p-6 flex flex-col flex-grow">
+                  <h3 className="text-xl font-bold tracking-tight leading-tight mb-3 text-hv-text-primary-maquette group-hover:text-hv-blue-accent transition-colors">
+                    {article.title}
+                  </h3>
+                  {article.excerpt && (
+                    <p className="text-hv-text-secondary-maquette text-sm mb-4 line-clamp-3 flex-grow">
+                      {article.excerpt}
+                    </p>
+                  )}
+                  <div className="mt-auto pt-3 border-t border-hv-card-border/50">
+                    <span className="text-hv-text-secondary-maquette text-xs">{formatDate(article.publishedAt)}</span>
+                  </div>
+                </div>
+              </Link>
+            </article>
           ))}
         </div>
-
-        {/* Load More Button */}
-        {hasMore && (
-          <div className="text-center mt-12">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setPage(p => p + 1)}
-              className="px-8 py-3 bg-accent-violet hover:bg-accent-fuchsia text-white rounded-lg font-inter transition-colors"
-            >
-              Charger plus d'articles
-            </motion.button>
-          </div>
-        )}
-      </motion.section>
-
-      {/* Newsletter */}
-      <section className="container mt-20">
-        <motion.div
-          initial="initial"
-          animate="animate"
-          variants={fadeInUp}
-        >
-          <NewsletterForm />
-        </motion.div>
-      </section>
-    </div>
+      )}
+    </section>
   );
 };
+
+export default CategoryPage;
+

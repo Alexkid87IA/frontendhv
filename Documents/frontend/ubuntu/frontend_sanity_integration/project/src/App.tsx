@@ -1,27 +1,28 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ResponsiveNavbar } from './components/layout/ResponsiveNavbar';
-import { Footer } from './components/layout/Footer';
+import Footer from './components/layout/Footer';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Analytics } from './components/common/Analytics';
 import { ChatWidget } from './components/chat/ChatWidget';
 import { HomePage } from './pages/HomePage';
 import { ArticlePage } from './pages/ArticlePage';
-import { CategoryPage } from './pages/CategoryPage';
+import { CategoryPage } from './pages/CategoryPage'; // Importation du nouveau composant
 import { PodcastPage } from './pages/PodcastPage';
 import { EmissionsPage } from './pages/EmissionsPage';
 import { CreateWithRogerPage } from './pages/CreateWithRogerPage';
 import { AboutPage } from './pages/AboutPage';
 import { AllArticlesPage } from './pages/AllArticlesPage';
 import { RecommendationsPage } from './pages/RecommendationsPage';
-import { BusinessInnovationPage } from './pages/BusinessInnovationPage';
-import { StoryPage } from './pages/StoryPage';
-import { PsychologiePage } from './pages/PsychologiePage';
-import { SocietePage } from './pages/SocietePage';
+// import { BusinessInnovationPage } from './pages/BusinessInnovationPage'; // Sera remplacé par la route dynamique
+// import { StoryPage } from './pages/StoryPage'; // Sera remplacé par la route dynamique
+// import { MentalPage } from './pages/MentalPage'; // Sera remplacé par la route dynamique
+// import { SocietePage } from './pages/SocietePage'; // Sera remplacé par la route dynamique
 import { CoachingPage } from './pages/CoachingPage';
 import { BusinessIdeasPage } from './pages/BusinessIdeasPage';
 import { BusinessIdeaPage } from './pages/BusinessIdeaPage';
 import { NotFound } from './pages/NotFound';
+import { NewHomePage } from './pages/NewHomePage';
 
 function App() {
   return (
@@ -46,10 +47,13 @@ function App() {
                 <Route path="/article/:slug" element={<ArticlePage />} />
                 <Route path="/business-ideas" element={<BusinessIdeasPage />} />
                 <Route path="/business-idea/:slug" element={<BusinessIdeaPage />} />
-                <Route path="/rubrique/story" element={<StoryPage />} />
-                <Route path="/rubrique/business" element={<BusinessInnovationPage />} />
-                <Route path="/rubrique/psychologie" element={<PsychologiePage />} />
-                <Route path="/rubrique/societe" element={<SocietePage />} />
+                {/* Route dynamique pour les catégories */}
+                <Route path="/rubrique/:categorySlug" element={<CategoryPage />} /> 
+                {/* Les anciennes routes statiques pour les catégories peuvent être supprimées ou redirigées si nécessaire */}
+                {/* <Route path="/rubrique/story" element={<StoryPage />} /> */}
+                {/* <Route path="/rubrique/business" element={<BusinessInnovationPage />} /> */}
+                {/* <Route path="/rubrique/mental" element={<MentalPage />} /> */}
+                {/* <Route path="/rubrique/societe" element={<SocietePage />} /> */}
                 <Route path="/podcasts" element={<PodcastPage />} />
                 <Route path="/emissions" element={<EmissionsPage />} />
                 <Route path="/create-with-roger" element={<CreateWithRogerPage />} />
@@ -58,6 +62,7 @@ function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/recommendations" element={<RecommendationsPage />} />
                 <Route path="*" element={<NotFound />} />
+                <Route path="/new" element={<NewHomePage />} />
               </Routes>
             </main>
             <Footer />

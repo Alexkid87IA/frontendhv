@@ -1,4 +1,6 @@
-import React from 'react';
+// src/pages/AllArticlesPage.tsx
+import React, { useEffect, useState } from 'react';
+import { sanityClient } from '../lib/sanityClient'; // Ajustez le chemin si votre sanityClient.ts est ailleurs
 import { SEO } from '../components/common/SEO';
 import { NewsletterForm } from '../components/common/NewsletterForm';
 import { ArticlesHeroSection } from '../components/sections/ArticlesHeroSection';
@@ -10,11 +12,56 @@ import { ArticlesStatsSection } from '../components/sections/ArticlesStatsSectio
 import { ArticlesContributorsSection } from '../components/sections/ArticlesContributorsSection';
 import { ArticlesBookmarksSection } from '../components/sections/ArticlesBookmarksSection';
 
+// Définir une interface pour la structure attendue d'un article de Sanity
+interface SanityArticle {
+  slug: string;
+  title: string;
+  mainImage?: { asset?: { _ref?: string; _id?: string; [key: string]: any }; [key: string]: any };
+  tag?: string;
+  summary?: string;
+  publishedAt: string; 
+  views?: number; 
+}
+
 export const AllArticlesPage = () => {
+  console.log("--- AllArticlesPage COMPOSANT EST MONTÉ ---");
+
+  const [articles, setArticles] = useState<SanityArticle[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = React.useState('all');
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [sortBy, setSortBy] = React.useState('date');
+  const [sortBy, setSortBy] = React.useState('date'); 
   const [bookmarkedArticles, setBookmarkedArticles] = React.useState<string[]>([]);
+
+  useEffect(() => {
+    console.log("--- AllArticlesPage useEffect DÉMARRE ---");
+
+    const fetchArticles = async () => {
+      console.log("--- AllArticlesPage fetchArticles DÉMARRE ---");
+      setIsLoading(true);
+      try {
+        const query = `*[_type == "article"] | order(publishedAt desc) {
+          "slug": slug.current,
+          title,
+          mainImage { asset-> }, // Correction ici pour récupérer les détails de l'asset
+          "tag": category->title,
+          "summary": excerpt,
+          publishedAt
+        }`;
+        console.log("--- AllArticlesPage AVANT sanityClient.fetch ---");
+        const sanityArticles: SanityArticle[] = await sanityClient.fetch(query);
+        console.log("--- AllArticlesPage APRÈS sanityClient.fetch, articles reçus:", sanityArticles);
+        setArticles(sanityArticles);
+      } catch (error) {
+        console.error("--- AllArticlesPage ERREUR dans fetchArticles:", error);
+        setArticles([]);
+      }
+      setIsLoading(false);
+      console.log("--- AllArticlesPage fetchArticles TERMINÉ ---");
+    };
+
+    fetchArticles();
+  }, []);
 
   const handleBookmark = (slug: string) => {
     setBookmarkedArticles(prev => 
@@ -24,6 +71,22 @@ export const AllArticlesPage = () => {
     );
   };
 
+  const filteredAndSortedArticles = articles
+    .filter(article => {
+      const matchesCategory = selectedCategory === 'all' || (article.tag && article.tag.toLowerCase() === selectedCategory.toLowerCase());
+      const matchesSearch = 
+        article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (article.summary && article.summary.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesCategory && matchesSearch;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'date') {
+        return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      }
+      return (b.views || 0) - (a.views || 0);
+    });
+
+  console.log("--- AllArticlesPage RENDU, articles actuels:", articles);
   return (
     <>
       <SEO
@@ -32,7 +95,6 @@ export const AllArticlesPage = () => {
         image="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80"
       />
       <div className="relative">
-        {/* Background Effects */}
         <div className="fixed inset-0 bg-primary">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.15),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.15),transparent_50%)]" />
@@ -40,7 +102,6 @@ export const AllArticlesPage = () => {
           <div className="absolute inset-0 backdrop-blur-[100px]" />
         </div>
 
-        {/* Content */}
         <div className="relative pb-20">
           <ArticlesHeroSection />
           
@@ -59,24 +120,25 @@ export const AllArticlesPage = () => {
             onSortChange={setSortBy}
           />
           
-          <ArticlesGridSection
-            searchTerm={searchTerm}
-            selectedCategory={selectedCategory}
-            sortBy={sortBy}
-            bookmarkedArticles={bookmarkedArticles}
-            onBookmark={handleBookmark}
-          />
+          {isLoading ? (
+            <p className="container text-center text-tertiary">Chargement des articles...</p>
+          ) : (
+            <ArticlesGridSection
+              articles={filteredAndSortedArticles}
+              bookmarkedArticles={bookmarkedArticles}
+              onBookmark={handleBookmark}
+            />
+          )}
 
           {bookmarkedArticles.length > 0 && (
             <ArticlesBookmarksSection
-              bookmarkedArticles={bookmarkedArticles}
+              bookmarkedArticles={bookmarkedArticles} 
               onBookmark={handleBookmark}
             />
           )}
 
           <ArticlesContributorsSection />
 
-          {/* Newsletter */}
           <section className="container mt-20">
             <NewsletterForm />
           </section>
@@ -87,3 +149,4 @@ export const AllArticlesPage = () => {
 };
 
 export default AllArticlesPage;
+

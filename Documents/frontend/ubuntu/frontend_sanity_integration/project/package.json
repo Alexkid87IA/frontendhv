@@ -12,14 +12,17 @@
     "create-article": "node src/scripts/create-strapi-article.js"
   },
   "dependencies": {
-    "@sanity/client": "^7.2.1",
+    "@heroicons/react": "^2.2.0",
+    "@portabletext/react": "^3.2.1",
+    "@sanity/client": "^7.2.2",
     "@sanity/image-url": "^1.1.0",
     "axios": "^1.6.7",
     "clsx": "^2.1.0",
     "embla-carousel-react": "^8.0.0",
-    "framer-motion": "^11.0.8",
+    "framer-motion": "^11.18.2",
     "groq": "^3.88.2",
     "lucide-react": "^0.344.0",
+    "next-sanity": "^9.11.1",
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -45,4 +48,3 @@
     "vite": "^5.1.4"
   }
 }
-

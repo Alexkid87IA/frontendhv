@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Building2, Users, TrendingUp, Target, Calendar, Clock } from 'lucide-react';
-import { SEO } from '../components/common/SEO';
-import { NewsletterForm } from '../components/common/NewsletterForm';
-import { ArticleProgress } from '../components/sections/ArticleProgress';
-import { ArticleContent } from '../components/sections/ArticleContent';
-import { ShareButtons } from '../components/common/ShareButtons';
-import { RelatedArticles } from '../components/sections/RelatedArticles';
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Building2, Users, TrendingUp, Target, Calendar, Clock } from "lucide-react";
+import { SEO } from "../components/common/SEO";
+import { NewsletterForm } from "../components/common/NewsletterForm";
+import { ArticleProgress } from "../components/sections/ArticleProgress";
+import ArticleContent from "../components/sections/ArticleContent"; // Correction de l'import
+import { ShareButtons } from "../components/common/ShareButtons";
+import { RelatedArticles } from "../components/sections/RelatedArticles";
 
 const businessIdea = {
-  slug: 'saas-ia-sales',
+  slug: "saas-ia-sales",
   title: "SaaS d'IA pour la vente B2B",
-  image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80',
-  category: 'SaaS/IA',
+  image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80",
+  category: "SaaS/IA",
   metrics: [
-    { icon: Building2, value: '€8.5B', label: 'Marché Global' },
-    { icon: TrendingUp, value: '45%', label: 'CAGR' },
-    { icon: Target, value: '89%', label: 'Marge brute' }
+    { icon: Building2, value: "€8.5B", label: "Marché Global" },
+    { icon: TrendingUp, value: "45%", label: "CAGR" },
+    { icon: Target, value: "89%", label: "Marge brute" }
   ],
   opportunity: "L'IA révolutionne la prospection et la qualification des leads B2B",
   content: `
@@ -102,10 +102,10 @@ Le marché des solutions d'IA pour la vente B2B connaît une croissance explosiv
   readTime: "15 min",
   relatedIdeas: [
     {
-      slug: 'fintech-crypto-b2b',
-      title: 'Infrastructure crypto pour PME',
-      image: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&q=80',
-      tag: 'Fintech',
+      slug: "fintech-crypto-b2b",
+      title: "Infrastructure crypto pour PME",
+      image: "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&q=80",
+      tag: "Fintech",
       summary: "Les PME cherchent à intégrer les paiements crypto de manière sécurisée"
     }
   ]
@@ -151,10 +151,10 @@ export const BusinessIdeaPage = () => {
                   <div className="flex items-center gap-2">
                     <Calendar size={18} />
                     <time dateTime={businessIdea.publishDate}>
-                      {new Date(businessIdea.publishDate).toLocaleDateString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
+                      {new Date(businessIdea.publishDate).toLocaleDateString("fr-FR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric"
                       })}
                     </time>
                   </div>
@@ -202,3 +202,4 @@ export const BusinessIdeaPage = () => {
 };
 
 export default BusinessIdeaPage;
+
