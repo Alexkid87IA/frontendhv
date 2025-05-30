@@ -3,35 +3,15 @@ import { Link } from "react-router-dom";
 import { Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { getAmuseBouches } from "../../utils/sanityAPI";
 import type { SanityArticle, SanityImage } from "../../pages/ArticlePage";
-import imageUrlBuilder from "@sanity/image-url";
-import { sanityClient } from "../../utils/sanityClient";
+import { urlFor } from "../../utils/sanityClient";
 
-const builder = imageUrlBuilder(sanityClient);
-
-const urlFor = (source: SanityImage | string | undefined): string => {
-  if (!source) return "https://via.placeholder.com/280x498?text=Image+non+disponible";
-  // Si c'est déjà une URL complète (par exemple, un placeholder externe ou une URL stockée directement)
-  if (typeof source === "string" && (source.startsWith('http://') || source.startsWith('https://'))) return source;
-  // Si c'est une chaîne mais pas une URL valide, c'est peut-être une ancienne valeur placeholder, on retourne un placeholder par défaut
-  if (typeof source === "string") return "https://via.placeholder.com/280x498?text=Source+invalide";
-  
-  // Assumant que 'source' est un objet SanityImage valide
-  if (source && typeof source === 'object' && (source as SanityImage).asset) {
-    return builder.image(source).auto('format').fit('crop').width(280).height(498).url();
-  }
-  // Fallback pour tout autre cas non géré
-  return "https://via.placeholder.com/280x498?text=Erreur+Image";
-};
-
-interface AmuseBoucheSectionProps {
-  title?: string;
-  description?: string;
-}
-
-export const AmuseBoucheSection = ({
+const AmuseBoucheSection = ({
   title = "Amuses-bouches",
   description = "Des conseils percutants en format court",
-}: AmuseBoucheSectionProps) => {
+}: {
+  title?: string;
+  description?: string;
+}) => {
   const [videos, setVideos] = useState<SanityArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -158,6 +138,6 @@ export const AmuseBoucheSection = ({
       </div>
     </section>
   );
-};export default AmuseBoucheSection;
+};
 
-
+export default AmuseBoucheSection;

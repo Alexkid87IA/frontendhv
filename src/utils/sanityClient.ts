@@ -2,12 +2,13 @@ import { createClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
 import type { SanityImage } from "../pages/ArticlePage";
 
-// Create a single Sanity client instance
+// Create a single Sanity client instance with the provided credentials
 export const sanityClient = createClient({
   projectId: "z9wsynas",
   dataset: "production",
   apiVersion: "2024-05-13",
-  useCdn: process.env.NODE_ENV === "production",
+  token: "skmbckwG1fYkVigzCOhehG30wAhNCmbMtje7tmLk2riWc2DafBltD3t4RUHL1Gh5Dr6T8CUodbSvMpLWJyR91Ra5nxfKOdIMkRBGqMUT73RIidvT0wwroEyMjur1oqzaRD7qm3cn2axQiyiYMYFR4f4aYJkTIRRpgWNJbhDU58XFVOXbcXE0",
+  useCdn: false, // Set to false to always get fresh data
   perspective: "published"
 });
 

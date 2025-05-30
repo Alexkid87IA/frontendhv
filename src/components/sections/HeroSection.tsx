@@ -3,32 +3,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Quote as QuoteIcon } from "lucide-react";
 import { getAllArticles, getLatestQuote } from "../../utils/sanityAPI";
-import type { SanityArticle, SanityImage, SanityCategory } from "../../pages/ArticlePage";
-import imageUrlBuilder from "@sanity/image-url";
-import { sanityClient } from "../../utils/sanityClient";
-
-const builder = imageUrlBuilder(sanityClient);
-
-function urlFor(source: SanityImage | string | undefined) {
-  if (!source) {
-    return "https://via.placeholder.com/800x450?text=Image+non+disponible";
-  }
-  if (typeof source === 'string'){
-    if (source.startsWith('http://') || source.startsWith('https://')) return source;
-    return "https://via.placeholder.com/800x450?text=Source+invalide";
-  }
-  if ((source as SanityImage).asset) {
-    return builder.image(source).auto('format').fit('max').url();
-  }
-  return "https://via.placeholder.com/800x450?text=Source+image+invalide";
-}
-
-interface SanityQuote {
-  _id: string;
-  text: string;
-  author: string;
-  role?: string;
-}
+import type { SanityArticle, SanityImage, SanityCategory, SanityQuote } from "../../pages/ArticlePage";
+import { urlFor } from "../../utils/sanityClient";
 
 const formatDate = (dateString?: string): string => {
   if (!dateString) return "Date inconnue";
@@ -51,7 +27,7 @@ export const HeroSection = () => {
       try {
         setIsLoading(true);
         const articles = await getAllArticles();
-        console.log("Articles fetched in HeroSection (veuillez inspecter le champ 'categories'):", articles); // Gardons ce log pour l'instant
+        console.log("Articles fetched in HeroSection (veuillez inspecter le champ 'categories'):", articles);
         const quote = await getLatestQuote();
 
         if (articles && articles.length > 0) {
@@ -106,7 +82,6 @@ export const HeroSection = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                   </div>
                 </Link>
-                {/* Badges de catégories avec couleurs Tailwind standard */}
                 {mainArticle.categories && mainArticle.categories.length > 0 && (
                   <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                     {mainArticle.categories.map((category: SanityCategory, index: number) => (
@@ -186,7 +161,6 @@ export const HeroSection = () => {
               <article key={article._id} className="group">
                 <div className="p-3 hover:bg-hv-card-bg/50 rounded-lg transition-colors h-full flex flex-col border border-transparent hover:border-hv-blue-accent/30">
                   <div className="flex flex-col flex-grow">
-                    {/* Badges de catégories avec couleurs Tailwind standard */}
                     {article.categories && article.categories.length > 0 && (
                        <div className="flex flex-wrap gap-1 mb-2 self-start">
                         {article.categories.map((category: SanityCategory, index: number) => (
