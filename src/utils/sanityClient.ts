@@ -8,9 +8,8 @@ export const sanityClient = createClient({
   dataset: "production",
   apiVersion: "2024-05-13",
   useCdn: true,
-  token: import.meta.env.VITE_SANITY_TOKEN, // Updated to use Vite's import.meta.env
+  // Remove token requirement since we're only doing public reads
   perspective: "published",
-  withCredentials: true, // Enable credentials
   cors: true // Enable CORS support
 });
 
