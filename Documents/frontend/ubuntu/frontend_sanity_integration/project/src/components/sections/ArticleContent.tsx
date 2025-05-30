@@ -3,6 +3,30 @@ import { PortableText, PortableTextComponents } from '@portabletext/react';
 import { urlFor } from '../../utils/sanityImage'; // Assurez-vous que ce chemin est correct
 import { SanityImage } from '../../pages/ArticlePage'; // Type pour l'image Sanity
 
+// Fonction de normalisation du contenu Portable Text
+const normalizePortableText = (content) => {
+  if (!content || !Array.isArray(content)) return [];
+  
+  return content.map(block => {
+    // Si le bloc est un objet simple avec _type et text, le convertir en format compatible
+    if (block && typeof block === 'object' && block._type && block.text && !block.children) {
+      return {
+        _type: 'block',
+        style: 'normal',
+        children: [
+          {
+            _type: 'span',
+            text: block.text,
+            marks: []
+          }
+        ],
+        markDefs: []
+      };
+    }
+    return block;
+  });
+};
+
 interface ArticleContentProps {
   content: any[]; // Le contenu Portable Text est un tableau d'objets
 }
@@ -17,7 +41,8 @@ const customComponents: Partial<PortableTextComponents> = {
       return (
         <figure className="my-8 md:my-10 transform transition-all duration-300 ease-out hover:scale-[1.02]">
           <img
-            src={urlFor(value).fit('max').auto('format').url()}            alt={value.alt || "Image de l'article"}
+            src={urlFor(value).fit('max').auto('format').url()}            
+            alt={value.alt || "Image de l'article"}
             className="rounded-lg shadow-xl mx-auto max-h-[600px] object-contain"
             loading="lazy"
           />
@@ -47,9 +72,9 @@ const customComponents: Partial<PortableTextComponents> = {
       if (style === 'blockquote') {
         return (
           <blockquote className="relative border-l-4 border-accent-violet pl-6 pr-4 py-4 my-8 md:my-10 text-lg md:text-xl italic text-gray-200 bg-gray-800/30 rounded-r-md shadow-md">
-            <span className="absolute top-2 left-2 text-4xl text-accent-violet/50 opacity-50">“</span>
+            <span className="absolute top-2 left-2 text-4xl text-accent-violet/50 opacity-50">"</span>
             {props.children}
-            <span className="absolute bottom-1 right-3 text-4xl text-accent-violet/50 opacity-50">”</span>
+            <span className="absolute bottom-1 right-3 text-4xl text-accent-violet/50 opacity-50">"</span>
           </blockquote>
         );
       }
@@ -90,13 +115,16 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
     return <p className="text-gray-400 text-center py-10">Le contenu de cet article n'est pas encore disponible.</p>;
   }
 
+  // Normaliser le contenu avant de le passer à PortableText
+  const normalizedContent = normalizePortableText(content);
+
   return (
     // La classe `prose` de Tailwind est utile mais peut être surchargée par nos styles personnalisés.
     // Nous utilisons `prose-invert` pour le thème sombre de base.
     // `max-w-none` pour que nos conteneurs parents gèrent la largeur.
     <article className="prose prose-lg prose-invert max-w-none selection:bg-accent-violet selection:text-white">
       <PortableText
-        value={content}
+        value={normalizedContent}
         components={customComponents}
       />
     </article>
@@ -104,4 +132,3 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
 };
 
 export default ArticleContent;
-
