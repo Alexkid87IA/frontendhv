@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createClient } from '@sanity/client';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 // Configuration du client Sanity
 const sanityClient = createClient({
@@ -179,14 +179,14 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
               className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
               aria-label="Précédent"
             >
-              &#10094; {/* Caractère Unicode pour flèche gauche */}
+              &#10094;
             </button>
             <button 
               onClick={scrollRight}
               className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
               aria-label="Suivant"
             >
-              &#10095; {/* Caractère Unicode pour flèche droite */}
+              &#10095;
             </button>
           </div>
         </div>
@@ -198,7 +198,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
         >
           {articles.map((article) => (
             <div key={article._id} className="flex-none w-80 md:w-96">
-              <Link href={`/article/${article.slug.current}`} className="block">
+              <Link to={`/article/${article.slug.current}`} className="block">
                 <div className="bg-navy-800 rounded-lg overflow-hidden transition-transform hover:scale-[1.02] hover:shadow-lg">
                   <div className="relative h-48 md:h-56">
                     {article.mainImage ? (
@@ -218,7 +218,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="p-4 rounded-full bg-blue-500 bg-opacity-80 hover:bg-opacity-100 transition-all transform hover:scale-110">
                           <div className="w-8 h-8 flex items-center justify-center text-white">
-                            &#9658; {/* Caractère Unicode pour triangle play */}
+                            &#9658;
                           </div>
                         </div>
                       </div>
@@ -259,7 +259,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                     <div className="mt-4">
                       <span className="text-blue-400 hover:text-blue-300 transition-colors flex items-center">
                         {getCtaText(sectionType)}
-                        <span className="ml-1">&#10095;</span> {/* Caractère Unicode pour flèche droite */}
+                        <span className="ml-1">&#10095;</span>
                       </span>
                     </div>
                   </div>

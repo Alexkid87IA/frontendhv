@@ -1,5 +1,5 @@
 {
-  "name": "roger-ormieres-webzine",
+  "name": "project",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,44 +7,27 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "create-authors": "node src/scripts/create-strapi-authors.js",
-    "create-article": "node src/scripts/create-strapi-article.js"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@heroicons/react": "^2.2.0",
-    "@portabletext/react": "^3.2.1",
-    "@sanity/client": "^7.2.2",
-    "@sanity/image-url": "^1.1.0",
-    "axios": "^1.6.7",
-    "clsx": "^2.1.0",
-    "embla-carousel-react": "^8.0.0",
-    "framer-motion": "^11.18.2",
-    "groq": "^3.88.2",
-    "lucide-react": "^0.344.0",
-    "next-sanity": "^9.11.1",
-    "qs": "^6.11.2",
+    "@sanity/client": "^6.12.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-error-boundary": "^4.0.13",
-    "react-helmet-async": "^2.0.4",
-    "react-router-dom": "^6.22.3",
-    "react-textarea-autosize": "^8.5.3"
+    "react-router-dom": "^6.22.0"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.10",
-    "@types/react": "^18.2.56",
-    "@types/react-dom": "^18.2.19",
-    "@typescript-eslint/eslint-plugin": "^7.0.2",
-    "@typescript-eslint/parser": "^7.0.2",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
     "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.18",
-    "eslint": "^8.56.0",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "postcss": "^8.4.35",
+    "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
-    "vite": "^5.1.4"
+    "vite": "^5.0.8"
   }
 }
