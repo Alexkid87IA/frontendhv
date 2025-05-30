@@ -16,7 +16,7 @@ interface SafeImageProps {
  * Composant sécurisé pour afficher des images Sanity avec gestion des erreurs
  * et fallback automatique en cas d'image invalide ou d'erreur de chargement
  */
-export const SafeImage: React.FC<SafeImageProps> = ({
+const SafeImage: React.FC<SafeImageProps> = ({
   image,
   alt,
   width = 800,
@@ -46,20 +46,8 @@ export const SafeImage: React.FC<SafeImageProps> = ({
   }
   
   // Générer l'URL de l'image avec les dimensions spécifiées
-  let imageUrl;
-  try {
-    imageUrl = urlFor(image).width(width).height(height).url();
-  } catch (error) {
-    console.error('Erreur lors de la génération de l\'URL de l\'image:', error);
-    return (
-      <div 
-        className={`bg-gray-200 flex items-center justify-center text-gray-500 ${className}`}
-        style={{ width: width ? `${width}px` : '100%', height: `${height}px` }}
-      >
-        <span className="text-sm text-center px-4">{displayText}</span>
-      </div>
-    );
-  }
+  // Utiliser la nouvelle fonction urlFor sécurisée qui gère les dimensions en interne
+  const imageUrl = urlFor(image, width, height);
   
   return (
     <img
