@@ -1,6 +1,6 @@
 // src/pages/AllArticlesPage.tsx
 import React, { useEffect, useState } from 'react';
-import { sanityClient } from '../lib/sanityClient'; // Ajustez le chemin si votre sanityClient.ts est ailleurs
+import { sanityClient } from '../utils/sanityClient'; // Fixed import path
 import { SEO } from '../components/common/SEO';
 import { NewsletterForm } from '../components/common/NewsletterForm';
 import { ArticlesHeroSection } from '../components/sections/ArticlesHeroSection';
@@ -149,4 +149,3 @@ export const AllArticlesPage = () => {
 };
 
 export default AllArticlesPage;
-

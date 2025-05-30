@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { ArticleCard } from '../common/ArticleCard';
-import { sanityClient, urlFor } from '../../lib/sanityClient'; // Assurez-vous que ce chemin est correct
+import { sanityClient, urlFor } from '../../utils/sanityClient'; // Fixed import path
 
 // Interface pour la structure d'un article venant de Sanity
 interface SanityArticle {

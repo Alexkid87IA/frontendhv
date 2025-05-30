@@ -4,7 +4,7 @@ import { Search, Filter, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { CategoryFilter } from "../common/CategoryFilter";
 import { ArticleCard } from "../common/ArticleCard";
-import { sanityClient, urlFor } from "../../lib/sanityClient"; // Importer le vrai client Sanity et urlFor
+import { sanityClient, urlFor } from "../../utils/sanityClient"; // Fixed import path
 import type { SanityArticle, SanityCategory, SanityImage } from "../../pages/ArticlePage";
 
 const formatDate = (dateString?: string): string => {
