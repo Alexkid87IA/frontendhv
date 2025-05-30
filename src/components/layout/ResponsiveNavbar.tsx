@@ -203,36 +203,59 @@ export const ResponsiveNavbar = () => {
 
           {/* CTA Buttons */}
           <div className="flex items-center space-x-4">
+            {/* Coaching Button */}
             <motion.div 
-              whileHover={{ scale: 1.05 }} 
-              whileTap={{ scale: 0.95 }}
-              className="relative group"
+              whileHover={{ scale: 1.03 }} 
+              whileTap={{ scale: 0.97 }}
+              className="relative"
             >
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-md opacity-0 group-hover:opacity-75 blur transition-all duration-300"></div>
               <Link
                 to="/coaching"
-                className={`relative flex items-center justify-center px-5 py-2.5 text-sm font-medium rounded-md transition-all duration-300 ${
+                className={`relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300 ${
                   location.pathname === "/coaching" 
-                  ? "bg-accent-blue text-white shadow-lg shadow-accent-blue/20"
-                  : "bg-black/80 backdrop-blur-sm hover:bg-black/60 text-white border border-white/20 group-hover:border-transparent"
+                  ? "text-white"
+                  : "text-white"
                 }`}
               >
-                Coaching
+                <span className={`absolute inset-0 ${
+                  location.pathname === "/coaching"
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-600"
+                  : "bg-black/80"
+                } transition-all duration-300`}></span>
+                
+                <span className="absolute inset-0 h-full w-full bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 opacity-0 transition-opacity duration-300 group-hover:opacity-80 hover:opacity-80"></span>
+                
+                {/* Subtle animated border */}
+                <span className="absolute inset-0 rounded-md border border-white/20 hover:border-white/40 transition-colors duration-300"></span>
+                
+                {/* Text with shadow for better readability */}
+                <span className="relative z-10 flex items-center gap-1.5 text-white drop-shadow-sm">
+                  Coaching
+                </span>
               </Link>
             </motion.div>
             
+            {/* Votre Histoire Button */}
             <motion.div 
-              whileHover={{ scale: 1.05 }} 
-              whileTap={{ scale: 0.95 }}
-              className="relative group"
+              whileHover={{ scale: 1.03 }} 
+              whileTap={{ scale: 0.97 }}
+              className="relative"
             >
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 rounded-md blur opacity-75 group-hover:opacity-100 animate-tilt transition-opacity duration-300"></div>
               <Link
                 to="/create-with-roger"
-                className={`relative flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-md bg-black/80 backdrop-blur-sm text-white border border-transparent transition-all duration-300`}
+                className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300"
               >
-                <Sparkles className="w-4 h-4 text-accent-turquoise group-hover:text-white transition-colors" />
-                <span className="bg-gradient-to-r from-accent-blue to-accent-turquoise bg-clip-text text-transparent group-hover:text-white transition-colors">Votre histoire</span>
+                {/* Animated gradient background */}
+                <span className="absolute inset-0 bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 opacity-100"></span>
+                
+                {/* Animated glow effect */}
+                <span className="absolute inset-0 bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 blur-md opacity-50 group-hover:opacity-75 hover:opacity-75 animate-pulse"></span>
+                
+                {/* Content */}
+                <span className="relative z-10 flex items-center gap-2 text-white">
+                  <Sparkles className="w-4 h-4 animate-pulse" />
+                  <span className="font-medium">Votre histoire</span>
+                </span>
               </Link>
             </motion.div>
           </div>
@@ -328,31 +351,39 @@ export const ResponsiveNavbar = () => {
 
             <div className="px-4 space-y-4 pt-4 border-t border-white/10">
               {/* Mobile Coaching Button */}
-              <div className="relative group w-full">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-lg opacity-0 group-hover:opacity-75 blur transition-all duration-300"></div>
+              <div className="relative overflow-hidden rounded-lg group">
+                {/* Animated gradient border */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg opacity-70 group-hover:opacity-100 blur-sm transition-all duration-300 group-hover:blur"></div>
+                
                 <Link
                   to="/coaching"
-                  className={`relative block w-full text-center px-4 py-3.5 rounded-lg font-medium transition-all duration-300 text-base ${
-                    location.pathname === '/coaching' 
-                    ? 'bg-accent-blue text-white shadow-lg shadow-accent-blue/20'
-                    : 'bg-black/80 hover:bg-black/60 text-white border border-white/20 group-hover:border-transparent'
-                  }`}
+                  className="relative flex items-center justify-center w-full px-6 py-3.5 bg-black text-white font-medium rounded-lg overflow-hidden group-hover:shadow-lg transition-all duration-300"
                   onClick={() => setIsOpen(false)}
                 >
-                  Coaching
+                  {/* Subtle animated background */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  
+                  {/* Text with subtle animation */}
+                  <span className="relative z-10 text-base">Coaching</span>
                 </Link>
               </div>
               
               {/* Mobile Votre Histoire Button */}
-              <div className="relative group w-full">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 rounded-lg blur opacity-75 group-hover:opacity-100 animate-tilt transition-opacity duration-300"></div>
+              <div className="relative overflow-hidden rounded-lg group">
+                {/* Animated gradient background */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 rounded-lg opacity-80 group-hover:opacity-100 blur-sm transition-all duration-300 animate-pulse"></div>
+                
                 <Link
                   to="/create-with-roger"
-                  className="relative flex items-center justify-center gap-2 bg-black/80 backdrop-blur-sm text-white w-full px-4 py-3.5 rounded-lg font-medium transition-all duration-300 text-base"
+                  className="relative flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-black text-white font-medium rounded-lg overflow-hidden group-hover:shadow-lg transition-all duration-300"
                   onClick={() => setIsOpen(false)}
                 >
+                  {/* Subtle animated background */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-accent-blue/20 via-accent-turquoise/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  
+                  {/* Icon and text with subtle animation */}
                   <Sparkles className="w-5 h-5 text-accent-turquoise group-hover:text-white transition-colors" />
-                  <span className="bg-gradient-to-r from-accent-blue to-accent-turquoise bg-clip-text text-transparent group-hover:text-white transition-colors">Votre histoire</span>
+                  <span className="relative z-10 text-base bg-gradient-to-r from-accent-blue to-accent-turquoise bg-clip-text text-transparent group-hover:text-white transition-colors">Votre histoire</span>
                 </Link>
               </div>
             </div>
