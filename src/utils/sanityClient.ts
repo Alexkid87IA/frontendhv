@@ -8,7 +8,7 @@ export const sanityClient = createClient({
   dataset: "production",
   apiVersion: "2024-05-13",
   useCdn: true,
-  token: process.env.VITE_SANITY_TOKEN, // Add token for authentication
+  token: import.meta.env.VITE_SANITY_TOKEN, // Updated to use Vite's import.meta.env
   perspective: "published",
   withCredentials: true, // Enable credentials
   cors: true // Enable CORS support
