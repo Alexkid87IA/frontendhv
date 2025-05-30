@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Sparkles, BookOpen, Briefcase, Brain, Users, Film, ChevronDown } from 'lucide-react';
+import { Menu, X, Sparkles, BookOpen, Briefcase, Brain, Users, Film } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
@@ -7,66 +7,15 @@ import { useScrollDirection } from '../../hooks/useScrollDirection';
 export const ResponsiveNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const location = useLocation();
   const { visible } = useScrollDirection();
 
   const menuItems = [
-    { 
-      label: 'Story', 
-      path: '/rubrique/story', 
-      icon: BookOpen, 
-      slug: 'story',
-      dropdown: [
-        { label: 'Success Stories', path: '/rubrique/story/success-stories' },
-        { label: 'Portraits', path: '/rubrique/story/portraits' },
-        { label: 'Transformations', path: '/rubrique/story/transformations' }
-      ]
-    },
-    { 
-      label: 'Business', 
-      path: '/rubrique/business', 
-      icon: Briefcase, 
-      slug: 'business',
-      dropdown: [
-        { label: 'Innovation', path: '/rubrique/business/innovation' },
-        { label: 'Stratégie', path: '/rubrique/business/strategie' },
-        { label: 'Leadership', path: '/rubrique/business/leadership' }
-      ]
-    },
-    { 
-      label: 'Mental', 
-      path: '/rubrique/mental', 
-      icon: Brain, 
-      slug: 'mental',
-      dropdown: [
-        { label: 'Développement personnel', path: '/rubrique/mental/developpement' },
-        { label: 'Résilience', path: '/rubrique/mental/resilience' },
-        { label: 'Productivité', path: '/rubrique/mental/productivite' }
-      ]
-    },
-    { 
-      label: 'Society', 
-      path: '/rubrique/society', 
-      icon: Users, 
-      slug: 'society',
-      dropdown: [
-        { label: 'Tendances', path: '/rubrique/society/tendances' },
-        { label: 'Impact', path: '/rubrique/society/impact' },
-        { label: 'Culture', path: '/rubrique/society/culture' }
-      ]
-    },
-    { 
-      label: 'Émissions', 
-      path: '/emissions', 
-      icon: Film, 
-      slug: 'emissions',
-      dropdown: [
-        { label: 'Podcasts', path: '/podcasts' },
-        { label: 'Vidéos', path: '/emissions/videos' },
-        { label: 'Interviews', path: '/emissions/interviews' }
-      ]
-    }
+    { label: 'Story', path: '/rubrique/story', icon: BookOpen, slug: 'story' },
+    { label: 'Business', path: '/rubrique/business', icon: Briefcase, slug: 'business' },
+    { label: 'Mental', path: '/rubrique/mental', icon: Brain, slug: 'mental' },
+    { label: 'Society', path: '/rubrique/society', icon: Users, slug: 'society' },
+    { label: 'Émissions', path: '/emissions', icon: Film, slug: 'emissions' }
   ];
 
   const handleLogoClick = () => {
@@ -76,27 +25,19 @@ export const ResponsiveNavbar = () => {
     }
   };
 
-  const handleDropdownToggle = (label: string) => {
-    setActiveDropdown(activeDropdown === label ? null : label);
-  };
-
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (isOpen && !target.closest('#mobile-menu') && !target.closest('#menu-button')) {
         setIsOpen(false);
       }
-      if (activeDropdown && !target.closest('.dropdown-menu') && !target.closest('.dropdown-trigger')) {
-        setActiveDropdown(null);
-      }
     };
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
-  }, [isOpen, activeDropdown]);
+  }, [isOpen]);
 
   useEffect(() => {
     setIsOpen(false);
-    setActiveDropdown(null);
   }, [location.pathname]);
 
   return (
@@ -145,57 +86,20 @@ export const ResponsiveNavbar = () => {
                 const Icon = item.icon;
                 
                 return (
-                  <div key={item.path} className="relative group">
-                    <button
-                      className={`group dropdown-trigger flex items-center gap-1.5 px-4 py-3 rounded-md transition-all duration-200 text-sm font-medium ${
-                        isActive 
-                          ? "text-accent-blue bg-accent-blue/10" 
-                          : "text-white hover:text-accent-blue hover:bg-accent-blue/5"
-                      }`}
-                      onClick={() => handleDropdownToggle(item.label)}
-                      aria-expanded={activeDropdown === item.label}
-                    >
-                      <Icon size={16} className={`transition-colors duration-200 ${
-                        isActive ? "text-accent-blue" : "text-gray-400 group-hover:text-accent-blue"
-                      }`} />
-                      <span>{item.label}</span>
-                      {item.dropdown && (
-                        <ChevronDown 
-                          size={14} 
-                          className={`ml-1 transition-transform duration-200 ${
-                            activeDropdown === item.label ? "rotate-180" : ""
-                          }`} 
-                        />
-                      )}
-                    </button>
-                    
-                    {/* Dropdown Menu */}
-                    {item.dropdown && (
-                      <AnimatePresence>
-                        {activeDropdown === item.label && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            transition={{ duration: 0.2 }}
-                            className="dropdown-menu absolute left-0 mt-1 w-56 rounded-md shadow-lg bg-black/90 backdrop-blur-xl border border-white/10 overflow-hidden z-50"
-                          >
-                            <div className="py-1">
-                              {item.dropdown.map((subItem) => (
-                                <Link
-                                  key={subItem.path}
-                                  to={subItem.path}
-                                  className="block px-4 py-2.5 text-sm text-gray-200 hover:bg-accent-blue/10 hover:text-accent-blue transition-colors"
-                                >
-                                  {subItem.label}
-                                </Link>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    )}
-                  </div>
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`group flex items-center gap-1.5 px-4 py-3 rounded-md transition-all duration-300 text-sm font-medium ${
+                      isActive 
+                        ? "text-white bg-gradient-to-r from-accent-blue/20 to-transparent" 
+                        : "text-white/80 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    <Icon size={16} className={`transition-colors duration-200 ${
+                      isActive ? "text-accent-blue" : "text-gray-400 group-hover:text-accent-blue"
+                    }`} />
+                    <span>{item.label}</span>
+                  </Link>
                 );
               })}
             </div>
@@ -211,22 +115,17 @@ export const ResponsiveNavbar = () => {
             >
               <Link
                 to="/coaching"
-                className={`relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300 ${
-                  location.pathname === "/coaching" 
-                  ? "text-white"
-                  : "text-white"
-                }`}
+                className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300"
               >
-                <span className={`absolute inset-0 ${
-                  location.pathname === "/coaching"
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600"
-                  : "bg-black/80"
-                } transition-all duration-300`}></span>
+                {/* Animated gradient border */}
+                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 opacity-70 blur-[1px] transition-opacity duration-300 group-hover:opacity-100"></span>
                 
-                <span className="absolute inset-0 h-full w-full bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 opacity-0 transition-opacity duration-300 group-hover:opacity-80 hover:opacity-80"></span>
-                
-                {/* Subtle animated border */}
-                <span className="absolute inset-0 rounded-md border border-white/20 hover:border-white/40 transition-colors duration-300"></span>
+                {/* Background with glass effect */}
+                <span className={`absolute inset-[1.5px] rounded-md bg-black/80 z-0 ${
+                  location.pathname === "/coaching" 
+                  ? "bg-gradient-to-r from-blue-600/20 to-indigo-600/20"
+                  : ""
+                }`}></span>
                 
                 {/* Text with shadow for better readability */}
                 <span className="relative z-10 flex items-center gap-1.5 text-white drop-shadow-sm">
@@ -246,10 +145,10 @@ export const ResponsiveNavbar = () => {
                 className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300"
               >
                 {/* Animated gradient background */}
-                <span className="absolute inset-0 bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 opacity-100"></span>
+                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue via-purple-600 to-pink-500 opacity-100"></span>
                 
                 {/* Animated glow effect */}
-                <span className="absolute inset-0 bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 blur-md opacity-50 group-hover:opacity-75 hover:opacity-75 animate-pulse"></span>
+                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue via-purple-600 to-pink-500 blur-[2px] opacity-50 animate-pulse"></span>
                 
                 {/* Content */}
                 <span className="relative z-10 flex items-center gap-2 text-white">
@@ -295,56 +194,19 @@ export const ResponsiveNavbar = () => {
                 const Icon = item.icon;
                 
                 return (
-                  <div key={item.path} className="mb-2">
-                    <button
-                      className={`flex items-center justify-between w-full p-3 rounded-lg transition-all duration-200 text-base font-medium ${
-                        isActive 
-                          ? 'text-accent-blue bg-accent-blue/10' 
-                          : 'text-white hover:text-accent-blue hover:bg-white/5'
-                      }`}
-                      onClick={() => handleDropdownToggle(item.label)}
-                      aria-expanded={activeDropdown === item.label}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon size={20} className={isActive ? 'text-accent-blue' : 'text-gray-400'} />
-                        <span>{item.label}</span>
-                      </div>
-                      {item.dropdown && (
-                        <ChevronDown 
-                          size={18} 
-                          className={`transition-transform duration-200 ${
-                            activeDropdown === item.label ? "rotate-180" : ""
-                          }`} 
-                        />
-                      )}
-                    </button>
-                    
-                    {/* Mobile Dropdown */}
-                    {item.dropdown && (
-                      <AnimatePresence>
-                        {activeDropdown === item.label && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="pl-10 pr-4 mt-1 space-y-1"
-                          >
-                            {item.dropdown.map((subItem) => (
-                              <Link
-                                key={subItem.path}
-                                to={subItem.path}
-                                className="block py-2.5 px-3 text-sm text-gray-300 hover:text-accent-blue hover:bg-accent-blue/5 rounded-md transition-colors"
-                                onClick={() => setIsOpen(false)}
-                              >
-                                {subItem.label}
-                              </Link>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    )}
-                  </div>
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 text-base font-medium ${
+                      isActive 
+                        ? 'text-accent-blue bg-accent-blue/10' 
+                        : 'text-white hover:text-accent-blue hover:bg-white/5'
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Icon size={20} className={isActive ? 'text-accent-blue' : 'text-gray-400'} />
+                    <span>{item.label}</span>
+                  </Link>
                 );
               })}
             </div>
@@ -371,7 +233,7 @@ export const ResponsiveNavbar = () => {
               {/* Mobile Votre Histoire Button */}
               <div className="relative overflow-hidden rounded-lg group">
                 {/* Animated gradient background */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 rounded-lg opacity-80 group-hover:opacity-100 blur-sm transition-all duration-300 animate-pulse"></div>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-purple-600 to-pink-500 rounded-lg opacity-80 group-hover:opacity-100 blur-sm transition-all duration-300 animate-pulse"></div>
                 
                 <Link
                   to="/create-with-roger"
@@ -379,11 +241,11 @@ export const ResponsiveNavbar = () => {
                   onClick={() => setIsOpen(false)}
                 >
                   {/* Subtle animated background */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-accent-blue/20 via-accent-turquoise/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-accent-blue/20 via-purple-600/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   
                   {/* Icon and text with subtle animation */}
-                  <Sparkles className="w-5 h-5 text-accent-turquoise group-hover:text-white transition-colors" />
-                  <span className="relative z-10 text-base bg-gradient-to-r from-accent-blue to-accent-turquoise bg-clip-text text-transparent group-hover:text-white transition-colors">Votre histoire</span>
+                  <Sparkles className="w-5 h-5 text-white" />
+                  <span className="relative z-10 text-base">Votre histoire</span>
                 </Link>
               </div>
             </div>
