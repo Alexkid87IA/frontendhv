@@ -47,7 +47,7 @@ function App() {
                 <Route path="/podcasts" element={<PodcastPage />} />
                 <Route path="/emissions" element={<EmissionsPage />} />
                 <Route path="/create-with-roger" element={<CreateWithRogerPage />} />
-                <Route path="/co-shooting" element={<Navigate to="/create-with-roger" replace />} />
+                <Route path="/co-shooting" element={<Navigate to="/create-with-roger\" replace />} />
                 <Route path="/coaching" element={<CoachingPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/recommendations" element={<RecommendationsPage />} />
