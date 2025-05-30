@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, ChevronLeft, ChevronRight, MessageCircle, Share2, ThumbsUp, ThumbsDown, Users, TrendingUp } from 'lucide-react';
 import { ShareButtons } from '../common/ShareButtons';
-import { sanityClient, urlFor } from '../../lib/sanityClient'; // Importer le client Sanity
+import { sanityClient, urlFor } from '../../utils/sanityClient';
 
-// Interface pour les types de données Sanity
 interface SanityDebate {
   _id: string;
   question: string;
@@ -13,7 +12,7 @@ interface SanityDebate {
   forPerson: {
     name: string;
     role: string;
-    image: any; // Pour l'image Sanity
+    image: any;
     argument: string;
     credentials: string;
     publications: number;
@@ -22,7 +21,7 @@ interface SanityDebate {
   againstPerson: {
     name: string;
     role: string;
-    image: any; // Pour l'image Sanity
+    image: any;
     argument: string;
     credentials: string;
     publications: number;
@@ -54,13 +53,11 @@ export const DebateSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Récupérer les débats depuis Sanity
   useEffect(() => {
     const fetchDebates = async () => {
       try {
         setIsLoading(true);
         
-        // Requête GROQ pour récupérer les débats actifs, triés par date de publication
         const query = `*[_type == "debate" && isActive == true] | order(publishedAt desc) {
           _id,
           question,
@@ -104,7 +101,6 @@ export const DebateSection = () => {
         if (fetchedDebates && fetchedDebates.length > 0) {
           setDebates(fetchedDebates);
           
-          // Initialiser les résultats de vote pour chaque débat
           const initialResults: Record<string, { yes: number; no: number }> = {};
           fetchedDebates.forEach((debate: SanityDebate) => {
             const totalVotes = debate.stats.votesFor + debate.stats.votesAgainst;
@@ -130,7 +126,6 @@ export const DebateSection = () => {
     fetchDebates();
   }, []);
 
-  // Si aucun débat n'est disponible ou pendant le chargement
   if (isLoading) {
     return (
       <section className="container py-20">
@@ -154,12 +149,8 @@ export const DebateSection = () => {
   const currentDebate = debates[currentDebateIndex];
 
   const handleVote = async (debateId: string, vote: 'yes' | 'no') => {
-    // Dans une version complète, vous pourriez envoyer le vote à une API ou à Sanity
-    // Pour l'instant, nous simulons le vote localement
-    
-    // Simuler des pourcentages réalistes basés sur la participation actuelle
     const currentParticipants = currentDebate.stats.participants;
-    const baseYesPercentage = 45 + Math.random() * 10; // Entre 45-55%
+    const baseYesPercentage = 45 + Math.random() * 10;
     const totalVotes = currentParticipants + 1;
     
     const yesVotes = Math.round((vote === 'yes' ? baseYesPercentage + 1 : baseYesPercentage) * totalVotes / 100);
@@ -173,9 +164,6 @@ export const DebateSection = () => {
       }
     }));
     setHasVoted(prev => ({ ...prev, [debateId]: true }));
-    
-    // Vous pourriez implémenter ici une logique pour enregistrer le vote dans Sanity
-    // via une API ou un webhook
   };
 
   const nextDebate = () => {
@@ -193,11 +181,9 @@ export const DebateSection = () => {
   return (
     <section className="container py-20">
       <div className="bg-neutral-900 rounded-2xl p-8 relative overflow-hidden">
-        {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-br from-accent-violet/5 to-accent-fuchsia/5" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.1),transparent_50%)]" />
         <div className="relative">
-          {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
               <motion.span
@@ -231,9 +217,7 @@ export const DebateSection = () => {
             </div>
           </div>
 
-          {/* Debate Content */}
           <div className="space-y-8">
-            {/* Question & Category */}
             <div className="text-center">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <span className="text-sm text-tertiary">
@@ -251,9 +235,7 @@ export const DebateSection = () => {
               </p>
             </div>
 
-            {/* Debate Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Pour */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -307,7 +289,6 @@ export const DebateSection = () => {
                 </div>
               </motion.div>
 
-              {/* Contre */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -362,7 +343,6 @@ export const DebateSection = () => {
               </motion.div>
             </div>
 
-            {/* Actions */}
             <div className="flex flex-col items-center gap-6 pt-6">
               {!hasVoted[currentDebate._id] ? (
                 <div className="flex flex-col sm:flex-row gap-4">
@@ -396,7 +376,6 @@ export const DebateSection = () => {
                 </motion.div>
               )}
 
-              {/* Stats & Actions */}
               <div className="flex items-center gap-6 text-sm text-tertiary">
                 <div className="flex items-center gap-2">
                   <Users size={16} />
@@ -418,7 +397,6 @@ export const DebateSection = () => {
                 </button>
               </div>
 
-              {/* Sharing Options */}
               {isSharing && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -433,7 +411,6 @@ export const DebateSection = () => {
                 </motion.div>
               )}
 
-              {/* Related Articles */}
               {currentDebate.relatedArticles && currentDebate.relatedArticles.length > 0 && (
                 <div className="w-full mt-8">
                   <h4 className="text-lg font-semibold mb-4">Articles liés</h4>

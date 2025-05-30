@@ -1,6 +1,6 @@
 import React from 'react';
 import { SanityImage } from '../../pages/ArticlePage';
-import { urlFor } from '../../utils/sanityImage';
+import { urlFor } from '../../utils/sanityClient'; // Fixed import path
 import { Share2, Clock, Tag, CalendarDays } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -59,7 +59,6 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
         </motion.div>
       )}
 
-      {/* Conteneur pour le titre et les métadonnées */} 
       <div className={`max-w-4xl mx-auto text-center px-4 ${imageUrl ? 'relative z-10 -mt-24 sm:-mt-28 md:-mt-36 lg:-mt-44' : 'pt-8'}`}>
         <div className={`${imageUrl ? 'bg-background-dark/80 backdrop-blur-md p-6 sm:p-8 md:p-10 rounded-lg shadow-xl' : ''}`}>
           
@@ -125,4 +124,3 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
 }
 
 export default ArticleHeader;
-
