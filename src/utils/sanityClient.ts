@@ -7,8 +7,11 @@ export const sanityClient = createClient({
   projectId: "z9wsynas",
   dataset: "production",
   apiVersion: "2024-05-13",
-  useCdn: true, // Set to true to use the CDN for better performance with public data
-  perspective: "published"
+  useCdn: true,
+  token: process.env.VITE_SANITY_TOKEN, // Add token for authentication
+  perspective: "published",
+  withCredentials: true, // Enable credentials
+  cors: true // Enable CORS support
 });
 
 // Create a reusable image builder instance
