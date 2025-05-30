@@ -57,6 +57,13 @@ export interface SanityArticle {
   tags?: SanityTag[];
 }
 
+export interface SanityQuote {
+  _id: string;
+  text: string;
+  author: string;
+  role?: string;
+}
+
 const sectionVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
