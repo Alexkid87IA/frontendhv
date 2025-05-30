@@ -4,13 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
 
-// Import des logos
-import logoHVMedia from '../../assets/logos/LOGO_HV MEDIA.svg';
-import logoHVStory from '../../assets/logos/LOGO_HV STORY.svg';
-import logoHVBusiness from '../../assets/logos/LOGO_HV BUSINESS.svg';
-import logoHVPsycho from '../../assets/logos/LOGO_HV PSYCHO.svg';
-import logoHVSociety from '../../assets/logos/LOGO_HV SOCIETY.svg';
-
 export const ResponsiveNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -18,10 +11,10 @@ export const ResponsiveNavbar = () => {
   const { visible } = useScrollDirection();
 
   const menuItems = [
-    { label: 'Story', path: '/rubrique/story', icon: BookOpen, slug: 'story' },
+    { label: 'Récits', path: '/rubrique/recits', icon: BookOpen, slug: 'recits' },
     { label: 'Business', path: '/rubrique/business', icon: Briefcase, slug: 'business' },
     { label: 'Mental', path: '/rubrique/mental', icon: Brain, slug: 'mental' },
-    { label: 'Society', path: '/rubrique/society', icon: Users, slug: 'society' },
+    { label: 'Culture', path: '/rubrique/culture', icon: Users, slug: 'culture' },
     { label: 'Émissions', path: '/emissions', icon: Film, slug: 'emissions' }
   ];
 
@@ -33,22 +26,10 @@ export const ResponsiveNavbar = () => {
   };
 
   const getCurrentLogo = () => {
-    // Logique pour afficher le bon logo selon la page active
-    if (location.pathname.startsWith('/rubrique/story')) {
-      return logoHVStory;
-    } else if (location.pathname.startsWith('/rubrique/business')) {
-      return logoHVBusiness;
-    } else if (location.pathname.startsWith('/rubrique/mental')) {
-      return logoHVPsycho;
-    } else if (location.pathname.startsWith('/rubrique/society')) {
-      return logoHVSociety;
-    } else {
-      // Logo par défaut pour homepage, émissions et autres pages
-      return logoHVMedia;
-    }
+    return "https://26.staticbtf.eno.do/v1/24-default/c6447f1810fadbb886029b7c212d9d98/media.jpg";
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (isOpen && !target.closest('#mobile-menu') && !target.closest('#menu-button')) {
@@ -59,16 +40,15 @@ export const ResponsiveNavbar = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isOpen]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
 
-  return (
-    <motion.nav
+  return    <motion.nav
       initial={{ y: 0 }}
       animate={{ y: visible ? 0 : -150 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-hv-card-bg/60 border-b border-white/10 shadow-lg"
+      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-hv-card-bg/80 border-b border-hv-card-border shadow-md"
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
         <Link 
@@ -78,18 +58,19 @@ export const ResponsiveNavbar = () => {
         >
           <motion.img 
             src={getCurrentLogo()}
-            alt="High Value Logo"
+            alt="High Value Media Logo"
             className="h-10 md:h-12 w-auto object-contain" 
-            animate={isAnimating ? { scale: [1, 1.05, 1], filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"] } : {}}
+            animate={isAnimating ? { scale: [1, 1.05, 1], filter: ["brightness(1)", "brightness(1.1)", "brightness(1)"] } : {}}
             transition={{ duration: 0.5, ease: "easeInOut" }}
-            whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+            whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
           />
         </Link>
         
         <div className="hidden lg:flex flex-1 items-center justify-between ml-6">
           <div className="flex-1 flex justify-center">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
               {menuItems.map((item) => {
+                // Pour les rubriques, l'activité est basée sur le slug de la catégorie dans l'URL
                 const isActive = item.path.startsWith('/rubrique/') 
                   ? location.pathname === `/rubrique/${item.slug}` 
                   : location.pathname.startsWith(item.path);
@@ -98,27 +79,16 @@ export const ResponsiveNavbar = () => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`group relative flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all duration-300 text-sm font-medium ${
+                    className={`group flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200 text-sm font-medium ${
                       isActive 
-                        ? "text-white bg-gradient-to-r from-hv-blue-accent/80 to-accent-turquoise/80 shadow-md" 
-                        : "text-hv-text-primary-maquette hover:text-white hover:bg-white/10"
+                        ? "text-hv-blue-accent bg-hv-blue-accent/10" 
+                        : "text-hv-text-primary-maquette hover:text-hv-blue-accent hover:bg-hv-blue-accent/5"
                     }`}
                   >
-                    <Icon size={18} className={`transition-all duration-300 ${
-                      isActive ? "text-white" : "text-hv-text-secondary-maquette group-hover:text-white"
+                    <Icon size={16} className={`transition-colors duration-200 ${
+                      isActive ? "text-hv-blue-accent" : "text-hv-text-secondary-maquette group-hover:text-hv-blue-accent"
                     }`} />
-                    <span className="relative">
-                      {item.label}
-                      {isActive && (
-                        <motion.span
-                          layoutId="navbar-indicator"
-                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-white rounded-full"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      )}
-                    </span>
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
@@ -129,10 +99,10 @@ export const ResponsiveNavbar = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/coaching"
-                className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap border ${
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap border ${
                   location.pathname === "/coaching" 
-                  ? "bg-hv-blue-accent text-white border-hv-blue-accent shadow-lg shadow-hv-blue-accent/20"
-                  : "bg-hv-card-bg/50 hover:bg-white/10 text-hv-text-primary-maquette hover:text-white border-white/10 hover:border-white/30"
+                  ? "bg-hv-blue-accent text-hv-text-white border-hv-blue-accent shadow-lg"
+                  : "bg-hv-card-bg/50 hover:bg-hv-blue-accent/10 text-hv-text-primary-maquette hover:text-hv-blue-accent border-hv-card-border hover:border-hv-blue-accent/50"
                 }`}
               >
                 Coaching
@@ -141,10 +111,10 @@ export const ResponsiveNavbar = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/create-with-roger"
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 whitespace-nowrap shadow-lg ${
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap shadow-md border border-transparent ${
                   location.pathname === "/create-with-roger"
-                  ? "bg-gradient-to-r from-hv-blue-accent to-accent-turquoise text-white ring-2 ring-hv-blue-accent/50"
-                  : "bg-gradient-to-r from-accent-blue/90 to-accent-turquoise/90 hover:from-hv-blue-accent hover:to-accent-turquoise text-white shadow-accent-blue/30"
+                  ? "bg-gradient-to-r from-hv-blue-accent to-accent-turquoise text-hv-text-white ring-2 ring-hv-blue-accent"
+                  : "bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-hv-blue-accent hover:to-accent-turquoise text-hv-text-white"
                 }`}
               >
                 <Sparkles className="w-4 h-4" />
@@ -156,7 +126,7 @@ export const ResponsiveNavbar = () => {
         <div className="lg:hidden flex items-center">
           <button
             id="menu-button"
-            className="p-2.5 text-white bg-hv-blue-accent/80 hover:bg-hv-blue-accent rounded-lg transition-colors shadow-md"
+            className="p-2 text-neutral-300 hover:text-white hover:bg-white/10 rounded-md transition-colors"
             onClick={() => setIsOpen(!isOpen)}
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
@@ -174,76 +144,58 @@ export const ResponsiveNavbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
             className="lg:hidden fixed inset-x-0 top-20 bottom-0 bg-hv-dark/95 backdrop-blur-xl border-t border-white/10 z-40 overflow-y-auto pb-6"
           >
-            <div className="px-4 pt-6 pb-4 space-y-2">
+            <div className="px-4 pt-6 pb-4 space-y-3">
               {menuItems.map((item) => {
                 const isActive = item.path.startsWith('/rubrique/') 
                   ? location.pathname === `/rubrique/${item.slug}` 
                   : location.pathname.startsWith(item.path);
                 const Icon = item.icon;
                 return (
-                  <motion.div
+                  <Link
                     key={item.path}
-                    whileTap={{ scale: 0.98 }}
+                    to={item.path}
+                    className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 text-base font-medium ${
+                      isActive 
+                        ? 'text-hv-turquoise bg-hv-blue/20' 
+                        : 'text-neutral-200 hover:text-white hover:bg-white/10'
+                    }`}
+                    onClick={() => setIsOpen(false)}
                   >
-                    <Link
-                      to={item.path}
-                      className={`flex items-center gap-3 p-3.5 rounded-lg transition-all duration-300 text-base font-medium ${
-                        isActive 
-                          ? 'text-white bg-gradient-to-r from-hv-blue-accent/80 to-accent-turquoise/80 shadow-md' 
-                          : 'text-neutral-200 hover:text-white hover:bg-white/10'
-                      }`}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Icon size={22} className={isActive ? 'text-white' : 'text-neutral-400'} />
-                      <span>{item.label}</span>
-                      {isActive && (
-                        <motion.span
-                          layoutId="mobile-indicator"
-                          className="ml-auto h-2 w-2 rounded-full bg-white"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      )}
-                    </Link>
-                  </motion.div>
+                    <Icon size={20} className={isActive ? 'text-hv-turquoise' : 'text-neutral-400'} />
+                    <span>{item.label}</span>
+                  </Link>
                 );
               })}
             </div>
 
-            <div className="px-4 space-y-3 pt-4 border-t border-white/10">
-              <motion.div whileTap={{ scale: 0.98 }}>
-                <Link
-                  to="/coaching"
-                  className={`block w-full text-center px-4 py-3.5 rounded-lg font-medium transition-all duration-300 text-base ${
-                    location.pathname === '/coaching' 
-                    ? 'bg-hv-blue-accent text-white shadow-lg shadow-hv-blue-accent/20'
-                    : 'bg-white/10 hover:bg-white/20 text-white'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  Coaching
-                </Link>
-              </motion.div>
-              <motion.div whileTap={{ scale: 0.98 }}>
-                <Link
-                  to="/create-with-roger"
-                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-hv-blue-accent to-accent-turquoise hover:from-accent-blue hover:to-hv-blue-accent text-white w-full px-4 py-3.5 rounded-lg font-medium transition-all duration-300 text-base shadow-lg"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Sparkles className="w-5 h-5" />
-                  <span>Votre histoire</span>
-                </Link>
-              </motion.div>
+            <div className="px-4 space-y-3 pt-3 border-t border-white/10">
+              <Link
+                to="/coaching"
+                className={`block w-full text-center px-4 py-3 rounded-lg font-medium transition-all duration-200 text-base ${
+                  location.pathname === '/coaching' 
+                  ? 'bg-hv-blue text-white shadow-lg'
+                  : 'bg-neutral-700/70 hover:bg-neutral-600 text-neutral-100 hover:text-white'
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Coaching
+              </Link>
+              <Link
+                to="/create-with-roger"
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-hv-blue to-hv-turquoise hover:from-hv-turquoise hover:to-hv-blue text-white w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 text-base shadow-md"
+                onClick={() => setIsOpen(false)}
+              >
+                <Sparkles className="w-5 h-5" />
+                <span>Votre histoire</span>
+              </Link>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </motion.nav>
-  );
 };
 
 export default ResponsiveNavbar;

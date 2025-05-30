@@ -81,3 +81,5 @@ export const EditorialSection = () => {
     </section>
   );
 };
+
+export default EditorialSection;
