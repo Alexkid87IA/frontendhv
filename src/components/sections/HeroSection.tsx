@@ -1,106 +1,95 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
-import { getAllArticles } from '../../utils/sanityAPI';
-import { urlFor, isValidSanityImage } from '../../utils/sanityImage';
-import { formatDate } from '../../utils/dateUtils';
-import { QuoteIcon } from '../icons/QuoteIcon';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowRight, Quote as QuoteIcon } from "lucide-react";
+import { getAllArticles, getLatestQuote } from "../../utils/sanityAPI";
+import type { SanityArticle, SanityImage, SanityCategory, SanityQuote } from "../../pages/ArticlePage";
+import { urlFor } from "../../utils/sanityClient";
 
-// Types
-interface SanityCategory {
-  _id: string;
-  title: string;
-  slug?: {
-    current: string;
-  };
-}
-
-interface SanityArticle {
-  _id: string;
-  title: string;
-  slug?: {
-    current: string;
-  };
-  mainImage?: any;
-  excerpt?: string;
-  publishedAt?: string;
-  categories?: SanityCategory[];
-}
-
-interface Quote {
-  text: string;
-  author: string;
-  role?: string;
-}
+const formatDate = (dateString?: string): string => {
+  if (!dateString) return "Date inconnue";
+  return new Date(dateString).toLocaleDateString("fr-FR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
 
 export const HeroSection = () => {
   const [mainArticle, setMainArticle] = useState<SanityArticle | null>(null);
+  const [quoteOfTheDay, setQuoteOfTheDay] = useState<SanityQuote | null>(null);
   const [latestArticles, setLatestArticles] = useState<SanityArticle[]>([]);
-  const [quoteOfTheDay, setQuoteOfTheDay] = useState<Quote | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchArticles = async () => {
+    const fetchData = async () => {
       try {
+        setIsLoading(true);
         const articles = await getAllArticles();
-        console.log('Articles fetched in HeroSection (veuillez inspecter le champ \'categories\'):', articles);
-        
+        console.log("Articles fetched in HeroSection (veuillez inspecter le champ 'categories'):", articles);
+        const quote = await getLatestQuote();
+
         if (articles && articles.length > 0) {
-          // Sélectionner l'article principal (le plus récent)
           setMainArticle(articles[0]);
-          
-          // Sélectionner les 3 articles suivants pour la section "Derniers Articles"
-          setLatestArticles(articles.slice(1, 4));
+          setLatestArticles(articles.slice(1, 4)); 
+        } else {
+          setMainArticle(null);
+          setLatestArticles([]);
         }
-        
-        // Citation du jour (exemple statique pour l'instant)
-        setQuoteOfTheDay({
-          text: "La vie est ce qui arrive quand on est occupé à faire d'autres projets.",
-          author: "John Lennon",
-          role: "Musicien et auteur-compositeur"
-        });
-        
-        console.log('Articles récupérés:', articles);
-      } catch (error) {
-        console.error('Erreur lors de la récupération des articles:', error);
+        setQuoteOfTheDay(quote);
+        setError(null);
+      } catch (err) {
+        console.error("HeroSection: Erreur lors de la récupération des données:", err);
+        setError("Impossible de charger le contenu principal.");
+      } finally {
+        setIsLoading(false);
       }
     };
-
-    fetchArticles();
+    fetchData();
   }, []);
 
-  // Fonction sécurisée pour obtenir l'URL de l'image
-  const getImageUrl = (image: any, width: number, height: number): string => {
-    try {
-      if (!isValidSanityImage(image)) {
-        return `https://placehold.co/${width}x${height}?text=Image+non+disponible`;
-      }
-      return urlFor(image).width(width).height(height).url();
-    } catch (error) {
-      console.error('Erreur lors de la génération de l\'URL de l\'image:', error);
-      return `https://placehold.co/${width}x${height}?text=Image+non+disponible`;
-    }
-  };
+  if (isLoading) {
+    return (
+      <section className="pt-24 md:pt-32 container mx-auto px-4 min-h-[70vh] flex items-center justify-center">
+        <p className="text-xl text-white/70">Chargement du contenu...</p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="pt-24 md:pt-32 container mx-auto px-4 min-h-[70vh] flex items-center justify-center">
+        <p className="text-red-500 text-xl">{error}</p>
+      </section>
+    );
+  }
 
   return (
-    <section className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+    <section className="pt-24 md:pt-32 pb-16 container mx-auto px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
         {mainArticle && (
           <div className="lg:col-span-7 xl:col-span-8">
-            <article className="bg-hv-card-bg rounded-xl shadow-lg overflow-hidden border border-hv-card-border h-full">
-              <div className="relative h-64 md:h-80 overflow-hidden">
-                <img 
-                  src={getImageUrl(mainArticle.mainImage, 800, 450)} 
-                  alt={mainArticle.title} 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+            <article className="group h-full flex flex-col bg-hv-card-bg p-0 rounded-xl overflow-hidden shadow-lg border border-hv-card-border transition-all duration-300 hover:border-hv-blue-accent">
+              <div className="relative">
+                <Link to={`/article/${mainArticle.slug?.current || '#'}`} className="block">
+                  <div className="relative aspect-video w-full overflow-hidden">
+                    <img
+                      src={urlFor(mainArticle.mainImage)}
+                      alt={mainArticle.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                  </div>
+                </Link>
                 {mainArticle.categories && mainArticle.categories.length > 0 && (
-                  <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                  <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                     {mainArticle.categories.map((category: SanityCategory, index: number) => (
                       category.slug?.current && (
                         <Link 
                           key={category.slug.current} 
                           to={`/rubrique/${category.slug.current}`} 
-                          className={`inline-block ${["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][index % 4]} px-3 py-1 text-sm font-medium text-white rounded-md hover:opacity-90 transition-opacity`}
+                          className={`${["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][index % 4]} px-3 py-1 text-xs font-semibold text-white rounded-md hover:opacity-90 transition-opacity`}
                         >
                           {category.title}
                         </Link>
@@ -109,9 +98,9 @@ export const HeroSection = () => {
                   </div>
                 )}
               </div>
-              <div className="p-6">
-                <Link to={`/article/${mainArticle.slug?.current || '#'}`} className="group">
-                  <h2 className="text-2xl font-bold mb-3 text-hv-text-primary-maquette group-hover:text-hv-blue-accent transition-colors">
+              <div className="p-6 flex-grow flex flex-col">
+                <Link to={`/article/${mainArticle.slug?.current || '#'}`} className="block">
+                  <h2 className="text-2xl lg:text-3xl font-bold tracking-tight leading-tight mb-3 text-hv-text-primary-maquette group-hover:text-hv-blue-accent transition-colors">
                     {mainArticle.title}
                   </h2>
                   {mainArticle.excerpt && (
@@ -131,6 +120,7 @@ export const HeroSection = () => {
             </article>
           </div>
         )}
+
         {quoteOfTheDay && (
           <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
             <div className="bg-hv-card-bg p-6 rounded-xl shadow-lg flex flex-col h-full border border-hv-card-border">
@@ -160,6 +150,7 @@ export const HeroSection = () => {
           </div>
         )}
       </div>
+
       {latestArticles.length > 0 && (
         <div className="bg-hv-card-bg p-6 rounded-xl shadow-lg border border-hv-card-border">
           <h3 className="text-xl font-semibold mb-6 pb-4 border-b border-hv-card-border text-hv-text-primary-maquette">
