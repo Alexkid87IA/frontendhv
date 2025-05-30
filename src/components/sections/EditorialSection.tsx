@@ -19,7 +19,7 @@ export const EditorialSection = () => {
             tag: "Récits",
             image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
             excerpt: "Des parcours inspirants qui redéfinissent le possible",
-            link: "/rubrique/recits"
+            link: "/rubrique/story"
           },
           {
             title: "Business & innovation",
@@ -40,7 +40,7 @@ export const EditorialSection = () => {
             tag: "Culture",
             image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
             excerpt: "Décrypter les mutations de notre époque",
-            link: "/rubrique/culture"
+            link: "/rubrique/society"
           }
         ].map((category, index) => (
           <motion.div

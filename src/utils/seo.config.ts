@@ -44,13 +44,13 @@ export const getSEOForCategory = (category: string): SEOConfig => {
       description: "Découvrez les clés mentales qui font la différence entre réussite et échec. Stratégies mentales, résilience et développement personnel.",
       image: "https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?auto=format&fit=crop&q=80"
     },
-    culture: {
-      title: "Culture & Société | Décryptage des mutations contemporaines",
+    society: {
+      title: "Society | Décryptage des mutations contemporaines",
       description: "Explorez les tendances culturelles et les mouvements qui façonnent notre société. Art, littérature, musique et transformations sociales.",
       image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80"
     },
-    recits: {
-      title: "Récits de vie | Histoires inspirantes et parcours d'exception",
+    story: {
+      title: "Story | Histoires inspirantes et parcours d'exception",
       description: "Des histoires authentiques qui redéfinissent le possible. Découvrez des parcours inspirants, des success stories et des transformations remarquables.",
       image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80"
     }

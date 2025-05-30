@@ -11,10 +11,10 @@ export const ResponsiveNavbar = () => {
   const { visible } = useScrollDirection();
 
   const menuItems = [
-    { label: 'Récits', path: '/rubrique/recits', icon: BookOpen, slug: 'recits' },
+    { label: 'Story', path: '/rubrique/story', icon: BookOpen, slug: 'story' },
     { label: 'Business', path: '/rubrique/business', icon: Briefcase, slug: 'business' },
     { label: 'Mental', path: '/rubrique/mental', icon: Brain, slug: 'mental' },
-    { label: 'Culture', path: '/rubrique/culture', icon: Users, slug: 'culture' },
+    { label: 'Society', path: '/rubrique/society', icon: Users, slug: 'society' },
     { label: 'Émissions', path: '/emissions', icon: Film, slug: 'emissions' }
   ];
 

@@ -15,10 +15,10 @@ export const Footer = () => {
   };
 
   const mainLinks = [
-    { label: 'Récits', path: '/rubrique/recits' },
+    { label: 'Story', path: '/rubrique/story' },
     { label: 'Business', path: '/rubrique/business' },
     { label: 'Mental', path: '/rubrique/mental' },
-    { label: 'Culture', path: '/rubrique/culture' },
+    { label: 'Society', path: '/rubrique/society' },
     { label: 'Coaching', path: '/coaching' },
     { label: 'Podcasts', path: '/podcasts' },
     { label: 'Émissions', path: '/emissions' }
