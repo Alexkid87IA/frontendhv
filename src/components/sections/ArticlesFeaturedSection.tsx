@@ -1,103 +1,96 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { ArticleCard } from '../common/ArticleCard';
-import { sanityClient, urlFor } from '../../utils/sanityClient'; // Fixed import path
+import SafeImage from '../common/SafeImage';
+import ErrorBoundary from '../common/ErrorBoundary';
 
-// Interface pour la structure d'un article venant de Sanity
-interface SanityArticle {
-  slug: string;
-  title: string;
-  mainImage?: { asset?: { _ref?: string; _id?: string; [key: string]: any }; [key: string]: any };
-  tag?: string; // Ou le nom de votre champ catégorie si différent
-  summary?: string; // Ou le nom de votre champ excerpt/description si différent
-  // Ajoutez d'autres champs si ArticleCard en a besoin
+interface ArticlesFeaturedSectionProps {
+  title?: string;
+  articles?: Array<{
+    _id: string;
+    title: string;
+    slug?: {
+      current: string;
+    };
+    mainImage?: any;
+    excerpt?: string;
+    publishedAt?: string;
+    categories?: Array<{
+      _id: string;
+      title: string;
+      slug?: {
+        current: string;
+      };
+    }>;
+  }>;
 }
 
-export const ArticlesFeaturedSection = () => {
-  const [featuredArticle, setFeaturedArticle] = useState<SanityArticle | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchFeaturedArticle = async () => {
-      setIsLoading(true);
-      try {
-        // Requête GROQ pour récupérer le dernier article publié
-        // Vous pouvez adapter cette requête si vous avez un champ booléen "isFeatured" par exemple :
-        // const query = `*[_type == "article" && isFeatured == true] | order(publishedAt desc)[0] {
-        const query = `*[_type == "article"] | order(publishedAt desc)[0] { 
-          "slug": slug.current,
-          title,
-          mainImage { asset-> },
-          "tag": category->title, // Assurez-vous que 'category' est le nom de votre champ de référence de catégorie
-          "summary": excerpt // Assurez-vous que 'excerpt' est le nom de votre champ de résumé
-        }`;
-        const article: SanityArticle = await sanityClient.fetch(query);
-        setFeaturedArticle(article);
-      } catch (error) {
-        console.error("Erreur lors de la récupération de l'article à la une:", error);
-        setFeaturedArticle(null);
-      }
-      setIsLoading(false);
-    };
-
-    fetchFeaturedArticle();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <section className="container mb-20">
-        <div className="bg-neutral-900/30 backdrop-blur-sm border border-white/5 rounded-2xl p-8">
-          <p className="text-center text-tertiary">Chargement de l'article à la une...</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (!featuredArticle) {
-    return (
-      <section className="container mb-20">
-        <div className="bg-neutral-900/30 backdrop-blur-sm border border-white/5 rounded-2xl p-8">
-          <p className="text-center text-tertiary">Aucun article à la une disponible pour le moment.</p>
-        </div>
-      </section>
-    );
-  }
-
-  // Préparation des props pour ArticleCard
-  const articleProps = {
-    slug: featuredArticle.slug,
-    title: featuredArticle.title,
-    image: featuredArticle.mainImage 
-      ? urlFor(featuredArticle.mainImage).width(800).height(450).fit("crop").url() 
-      : "https://via.placeholder.com/800x450?text=Image+Indisponible", // Placeholder valide
-    tag: featuredArticle.tag || "Non défini",
-    summary: featuredArticle.summary || "",
-    // Ajoutez d'autres props si ArticleCard les attend (ex: date, readTime, etc.)
-    // Ces props devront être ajoutées à la requête GROQ si elles ne sont pas déjà présentes
-  };
+export const ArticlesFeaturedSection: React.FC<ArticlesFeaturedSectionProps> = ({
+  title = "Articles à la une",
+  articles = []
+}) => {
+  if (!articles || articles.length === 0) return null;
 
   return (
-    <section className="container mb-20">
-      <div className="bg-neutral-900/30 backdrop-blur-sm border border-white/5 rounded-2xl p-8">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold">Article à la une</h2>
-          <motion.button
-            whileHover={{ x: 4 }}
-            className="flex items-center gap-2 text-accent-fuchsia hover:text-accent-cyan transition-colors"
-            // TODO: Implémenter la navigation vers la page de l'article ou une page "voir plus"
-            onClick={() => console.log('Voir plus cliqué')}
-          >
-            <span>Voir plus</span>
-            <ArrowRight size={18} />
-          </motion.button>
+    <ErrorBoundary>
+      <section className="py-12 bg-hv-bg-secondary">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold mb-8 text-hv-text-primary-maquette">
+            {title}
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.map((article, index) => (
+              <article key={article._id} className="bg-hv-card-bg rounded-xl shadow-lg overflow-hidden border border-hv-card-border group">
+                <div className="relative h-48 overflow-hidden">
+                  <SafeImage
+                    image={article.mainImage}
+                    alt={article.title || "Article à la une"}
+                    width={400}
+                    height={300}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  {article.categories && article.categories.length > 0 && (
+                    <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                      {article.categories.map((category, idx) => (
+                        category.slug?.current && (
+                          <Link 
+                            key={category._id} 
+                            to={`/rubrique/${category.slug.current}`} 
+                            className={`inline-block ${["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][idx % 4]} px-3 py-1 text-sm font-medium text-white rounded-md hover:opacity-90 transition-opacity`}
+                          >
+                            {category.title}
+                          </Link>
+                        )
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="p-6">
+                  <Link to={`/article/${article.slug?.current || '#'}`} className="group">
+                    <h3 className="text-xl font-bold mb-3 text-hv-text-primary-maquette group-hover:text-hv-blue-accent transition-colors">
+                      {article.title}
+                    </h3>
+                    {article.excerpt && (
+                      <p className="text-hv-text-secondary-maquette text-sm mb-4 line-clamp-2">
+                        {article.excerpt}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-end mt-auto">
+                      <span className="inline-flex items-center text-hv-blue-accent font-medium transition-colors group-hover:text-hv-text-white">
+                        Lire l'article
+                        <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      </span>
+                    </div>
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
-
-        <div className="grid grid-cols-1">
-          {/* Nous n'utilisons plus .map() car nous avons un seul article à la une */}
-          <ArticleCard {...articleProps} />
-        </div>
-      </div>
-    </section>
+      </section>
+    </ErrorBoundary>
   );
 };
+
+export default ArticlesFeaturedSection;
