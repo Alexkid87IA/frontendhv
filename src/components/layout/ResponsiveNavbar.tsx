@@ -118,12 +118,12 @@ export const ResponsiveNavbar = () => {
                 className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300"
               >
                 {/* Animated gradient border */}
-                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 opacity-70 blur-[1px] transition-opacity duration-300 group-hover:opacity-100"></span>
+                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue to-accent-turquoise opacity-70 blur-[1px] transition-opacity duration-300 group-hover:opacity-100"></span>
                 
                 {/* Background with glass effect */}
                 <span className={`absolute inset-[1.5px] rounded-md bg-black/80 z-0 ${
                   location.pathname === "/coaching" 
-                  ? "bg-gradient-to-r from-blue-600/20 to-indigo-600/20"
+                  ? "bg-gradient-to-r from-accent-blue/20 to-accent-turquoise/20"
                   : ""
                 }`}></span>
                 
@@ -145,10 +145,10 @@ export const ResponsiveNavbar = () => {
                 className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300"
               >
                 {/* Animated gradient background */}
-                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue via-purple-600 to-pink-500 opacity-100"></span>
+                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue via-accent-violet to-accent-fuchsia opacity-100"></span>
                 
                 {/* Animated glow effect */}
-                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue via-purple-600 to-pink-500 blur-[2px] opacity-50 animate-pulse"></span>
+                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue via-accent-violet to-accent-fuchsia blur-[2px] opacity-50 animate-pulse"></span>
                 
                 {/* Content */}
                 <span className="relative z-10 flex items-center gap-2 text-white">
@@ -215,7 +215,7 @@ export const ResponsiveNavbar = () => {
               {/* Mobile Coaching Button */}
               <div className="relative overflow-hidden rounded-lg group">
                 {/* Animated gradient border */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg opacity-70 group-hover:opacity-100 blur-sm transition-all duration-300 group-hover:blur"></div>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-lg opacity-70 group-hover:opacity-100 blur-sm transition-all duration-300 group-hover:blur"></div>
                 
                 <Link
                   to="/coaching"
@@ -223,7 +223,7 @@ export const ResponsiveNavbar = () => {
                   onClick={() => setIsOpen(false)}
                 >
                   {/* Subtle animated background */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-accent-blue/20 to-accent-turquoise/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   
                   {/* Text with subtle animation */}
                   <span className="relative z-10 text-base">Coaching</span>
@@ -233,7 +233,7 @@ export const ResponsiveNavbar = () => {
               {/* Mobile Votre Histoire Button */}
               <div className="relative overflow-hidden rounded-lg group">
                 {/* Animated gradient background */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-purple-600 to-pink-500 rounded-lg opacity-80 group-hover:opacity-100 blur-sm transition-all duration-300 animate-pulse"></div>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-violet to-accent-fuchsia rounded-lg opacity-80 group-hover:opacity-100 blur-sm transition-all duration-300 animate-pulse"></div>
                 
                 <Link
                   to="/create-with-roger"
@@ -241,7 +241,7 @@ export const ResponsiveNavbar = () => {
                   onClick={() => setIsOpen(false)}
                 >
                   {/* Subtle animated background */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-accent-blue/20 via-purple-600/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-accent-blue/20 via-accent-violet/20 to-accent-fuchsia/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   
                   {/* Icon and text with subtle animation */}
                   <Sparkles className="w-5 h-5 text-white" />
