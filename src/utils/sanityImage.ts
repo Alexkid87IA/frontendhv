@@ -1,14 +1,9 @@
-/**
- * Utilitaire robuste pour la gestion des images Sanity
- * Fournit des méthodes sécurisées pour manipuler les images et gérer les cas d'erreur
- */
-
 import imageUrlBuilder from '@sanity/image-url';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
-import { client } from './sanityClient';
+import { sanityClient } from './sanityClient';
 
 // Créer un constructeur d'URL d'image à partir du client Sanity
-const builder = imageUrlBuilder(client);
+const builder = imageUrlBuilder(sanityClient);
 
 // Type pour les images Sanity
 export interface SanityImage {

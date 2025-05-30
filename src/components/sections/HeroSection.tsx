@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { sanityAPI } from '../../utils/sanityAPI';
+import { getAllArticles } from '../../utils/sanityAPI';
 import { urlFor, isValidSanityImage } from '../../utils/sanityImage';
 import { formatDate } from '../../utils/dateUtils';
 import { QuoteIcon } from '../icons/QuoteIcon';
@@ -41,7 +41,7 @@ export const HeroSection = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const articles = await sanityAPI.getArticles();
+        const articles = await getAllArticles();
         console.log('Articles fetched in HeroSection (veuillez inspecter le champ \'categories\'):', articles);
         
         if (articles && articles.length > 0) {
@@ -65,17 +65,7 @@ export const HeroSection = () => {
       }
     };
 
-    const fetchDebates = async () => {
-      try {
-        const debates = await sanityAPI.getDebates();
-        console.log('Débats récupérés:', debates);
-      } catch (error) {
-        console.error('Erreur lors de la récupération des débats:', error);
-      }
-    };
-
     fetchArticles();
-    fetchDebates();
   }, []);
 
   // Fonction sécurisée pour obtenir l'URL de l'image
