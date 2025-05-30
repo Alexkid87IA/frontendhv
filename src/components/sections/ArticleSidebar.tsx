@@ -1,9 +1,9 @@
 import React from 'react';
-import { SanityAuthor, SanityArticle } from '../../pages/ArticlePage'; // Ajustez le chemin si nécessaire
-import { urlFor } from '../../utils/sanityImage';
+import { SanityAuthor, SanityArticle } from '../../pages/ArticlePage';
+import { urlFor } from '../../utils/sanityClient';
 import { Link } from 'react-router-dom';
-import { RelatedArticles } from './RelatedArticles'; // Assurez-vous que ce composant est adapté
-import { Heart, Bookmark, Share2, UserCircle, Edit3, BarChart2 } from 'lucide-react'; // Utilisation de Lucide pour les icônes
+import { RelatedArticles } from './RelatedArticles';
+import { Heart, Bookmark, Share2, UserCircle, Edit3, BarChart2 } from 'lucide-react';
 
 interface ArticleSidebarProps {
   author?: SanityAuthor | null;
@@ -69,8 +69,8 @@ export const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ author, relatedA
           <div className="flex justify-around text-center mb-6 py-4 bg-gray-700/60 rounded-lg shadow-inner">
             {[ 
               { label: "Articles", value: authorData.stats.articles, icon: <Edit3 size={20} className="mb-1" /> }, 
-              { label: "Podcasts", value: authorData.stats.podcasts, icon: <UserCircle size={20} className="mb-1" /> }, // Remplacer par une icône plus appropriée si disponible
-              { label: "Followers", value: authorData.stats.followers, icon: <BarChart2 size={20} className="mb-1" /> } // Remplacer par une icône plus appropriée si disponible
+              { label: "Podcasts", value: authorData.stats.podcasts, icon: <UserCircle size={20} className="mb-1" /> },
+              { label: "Followers", value: authorData.stats.followers, icon: <BarChart2 size={20} className="mb-1" /> }
             ].map(stat => (
               <div key={stat.label} className="px-2 flex flex-col items-center">
                 {stat.icon}
@@ -135,4 +135,3 @@ export const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ author, relatedA
 };
 
 export default ArticleSidebar;
-

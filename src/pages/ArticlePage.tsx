@@ -1,4 +1,3 @@
-// FORCER REBUILD AVEC LOGS - 13 Mai 23:01
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -6,13 +5,13 @@ import { SEO } from "../components/common/SEO";
 import { NewsletterForm } from "../components/common/NewsletterForm";
 import { ArticleProgress } from "../components/sections/ArticleProgress";
 import { ArticleHeader } from "../components/sections/ArticleHeader";
-import ArticleContent from "../components/sections/ArticleContent"; // <--- MODIFIÉ ICI: Import par défaut
+import ArticleContent from "../components/sections/ArticleContent";
 import { ExploreArticlesSection } from "../components/sections/ExploreArticlesSection";
 import { LoadingSpinner } from "../components/common/LoadingSpinner";
 import { ErrorMessage } from "../components/common/ErrorMessage";
 import { getArticleBySlug, getAllArticles } from "../utils/sanityAPI";
 import { ArticleSidebar } from "../components/sections/ArticleSidebar"; 
-import { urlFor } from "../utils/sanityImage"; 
+import { urlFor } from "../utils/sanityClient";
 
 export interface SanityImage {
   _type: "image";
@@ -77,13 +76,13 @@ export const ArticlePage = () => {
   const [relatedArticles, setRelatedArticles] = useState<SanityArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showComments, setShowComments] = useState(false); // State pour afficher/cacher les commentaires
+  const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
     const loadArticle = async () => {
-      console.log("Slug en cours de chargement:", slug); // <--- AJOUT 1: Voir le slug utilisé
+      console.log("Slug en cours de chargement:", slug);
       if (!slug) {
-        setError("Slug de l\\'article manquant.");
+        setError("Slug de l'article manquant.");
         setIsLoading(false);
         return;
       }
@@ -91,22 +90,22 @@ export const ArticlePage = () => {
         setIsLoading(true);
         setError(null);
         const fetchedArticle = await getArticleBySlug(slug);
-        console.log("Article récupéré par getArticleBySlug:", fetchedArticle); // <--- AJOUT 2: Voir l\\'article complet récupéré
+        console.log("Article récupéré par getArticleBySlug:", fetchedArticle);
 
         if (!fetchedArticle) {
           setError("Article non trouvé");
           setArticle(null);
         } else {
           setArticle(fetchedArticle);
-          console.log("Contenu DÉTAILLÉ du body de l\\'article mis dans l\\'état:", JSON.stringify(fetchedArticle.body, null, 2)); // <--- MODIFIÉ AVEC JSON.stringify
+          console.log("Contenu DÉTAILLÉ du body de l'article mis dans l'état:", JSON.stringify(fetchedArticle.body, null, 2));
           const allArticles = await getAllArticles();
           setRelatedArticles(
             allArticles.filter((a: SanityArticle) => a._id !== fetchedArticle._id).slice(0, 3)
           );
         }
       } catch (err) {
-        console.error("Erreur lors du chargement de l\\'article spécifique:", err); // <--- AJOUT 4: Pour voir les erreurs de getArticleBySlug
-        setError("Une erreur est survenue lors du chargement de l\\'article.");
+        console.error("Erreur lors du chargement de l'article spécifique:", err);
+        setError("Une erreur est survenue lors du chargement de l'article.");
         setArticle(null);
       } finally {
         setIsLoading(false);
@@ -126,23 +125,22 @@ export const ArticlePage = () => {
       <div className="container mx-auto py-20 min-h-screen bg-background-dark">
         <ErrorMessage
           title={error === "Article non trouvé" ? "Article non trouvé" : "Erreur"}
-          message={error || "L\\'article n\\'a pas pu être chargé."}
+          message={error || "L'article n'a pas pu être chargé."}
         />
       </div>
     );
   }
   
-  // Juste avant le return de la fonction ArticlePage:
-  console.log("État \'article\' avant le rendu:", article); // <--- AJOUT 5: Voir l\\'état de l\\'article avant le rendu
+  console.log("État 'article' avant le rendu:", article);
   if (article) {
-    console.log("Contenu DÉTAILLÉ \'article.body\' passé à ArticleContent:", JSON.stringify(article.body, null, 2)); // <--- MODIFIÉ AVEC JSON.stringify
+    console.log("Contenu DÉTAILLÉ 'article.body' passé à ArticleContent:", JSON.stringify(article.body, null, 2));
   }
 
   const headerData = {
     title: article.title,
     description: article.excerpt || "",
     date: article.publishedAt ? new Date(article.publishedAt).toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }) : "Date inconnue",
-    readingTime: "~" + Math.ceil((article.body?.length || 200 * 5) / 200 / 5) + " min", // Estimation basique
+    readingTime: "~" + Math.ceil((article.body?.length || 200 * 5) / 200 / 5) + " min",
     category: article.categories && article.categories.length > 0 ? article.categories[0].title : "Non catégorisé", 
     image: article.mainImage 
   };
@@ -160,13 +158,12 @@ export const ArticlePage = () => {
         <ArticleProgress />
 
         <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 pt-0">
-          {/* ArticleHeader est déjà animé en interne */}
           <ArticleHeader article={headerData} />
 
           <div className="flex flex-col lg:flex-row lg:gap-x-12 xl:gap-x-16">
             <motion.main 
               className="w-full lg:w-2/3 lg:max-w-3xl xl:max-w-4xl"
-              custom={1} // Délai pour apparaître après le header (qui a son propre délai interne)
+              custom={1}
               initial="hidden"
               animate="visible"
               variants={sectionVariants}
@@ -197,7 +194,7 @@ export const ArticlePage = () => {
               )}
               <motion.section 
                 className="mt-16 md:mt-20"
-                custom={showComments ? 4 : 3} // Ajuster le délai si les commentaires sont affichés
+                custom={showComments ? 4 : 3}
                 initial="hidden"
                 animate="visible"
                 variants={sectionVariants}
@@ -208,7 +205,7 @@ export const ArticlePage = () => {
 
             <motion.div 
               className="w-full lg:w-1/3 mt-12 lg:mt-0"
-              custom={1.5} // Délai pour la sidebar, pour qu\'elle apparaisse en même temps ou juste après le contenu principal
+              custom={1.5}
               initial="hidden"
               animate="visible"
               variants={sectionVariants}
@@ -226,4 +223,3 @@ export const ArticlePage = () => {
 };
 
 export default ArticlePage;
-
