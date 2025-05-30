@@ -7,8 +7,7 @@ export const sanityClient = createClient({
   projectId: "z9wsynas",
   dataset: "production",
   apiVersion: "2024-05-13",
-  token: "skmbckwG1fYkVigzCOhehG30wAhNCmbMtje7tmLk2riWc2DafBltD3t4RUHL1Gh5Dr6T8CUodbSvMpLWJyR91Ra5nxfKOdIMkRBGqMUT73RIidvT0wwroEyMjur1oqzaRD7qm3cn2axQiyiYMYFR4f4aYJkTIRRpgWNJbhDU58XFVOXbcXE0",
-  useCdn: false, // Set to false to always get fresh data
+  useCdn: true, // Set to true to use the CDN for better performance with public data
   perspective: "published"
 });
 

@@ -1,14 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { createClient } from '@sanity/client';
 import { Link } from 'react-router-dom';
-
-// Configuration du client Sanity
-const sanityClient = createClient({
-  projectId: 'z9wsynas',
-  dataset: 'production',
-  apiVersion: '2023-05-03',
-  useCdn: true,
-});
+import { sanityClient } from '../../utils/sanityClient';
 
 // Types pour TypeScript
 interface SanityImage {
@@ -125,20 +117,6 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
     return `${views} vues`;
   };
 
-  // Fonction pour construire l'URL de l'image Sanity
-  const getImageUrl = (image: SanityImage) => {
-    if (!image || !image.asset || !image.asset._ref) return '';
-    
-    // Format de _ref: "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg"
-    const ref = image.asset._ref;
-    const [, id, dimensionString, format] = ref.split('-');
-    
-    if (!id) return '';
-    
-    // Construire l'URL de l'image
-    return `https://cdn.sanity.io/images/z9wsynas/production/${id}-${dimensionString}.${format}`;
-  };
-
   // Fonction pour obtenir le texte du CTA selon le type de section
   const getCtaText = (type: string) => {
     switch (type) {
@@ -203,7 +181,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                   <div className="relative h-48 md:h-56">
                     {article.mainImage ? (
                       <img 
-                        src={getImageUrl(article.mainImage)} 
+                        src={`https://cdn.sanity.io/images/z9wsynas/production/${article.mainImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg')}`}
                         alt={article.title}
                         className="w-full h-full object-cover"
                       />
