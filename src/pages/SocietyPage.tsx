@@ -4,7 +4,7 @@ import { NewsletterForm } from '../components/common/NewsletterForm';
 import { QuoteBlock } from '../components/common/QuoteBlock';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Star, Trophy, Sparkles } from 'lucide-react';
+import { ArrowRight, Users, Globe, Lightbulb, Target } from 'lucide-react';
 import { ArticleCard } from '../components/common/ArticleCard';
 import { VideoCard } from '../components/common/VideoCard';
 
@@ -14,96 +14,92 @@ const fadeInUp = {
   transition: { duration: 0.6 }
 };
 
-// Articles mis en avant
-const featuredArticles = [
+const societyDomains = [
   {
-    slug: 'success-story-startup',
-    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80',
-    title: "De 0 à 1M€ : L'histoire d'une startup française",
-    tag: "Success Story",
-    summary: "Le parcours inspirant d'une jeune entreprise qui a su s'imposer sur son marché."
-  },
-  {
-    slug: 'reconversion-reussie',
-    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80',
-    title: "Changer de vie à 40 ans",
-    tag: "Parcours",
-    summary: "Comment une reconversion professionnelle peut devenir un nouveau départ."
-  },
-  {
-    slug: 'innovation-sociale',
-    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80',
-    title: "Entreprendre pour le bien commun",
-    tag: "Impact",
-    summary: "Ces entrepreneurs qui concilient business et impact social."
-  }
-];
-
-// Dernières vidéos
-const latestVideos = [
-  {
-    title: "De cadre à entrepreneur",
-    guest: "Pierre Martin",
-    duration: "48 min",
-    date: "2024-03-15",
-    thumbnail: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80",
-    videoUrl: "https://youtube.com/watch?v=example1",
-    articleSlug: "cadre-entrepreneur"
-  },
-  {
-    title: "Réinventer son business",
-    guest: "Marie Dubois",
-    duration: "42 min",
-    date: "2024-03-10",
-    thumbnail: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80",
-    videoUrl: "https://youtube.com/watch?v=example2",
-    articleSlug: "reinventer-business"
-  }
-];
-
-// Types de récits
-const storyTypes = [
-  {
-    icon: Star,
-    title: "Success Stories",
-    description: "Des parcours exceptionnels qui inspirent."
+    icon: Globe,
+    title: "Mutations sociales",
+    description: "Les transformations qui façonnent notre époque."
   },
   {
     icon: Users,
-    title: "Portraits",
-    description: "À la rencontre d'entrepreneurs passionnés."
+    title: "Communautés",
+    description: "Les nouveaux modes d'organisation collective."
   },
   {
-    icon: Trophy,
-    title: "Réussites",
-    description: "Des victoires qui donnent espoir."
+    icon: Lightbulb,
+    title: "Innovation sociale",
+    description: "Les solutions aux défis contemporains."
   },
   {
-    icon: Sparkles,
-    title: "Transformations",
-    description: "Des changements de vie inspirants."
+    icon: Target,
+    title: "Impact",
+    description: "Les initiatives qui changent la donne."
   }
 ];
 
-export const StoryPage = () => {
+const featuredArticles = [
+  {
+    slug: 'innovation-sociale-2024',
+    image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80',
+    title: "L'innovation sociale en 2024",
+    tag: "Société",
+    summary: "Comment les initiatives citoyennes transforment nos sociétés."
+  },
+  {
+    slug: 'communautes-digitales',
+    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80',
+    title: "L'essor des communautés digitales",
+    tag: "Digital",
+    summary: "Les nouveaux modes d'organisation sociale à l'ère numérique."
+  },
+  {
+    slug: 'impact-social',
+    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80',
+    title: "Mesurer l'impact social",
+    tag: "Impact",
+    summary: "Les méthodes pour évaluer et maximiser l'impact social."
+  }
+];
+
+const latestVideos = [
+  {
+    title: "Les nouveaux modèles sociaux",
+    guest: "Marie Lambert",
+    duration: "45 min",
+    date: "2024-03-15",
+    thumbnail: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80",
+    videoUrl: "https://youtube.com/watch?v=example1",
+    articleSlug: "nouveaux-modeles-sociaux"
+  },
+  {
+    title: "Innovation sociale et technologie",
+    guest: "Thomas Martin",
+    duration: "38 min",
+    date: "2024-03-10",
+    thumbnail: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
+    videoUrl: "https://youtube.com/watch?v=example2",
+    articleSlug: "innovation-sociale-tech"
+  }
+];
+
+export const SocietyPage = () => {
   return (
     <>
       <SEO
-        title="Story | Histoires inspirantes et parcours d'exception"
-        description="Des histoires authentiques qui redéfinissent le possible. Découvrez des parcours inspirants, des success stories et des transformations remarquables."
-        image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80"
+        title="Society | Décryptage des mutations contemporaines"
+        description="Explorez les transformations sociales et les initiatives qui façonnent notre société. Analyses, débats et solutions pour les défis contemporains."
+        image="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80"
       />
       <div className="pb-20">
         {/* Hero Section */}
         <section className="relative min-h-[60vh] flex items-center pt-40">
           <div className="absolute inset-0">
             <img
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80"
-              alt="Story"
+              src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80"
+              alt="Society"
               className="w-full h-full object-cover opacity-30"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent" />
-            {/* Sophisticated background effects */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.15),transparent_50%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.15),transparent_50%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(6,182,212,0.15),transparent_50%)]" />
@@ -117,21 +113,21 @@ export const StoryPage = () => {
             className="container relative z-10"
           >
             <span className="inline-block px-4 py-2 bg-accent-violet text-white text-sm font-medium rounded-full mb-6">
-              Story
+              Society
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-montserrat font-bold leading-tight mb-6 max-w-3xl">
-              Des histoires qui inspirent et transforment
+              Décryptez les mutations de notre époque
             </h1>
             <p className="text-xl text-tertiary max-w-2xl mb-8">
-              Découvrez des parcours authentiques qui redéfinissent le possible et inspirent l'action.
+              Explorez les transformations sociales et les initiatives qui façonnent notre société contemporaine.
             </p>
           </motion.div>
         </section>
 
-        {/* Story Types Section */}
+        {/* Domains Section */}
         <section className="container py-20">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {storyTypes.map((type, index) => (
+            {societyDomains.map((domain, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -141,10 +137,10 @@ export const StoryPage = () => {
                 className="bg-neutral-900 p-6 rounded-xl"
               >
                 <div className="w-12 h-12 bg-accent-violet rounded-xl flex items-center justify-center mb-4">
-                  <type.icon size={24} className="text-white" />
+                  <domain.icon size={24} className="text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">{type.title}</h3>
-                <p className="text-tertiary">{type.description}</p>
+                <h3 className="text-xl font-bold mb-2">{domain.title}</h3>
+                <p className="text-tertiary">{domain.description}</p>
               </motion.div>
             ))}
           </div>
@@ -154,14 +150,14 @@ export const StoryPage = () => {
         <section className="container mb-20">
           <div className="flex justify-between items-end mb-8">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">Histoires à la une</h2>
-              <p className="text-tertiary">Des parcours qui marquent les esprits</p>
+              <h2 className="text-2xl md:text-3xl font-bold mb-2">Articles à la une</h2>
+              <p className="text-tertiary">Les analyses sociétales du moment</p>
             </div>
             <Link
               to="/articles"
               className="flex items-center gap-2 text-accent-fuchsia hover:text-accent-cyan transition-colors"
             >
-              <span>Toutes les histoires</span>
+              <span>Tous les articles</span>
               <ArrowRight size={18} />
             </Link>
           </div>
@@ -208,7 +204,7 @@ export const StoryPage = () => {
         {/* Quote Section */}
         <section className="container mb-20">
           <QuoteBlock
-            quote="Chaque histoire est unique, mais toutes partagent une même vérité : le changement commence par l'audace d'agir."
+            quote="Les transformations sociales ne sont pas des accidents de l'histoire, mais le résultat de nos choix collectifs."
             author="Roger Ormières"
           />
         </section>
@@ -222,4 +218,4 @@ export const StoryPage = () => {
   );
 };
 
-export default StoryPage;
+export default SocietyPage;

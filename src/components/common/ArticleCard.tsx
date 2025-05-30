@@ -18,16 +18,16 @@ interface ArticleCardProps {
 }
 
 export const ArticleCard = ({ article }: ArticleCardProps) => {
-  // Fonction pour obtenir l'URL de l'image avec urlFor si disponible
+  // Fonction pour obtenir l'URL de l'image
   const getImageUrl = () => {
     if (!article.mainImage) return "https://via.placeholder.com/400x300?text=Image+Indisponible";
     
-    // Si urlFor est disponible dans le contexte
-    if (typeof window !== 'undefined' && window.urlFor) {
-      return window.urlFor(article.mainImage).width(400).height(300).fit("crop").url();
+    // Si c'est déjà une URL complète
+    if (typeof article.mainImage === 'string') {
+      return article.mainImage;
     }
     
-    // Fallback si urlFor n'est pas disponible
+    // Si c'est un objet Sanity avec asset
     if (article.mainImage.asset && article.mainImage.asset.url) {
       return article.mainImage.asset.url;
     }
