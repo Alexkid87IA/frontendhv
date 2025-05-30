@@ -141,3 +141,5 @@ const AmuseBoucheSection = ({
 };
 
 export default AmuseBoucheSection;
+
+export { AmuseBoucheSection }
