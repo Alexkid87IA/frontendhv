@@ -144,11 +144,11 @@ export const ResponsiveNavbar = () => {
                 to="/create-with-roger"
                 className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300"
               >
-                {/* Animated gradient background - Using orange */}
-                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 opacity-100"></span>
+                {/* Animated gradient background - Using blue */}
+                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue to-accent-turquoise opacity-100"></span>
                 
-                {/* Animated glow effect - Using orange */}
-                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 blur-[2px] opacity-50 animate-pulse"></span>
+                {/* Animated glow effect - Using blue */}
+                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue to-accent-turquoise blur-[2px] opacity-50 animate-pulse"></span>
                 
                 {/* Content */}
                 <span className="relative z-10 flex items-center gap-2 text-white">
@@ -232,8 +232,8 @@ export const ResponsiveNavbar = () => {
               
               {/* Mobile Votre Histoire Button */}
               <div className="relative overflow-hidden rounded-lg group">
-                {/* Animated gradient background - Using orange */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg opacity-80 group-hover:opacity-100 blur-sm transition-all duration-300 animate-pulse"></div>
+                {/* Animated gradient background - Using blue */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-lg opacity-80 group-hover:opacity-100 blur-sm transition-all duration-300 animate-pulse"></div>
                 
                 <Link
                   to="/create-with-roger"
@@ -241,7 +241,7 @@ export const ResponsiveNavbar = () => {
                   onClick={() => setIsOpen(false)}
                 >
                   {/* Subtle animated background */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-accent-blue/20 to-accent-turquoise/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   
                   {/* Icon and text with subtle animation */}
                   <Sparkles className="w-5 h-5 text-white" />
