@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Menu, X, Sparkles, BookOpen, Briefcase, Brain, Users, Film } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
@@ -6,7 +6,7 @@ import { useScrollDirection } from '../../hooks/useScrollDirection';
 
 export const ResponsiveNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false); // Pour l'animation du logo
   const location = useLocation();
   const { visible } = useScrollDirection();
 
@@ -21,12 +21,12 @@ export const ResponsiveNavbar = () => {
   const handleLogoClick = () => {
     if (!isAnimating) {
       setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 600);
+      setTimeout(() => setIsAnimating(false), 600); // Durée de l'animation
     }
   };
 
   const getCurrentLogo = () => {
-    return "https://26.staticbtf.eno.do/v1/24-default/c6447f1810fadbb886029b7c212d9d98/media.jpg";
+    return "https://26.staticbtf.eno.do/v1/24-default/c6447f1810fadbb886029b7c212d9d98/media.jpg"; // Logo par défaut
   };
 
   React.useEffect(() => {
@@ -77,8 +77,8 @@ export const ResponsiveNavbar = () => {
                 const Icon = item.icon;
                 return (
                   <Link
-                    key={item.path}
-                    to={item.path}
+                    key={item.path} // La clé peut rester item.path si les paths sont uniques
+                    to={item.path} // Le path utilisé pour la navigation
                     className={`group flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200 text-sm font-medium ${
                       isActive 
                         ? "text-hv-blue-accent bg-hv-blue-accent/10" 
@@ -197,5 +197,6 @@ export const ResponsiveNavbar = () => {
       </AnimatePresence>
     </motion.nav>
 };
+
 
 export default ResponsiveNavbar;
