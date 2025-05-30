@@ -203,29 +203,36 @@ export const ResponsiveNavbar = () => {
 
           {/* CTA Buttons */}
           <div className="flex items-center space-x-4">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div 
+              whileHover={{ scale: 1.05 }} 
+              whileTap={{ scale: 0.95 }}
+              className="relative group"
+            >
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-md opacity-0 group-hover:opacity-75 blur transition-all duration-300"></div>
               <Link
                 to="/coaching"
-                className={`px-4 py-2.5 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap border ${
+                className={`relative flex items-center justify-center px-5 py-2.5 text-sm font-medium rounded-md transition-all duration-300 ${
                   location.pathname === "/coaching" 
-                  ? "bg-accent-blue text-white border-accent-blue shadow-lg shadow-accent-blue/20"
-                  : "bg-transparent hover:bg-accent-blue/10 text-white hover:text-accent-blue border-white/20 hover:border-accent-blue/50"
+                  ? "bg-accent-blue text-white shadow-lg shadow-accent-blue/20"
+                  : "bg-black/80 backdrop-blur-sm hover:bg-black/60 text-white border border-white/20 group-hover:border-transparent"
                 }`}
               >
                 Coaching
               </Link>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            
+            <motion.div 
+              whileHover={{ scale: 1.05 }} 
+              whileTap={{ scale: 0.95 }}
+              className="relative group"
+            >
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 rounded-md blur opacity-75 group-hover:opacity-100 animate-tilt transition-opacity duration-300"></div>
               <Link
                 to="/create-with-roger"
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap shadow-md ${
-                  location.pathname === "/create-with-roger"
-                  ? "bg-gradient-to-r from-accent-blue to-accent-turquoise text-white ring-2 ring-accent-blue/50"
-                  : "bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-accent-blue hover:to-accent-turquoise text-white"
-                }`}
+                className={`relative flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-md bg-black/80 backdrop-blur-sm text-white border border-transparent transition-all duration-300`}
               >
-                <Sparkles className="w-4 h-4" />
-                <span>Votre histoire</span>
+                <Sparkles className="w-4 h-4 text-accent-turquoise group-hover:text-white transition-colors" />
+                <span className="bg-gradient-to-r from-accent-blue to-accent-turquoise bg-clip-text text-transparent group-hover:text-white transition-colors">Votre histoire</span>
               </Link>
             </motion.div>
           </div>
@@ -319,26 +326,35 @@ export const ResponsiveNavbar = () => {
               })}
             </div>
 
-            <div className="px-4 space-y-3 pt-3 border-t border-white/10">
-              <Link
-                to="/coaching"
-                className={`block w-full text-center px-4 py-3 rounded-lg font-medium transition-all duration-200 text-base ${
-                  location.pathname === '/coaching' 
-                  ? 'bg-accent-blue text-white shadow-lg shadow-accent-blue/20'
-                  : 'bg-white/5 hover:bg-white/10 text-white hover:text-white'
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                Coaching
-              </Link>
-              <Link
-                to="/create-with-roger"
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-accent-turquoise hover:to-accent-blue text-white w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 text-base shadow-md"
-                onClick={() => setIsOpen(false)}
-              >
-                <Sparkles className="w-5 h-5" />
-                <span>Votre histoire</span>
-              </Link>
+            <div className="px-4 space-y-4 pt-4 border-t border-white/10">
+              {/* Mobile Coaching Button */}
+              <div className="relative group w-full">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-lg opacity-0 group-hover:opacity-75 blur transition-all duration-300"></div>
+                <Link
+                  to="/coaching"
+                  className={`relative block w-full text-center px-4 py-3.5 rounded-lg font-medium transition-all duration-300 text-base ${
+                    location.pathname === '/coaching' 
+                    ? 'bg-accent-blue text-white shadow-lg shadow-accent-blue/20'
+                    : 'bg-black/80 hover:bg-black/60 text-white border border-white/20 group-hover:border-transparent'
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  Coaching
+                </Link>
+              </div>
+              
+              {/* Mobile Votre Histoire Button */}
+              <div className="relative group w-full">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-purple-500 rounded-lg blur opacity-75 group-hover:opacity-100 animate-tilt transition-opacity duration-300"></div>
+                <Link
+                  to="/create-with-roger"
+                  className="relative flex items-center justify-center gap-2 bg-black/80 backdrop-blur-sm text-white w-full px-4 py-3.5 rounded-lg font-medium transition-all duration-300 text-base"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Sparkles className="w-5 h-5 text-accent-turquoise group-hover:text-white transition-colors" />
+                  <span className="bg-gradient-to-r from-accent-blue to-accent-turquoise bg-clip-text text-transparent group-hover:text-white transition-colors">Votre histoire</span>
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}
