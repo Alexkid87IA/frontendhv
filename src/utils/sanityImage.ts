@@ -1,33 +1,29 @@
-import { createClient } from "@sanity/client";
-import imageUrlBuilder from "@sanity/image-url";
-import type { SanityImage } from "../pages/ArticlePage";
+import imageUrlBuilder from '@sanity/image-url';
+import { SanityImageSource } from '@sanity/image-url/lib/types/types';
+import { sanityClient } from './sanityClient';
 
-// Create a single Sanity client instance with the provided credentials
-export const sanityClient = createClient({
-  projectId: "z9wsynas",
-  dataset: "production",
-  apiVersion: "2024-05-13",
-  useCdn: true,
-  perspective: "published",
-  cors: true
-});
-
-// Create a reusable image builder instance
+// Créer un builder d'URL d'image
 const builder = imageUrlBuilder(sanityClient);
 
 /**
- * Vérifie si un objet est une image Sanity valide
- * @param source Objet à vérifier
- * @returns boolean indiquant si l'objet est une image Sanity valide
+ * Vérifie si une valeur est une image Sanity valide
+ * @param source - La source à vérifier
+ * @returns true si c'est une image Sanity valide, false sinon
  */
 export function isValidSanityImage(source: any): boolean {
   if (!source) return false;
   
-  // Si c'est une string, ce n'est pas un objet image Sanity valide pour builder
-  if (typeof source === 'string') return false;
+  // Si c'est une chaîne et que c'est une URL, c'est valide
+  if (typeof source === 'string') {
+    return source.startsWith('http://') || source.startsWith('https://');
+  }
   
-  // Vérifier si l'objet a la structure minimale requise pour une image Sanity
-  return !!(source && source.asset && source.asset._ref);
+  // Vérifier si c'est un objet d'image Sanity avec un asset
+  return (
+    typeof source === 'object' && 
+    source !== null && 
+    (source.asset || source._type === 'image')
+  );
 }
 
 /**
@@ -54,26 +50,83 @@ export function getImageBuilder(source: any) {
  * @param height Hauteur optionnelle
  * @returns URL de l'image ou URL de placeholder
  */
-export function urlFor(source: any, width?: number, height?: number): string {
-  // Si la source n'est pas valide, retourner une image placeholder
-  if (!isValidSanityImage(source)) {
+export function urlFor(source: any, width?: number, height?: number): string | any {
+  // Si la source n'est pas valide ou est null, retourner une image placeholder
+  if (!source) {
     const size = width && height ? `${width}x${height}` : '800x450';
-    return `https://via.placeholder.com/${size}?text=Image+Indisponible`;
+    const placeholderUrl = `https://via.placeholder.com/${size}?text=Image+non+disponible`;
+    
+    // Retourner un objet compatible avec la chaîne de méthodes pour éviter les erreurs
+    if (typeof width === 'undefined' && typeof height === 'undefined') {
+      return {
+        url: () => placeholderUrl,
+        width: () => ({ height: () => ({ fit: () => ({ url: () => placeholderUrl }) }) })
+      };
+    }
+    
+    return placeholderUrl;
+  }
+  
+  // Si c'est déjà une URL string
+  if (typeof source === 'string') {
+    if (source.startsWith('http://') || source.startsWith('https://')) {
+      // Retourner un objet compatible avec la chaîne de méthodes pour éviter les erreurs
+      if (typeof width === 'undefined' && typeof height === 'undefined') {
+        return {
+          url: () => source,
+          width: () => ({ height: () => ({ fit: () => ({ url: () => source }) }) })
+        };
+      }
+      
+      return source;
+    }
+    
+    const size = width && height ? `${width}x${height}` : '800x450';
+    const placeholderUrl = `https://via.placeholder.com/${size}?text=URL+invalide`;
+    
+    // Retourner un objet compatible avec la chaîne de méthodes pour éviter les erreurs
+    if (typeof width === 'undefined' && typeof height === 'undefined') {
+      return {
+        url: () => placeholderUrl,
+        width: () => ({ height: () => ({ fit: () => ({ url: () => placeholderUrl }) }) })
+      };
+    }
+    
+    return placeholderUrl;
   }
   
   try {
-    let imageBuilder = builder.image(source);
-    
-    // Appliquer les dimensions si spécifiées
-    if (width) imageBuilder = imageBuilder.width(width);
-    if (height) imageBuilder = imageBuilder.height(height);
-    
-    return imageBuilder.auto('format').url();
+    // Si c'est un objet d'image Sanity valide
+    if (isValidSanityImage(source)) {
+      let imageBuilder = builder.image(source as SanityImageSource);
+      
+      // Si les dimensions sont spécifiées, les appliquer et retourner l'URL directement
+      if (typeof width !== 'undefined' || typeof height !== 'undefined') {
+        if (width) imageBuilder = imageBuilder.width(width);
+        if (height) imageBuilder = imageBuilder.height(height);
+        return imageBuilder.auto('format').url();
+      }
+      
+      // Sinon retourner le builder pour permettre la chaîne de méthodes
+      return imageBuilder;
+    }
   } catch (error) {
     console.error("Erreur lors de la génération de l'URL de l'image:", error);
-    const size = width && height ? `${width}x${height}` : '800x450';
-    return `https://via.placeholder.com/${size}?text=Erreur+Image`;
   }
+  
+  // Fallback pour les cas non gérés
+  const size = width && height ? `${width}x${height}` : '800x450';
+  const placeholderUrl = `https://via.placeholder.com/${size}?text=Format+invalide`;
+  
+  // Retourner un objet compatible avec la chaîne de méthodes pour éviter les erreurs
+  if (typeof width === 'undefined' && typeof height === 'undefined') {
+    return {
+      url: () => placeholderUrl,
+      width: () => ({ height: () => ({ fit: () => ({ url: () => placeholderUrl }) }) })
+    };
+  }
+  
+  return placeholderUrl;
 }
 
 // Export le builder pour les cas où l'accès direct est nécessaire
