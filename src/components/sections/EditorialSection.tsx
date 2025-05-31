@@ -9,6 +9,7 @@ export default function EditorialSection() {
         {
           title: "Story",
           subtitle: "Pour t'inspirer",
+          description: "Des histoires authentiques qui redéfinissent le possible",
           icon: BookOpen,
           tag: "Story",
           image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
@@ -19,6 +20,7 @@ export default function EditorialSection() {
         {
           title: "Business",
           subtitle: "Pour faire du chiffre",
+          description: "Les stratégies qui font la différence",
           icon: Briefcase,
           tag: "Business",
           image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
@@ -29,6 +31,7 @@ export default function EditorialSection() {
         {
           title: "Mental",
           subtitle: "Pour ta tête",
+          description: "Développe une psychologie de champion",
           icon: Brain,
           tag: "Mental",
           image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80",
@@ -39,6 +42,7 @@ export default function EditorialSection() {
         {
           title: "Society",
           subtitle: "Pour ta culture",
+          description: "Comprendre les mutations de notre époque",
           icon: Users,
           tag: "Society",
           image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
@@ -71,6 +75,9 @@ export default function EditorialSection() {
               <h3 className="text-xl font-bold mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-500">
                 {category.subtitle}
               </h3>
+              <p className="text-sm text-white/80 group-hover:text-white transition-colors">
+                {category.description}
+              </p>
             </div>
           </Link>
         );
