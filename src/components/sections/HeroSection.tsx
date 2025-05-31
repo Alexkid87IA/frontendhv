@@ -15,6 +15,7 @@ export const HeroSection = () => {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 backdrop-blur-sm" />
         </div>
 
         <div className="container relative">
@@ -32,15 +33,16 @@ export const HeroSection = () => {
                 </span>
 
                 <h1 className="text-4xl md:text-5xl lg:text-7xl font-montserrat font-bold leading-tight">
-                  Inspirez-vous des{' '}
+                  Développe ton{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-turquoise">
-                    meilleurs
-                  </span>
+                    mindset
+                  </span>{' '}
+                  d'exception
                 </h1>
 
                 <p className="text-xl text-gray-300 max-w-2xl">
-                  Découvrez les histoires qui transforment, les stratégies qui font la différence, 
-                  et développez votre mindset d'exception.
+                  Découvre les histoires qui transforment, les stratégies qui font la différence, 
+                  et développe ta psychologie de champion.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -100,7 +102,7 @@ export const HeroSection = () => {
                     Comment développer un mindset d'exception
                   </h2>
                   <p className="text-gray-300 mb-4 line-clamp-2">
-                    Découvrez les secrets des entrepreneurs qui réussissent et transformez votre vision du possible.
+                    Découvre les secrets des entrepreneurs qui réussissent et transforme ta vision du possible.
                   </p>
                   <Link
                     to="/article/mindset-exception"
