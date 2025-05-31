@@ -8,7 +8,7 @@ import ErrorBoundary from '../common/ErrorBoundary';
 export const HeroSection = () => {
   return (
     <ErrorBoundary>
-      <section className="relative min-h-[60vh] flex items-center pt-12 pb-16 overflow-hidden">
+      <section className="relative min-h-[50vh] flex items-center pt-8 pb-12 overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
@@ -19,14 +19,14 @@ export const HeroSection = () => {
         </div>
 
         <div className="container relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             {/* Left Column - Text Content */}
             <div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="space-y-6"
+                className="space-y-4"
               >
                 <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium">
                   Média indépendant
@@ -94,14 +94,14 @@ export const HeroSection = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
 
                 {/* Featured Article Preview */}
-                <div className="absolute bottom-0 left-0 p-8 w-full">
-                  <span className="inline-block px-3 py-1 bg-accent-blue text-white text-sm font-medium rounded-full mb-4">
+                <div className="absolute bottom-0 left-0 p-6 w-full">
+                  <span className="inline-block px-3 py-1 bg-accent-blue text-white text-sm font-medium rounded-full mb-3">
                     À la une
                   </span>
-                  <h2 className="text-2xl font-bold text-white mb-2">
+                  <h2 className="text-xl font-bold text-white mb-2">
                     Comment développer un mindset d'exception
                   </h2>
-                  <p className="text-gray-300 mb-4 line-clamp-2">
+                  <p className="text-sm text-gray-300 mb-3 line-clamp-2">
                     Découvre les secrets des entrepreneurs qui réussissent et transforme ta vision du possible.
                   </p>
                   <Link
@@ -125,7 +125,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"
           >
             {[1, 2, 3].map((_, index) => (
               <Link
@@ -145,15 +145,15 @@ export const HeroSection = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold mb-2 text-white group-hover:text-accent-blue transition-colors">
+                <div className="p-4">
+                  <h3 className="text-base font-semibold mb-2 text-white group-hover:text-accent-blue transition-colors">
                     {[
                       "L'art de la résilience entrepreneuriale",
                       "Comment développer son leadership",
                       "Les clés d'une communication impactante"
                     ][index]}
                   </h3>
-                  <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+                  <p className="text-sm text-gray-400 mb-3 line-clamp-2">
                     {[
                       "Découvrez comment transformer les obstacles en opportunités",
                       "Les qualités essentielles d'un leader moderne",
