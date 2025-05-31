@@ -67,17 +67,19 @@ export default function EditorialSection() {
               <div className={`absolute inset-0 bg-gradient-to-t ${category.overlayGradient}`} />
               <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
             </div>
-            <div className="relative h-full flex flex-col justify-end p-6 text-white">
-              <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm bg-gradient-to-r ${category.gradient} mb-4 w-fit`}>
+            <div className="relative h-full flex flex-col justify-between p-6 text-white">
+              <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm bg-gradient-to-r ${category.gradient} self-start`}>
                 <Icon className="w-4 h-4 mr-2" />
                 {category.tag}
               </div>
-              <h3 className="text-xl font-bold mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-500">
-                {category.subtitle}
-              </h3>
-              <p className="text-sm text-white/80 group-hover:text-white transition-colors">
-                {category.description}
-              </p>
+              <div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-500">
+                  {category.subtitle}
+                </h3>
+                <p className="text-sm text-white/80 group-hover:text-white transition-colors">
+                  {category.description}
+                </p>
+              </div>
             </div>
           </Link>
         );
