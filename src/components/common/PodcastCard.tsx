@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, Clock, Calendar } from 'lucide-react';
+import SafeImage from './SafeImage';
 
 interface PodcastCardProps {
   title: string;
@@ -34,12 +35,13 @@ export const PodcastCard = ({
     >
       <div className="flex flex-col md:flex-row">
         <div className="w-full md:w-48 h-48">
-          <img
-            src={image}
+          <SafeImage
+            image={image}
             alt={`${guest} - Podcast Roger Ormières`}
+            width={192}
+            height={192}
             className="w-full h-full object-cover"
-            loading="lazy"
-            decoding="async"
+            fallbackText="Podcast"
           />
         </div>
         <div className="flex-1 p-6">
