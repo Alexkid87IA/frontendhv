@@ -131,7 +131,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
             {/* Content Grid */}
             <div
               ref={scrollRef}
-              className="flex space-x-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"
+              className="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"
             >
               {items.map((item, index) => (
                 <motion.div
