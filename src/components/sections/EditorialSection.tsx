@@ -11,17 +11,17 @@ export default function EditorialSection() {
           icon: BookOpen,
           tag: "Story",
           image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
-          excerpt: "Des parcours inspirants qui redéfinissent le possible",
+          excerpt: "Histoires d'entrepreneurs qui transforment leur vision en réalité",
           link: "/rubrique/story",
           gradient: "from-amber-500 to-orange-500",
           overlayGradient: "from-amber-900/80 via-black/50 to-transparent"
         },
         {
-          title: "Business & innovation",
+          title: "Business",
           icon: Briefcase,
-          tag: "Innovation",
+          tag: "Business",
           image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
-          excerpt: "Les nouvelles frontières de l'entrepreneuriat",
+          excerpt: "Stratégies et innovations qui façonnent le futur",
           link: "/rubrique/business",
           gradient: "from-blue-500 to-cyan-500",
           overlayGradient: "from-blue-900/80 via-black/50 to-transparent"
@@ -29,9 +29,9 @@ export default function EditorialSection() {
         {
           title: "Mental",
           icon: Brain,
-          tag: "Psychologie",
+          tag: "Mental",
           image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80",
-          excerpt: "Développer une psychologie de champion",
+          excerpt: "Outils et méthodes pour une psychologie de champion",
           link: "/rubrique/mental",
           gradient: "from-purple-500 to-violet-500",
           overlayGradient: "from-purple-900/80 via-black/50 to-transparent"
@@ -41,7 +41,7 @@ export default function EditorialSection() {
           icon: Users,
           tag: "Society",
           image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
-          excerpt: "Décrypter les mutations de notre époque",
+          excerpt: "Analyse des tendances qui redéfinissent notre monde",
           link: "/rubrique/society",
           gradient: "from-emerald-500 to-teal-500",
           overlayGradient: "from-emerald-900/80 via-black/50 to-transparent"
@@ -58,17 +58,20 @@ export default function EditorialSection() {
               <img 
                 src={category.image} 
                 alt={category.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
               />
               <div className={`absolute inset-0 bg-gradient-to-t ${category.overlayGradient}`} />
+              <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
             </div>
             <div className="relative h-full flex flex-col justify-end p-6 text-white">
               <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r ${category.gradient} mb-3 w-fit`}>
                 <Icon className="w-4 h-4 mr-2" />
                 {category.tag}
               </div>
-              <h3 className="text-xl font-bold mb-2">{category.title}</h3>
-              <p className="text-sm text-white/80">{category.excerpt}</p>
+              <h3 className="text-xl font-bold mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-500">
+                {category.title}
+              </h3>
+              <p className="text-sm text-white/80 line-clamp-2">{category.excerpt}</p>
             </div>
           </Link>
         );
