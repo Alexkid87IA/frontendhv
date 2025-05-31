@@ -21,14 +21,32 @@ const categories = [
   { id: 'featured', name: 'À la une' }
 ];
 
-// Mapping des couleurs par catégorie
-const categoryColors: Record<string, string> = {
-  "mental": "from-purple-600 to-indigo-600",
-  "business": "from-blue-600 to-cyan-600",
-  "recits": "from-amber-600 to-orange-600",
-  "culture": "from-emerald-600 to-teal-600",
-  // Couleur par défaut si la catégorie n'est pas dans la liste
-  "default": "from-blue-600 to-cyan-600"
+// Données de secours en cas d'erreur
+const fallbackCategoryDetails = {
+  "mental": {
+    title: "Mental",
+    description: "Développez une psychologie de champion. Stratégies mentales, résilience et développement personnel.",
+    image: "https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?auto=format&fit=crop&q=80",
+    color: "from-purple-600 to-indigo-600"
+  },
+  "business": {
+    title: "Business & Innovation",
+    description: "Explorez les nouvelles frontières du business et de l'innovation. Analyses, success stories et insights.",
+    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
+    color: "from-blue-600 to-cyan-600"
+  },
+  "recits": {
+    title: "Récits",
+    description: "Des histoires authentiques qui redéfinissent le possible. Parcours inspirants et transformations remarquables.",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
+    color: "from-amber-600 to-orange-600"
+  },
+  "culture": {
+    title: "Culture & Société",
+    description: "Décryptez les tendances culturelles et les mouvements qui façonnent notre société contemporaine.",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
+    color: "from-emerald-600 to-teal-600"
+  }
 };
 
 export const CategoryPage = () => {
@@ -40,6 +58,7 @@ export const CategoryPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
+  const [useFallback, setUseFallback] = useState(false);
 
   // Charger les données de catégorie et les articles depuis Sanity
   useEffect(() => {
@@ -50,28 +69,48 @@ export const CategoryPage = () => {
       setError(null);
       
       try {
+        console.log(`Chargement des données pour la catégorie: ${categorySlug}`);
+        
         // Récupérer les détails de la catégorie
         const categoryData = await getCategoryBySlug(categorySlug);
         
-        if (!categoryData) {
+        if (!categoryData && !fallbackCategoryDetails[categorySlug as keyof typeof fallbackCategoryDetails]) {
           setError(`La catégorie "${categorySlug}" n'existe pas.`);
           setIsLoading(false);
           return;
         }
         
-        // Ajouter la couleur à la catégorie
-        const categoryColor = categoryColors[categorySlug] || categoryColors.default;
-        setCategoryDetails({
-          ...categoryData,
-          color: categoryColor
-        });
+        // Utiliser les données de secours si nécessaire
+        if (!categoryData) {
+          console.log(`Utilisation des données de secours pour la catégorie: ${categorySlug}`);
+          setCategoryDetails(fallbackCategoryDetails[categorySlug as keyof typeof fallbackCategoryDetails]);
+          setUseFallback(true);
+        } else {
+          console.log(`Données de catégorie récupérées avec succès: ${categoryData.title}`);
+          setCategoryDetails({
+            ...categoryData,
+            color: fallbackCategoryDetails[categorySlug as keyof typeof fallbackCategoryDetails]?.color || "from-blue-600 to-cyan-600"
+          });
+        }
         
-        // Récupérer les articles de cette catégorie
-        const categoryArticles = await getArticlesByCategory(categorySlug);
-        setArticles(categoryArticles);
+        // Récupérer les articles de la catégorie
+        const articlesData = await getArticlesByCategory(categorySlug);
+        console.log(`${articlesData.length} articles récupérés pour la catégorie: ${categorySlug}`);
+        
+        if (articlesData.length === 0) {
+          console.warn(`Aucun article trouvé pour la catégorie: ${categorySlug}`);
+        }
+        
+        setArticles(articlesData);
       } catch (err) {
-        console.error("Erreur lors du chargement de la catégorie:", err);
-        setError("Une erreur est survenue lors du chargement des données. Veuillez réessayer.");
+        console.error(`Erreur lors du chargement des données pour la catégorie ${categorySlug}:`, err);
+        setError(`Une erreur est survenue lors du chargement des données. Veuillez réessayer plus tard.`);
+        
+        // Utiliser les données de secours en cas d'erreur
+        if (fallbackCategoryDetails[categorySlug as keyof typeof fallbackCategoryDetails]) {
+          setCategoryDetails(fallbackCategoryDetails[categorySlug as keyof typeof fallbackCategoryDetails]);
+          setUseFallback(true);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -207,8 +246,17 @@ export const CategoryPage = () => {
         </div>
       </section>
       
+      {/* Message si utilisation des données de secours */}
+      {useFallback && (
+        <div className="container mb-8">
+          <div className="bg-amber-900/20 border border-amber-500/20 rounded-lg p-4 text-amber-200">
+            <p>Affichage des données de secours. La connexion au CMS est temporairement indisponible.</p>
+          </div>
+        </div>
+      )}
+      
       {/* Featured Article */}
-      {filteredArticles.length > 0 && (
+      {filteredArticles.length > 0 ? (
         <section className="container mb-12">
           <Link to={`/article/${filteredArticles[0].slug.current}`} className="group">
             <motion.div
@@ -258,104 +306,85 @@ export const CategoryPage = () => {
             </motion.div>
           </Link>
         </section>
+      ) : (
+        <section className="container mb-12">
+          <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/5 rounded-xl p-8 text-center">
+            <h3 className="text-xl font-medium mb-2">Aucun article trouvé</h3>
+            <p className="text-gray-400">Aucun article ne correspond à votre recherche.</p>
+          </div>
+        </section>
       )}
       
       {/* Articles Grid */}
-      <section className="container mb-20">
-        {filteredArticles.length > 1 ? (
+      {filteredArticles.length > 1 && (
+        <section className="container mb-20">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredArticles.slice(1).map((article, index) => (
-              <motion.article
+              <motion.div
                 key={article._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="group bg-neutral-900/50 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-accent-blue/5"
+                transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <Link to={`/article/${article.slug.current}`} className="block">
-                  <div className="relative aspect-video overflow-hidden">
-                    <SafeImage
-                      image={article.mainImage}
-                      alt={article.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      fallbackText={article.title}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                    
-                    {article.categories && article.categories.length > 0 && (
-                      <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                        {article.categories.map((category: any, idx: number) => (
-                          category.slug?.current && (
-                            <Link 
-                              key={category._id || idx} 
-                              to={`/rubrique/${category.slug.current}`} 
-                              className={`px-3 py-1 text-xs font-semibold text-white rounded-md hover:opacity-90 transition-opacity ${
-                                categoryColors[category.slug.current] ? 
-                                `bg-gradient-to-r ${categoryColors[category.slug.current]}` : 
-                                'bg-accent-blue'
-                              }`}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {category.title}
-                            </Link>
-                          )
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold mb-3 group-hover:text-accent-blue transition-colors line-clamp-2">
-                      {article.title}
-                    </h3>
-                    
-                    <p className="text-gray-400 mb-4 line-clamp-2 text-sm">
-                      {article.excerpt}
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <SafeImage
-                          image={article.author?.image}
-                          alt={article.author?.name || "Auteur"}
-                          width={32}
-                          height={32}
-                          className="w-8 h-8 rounded-full object-cover"
-                          fallbackText={article.author?.name?.charAt(0) || "A"}
-                        />
-                        <span className="text-xs text-gray-400">{formatDate(article.publishedAt)}</span>
-                      </div>
+                <Link to={`/article/${article.slug.current}`} className="group block h-full">
+                  <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden h-full flex flex-col transition-all duration-300 hover:border-white/20 hover:shadow-xl">
+                    <div className="relative aspect-[16/9]">
+                      <SafeImage
+                        image={article.mainImage}
+                        alt={article.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        fallbackText={article.title}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
                       
-                      <span className="text-accent-blue group-hover:text-accent-turquoise transition-colors">
-                        <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
-                      </span>
+                      {article.categories && article.categories[0] && (
+                        <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm text-xs font-medium border border-white/10">
+                          {article.categories[0].title}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="p-6 flex-1 flex flex-col">
+                      <h3 className="text-xl font-bold mb-3 group-hover:text-accent-blue transition-colors line-clamp-2">
+                        {article.title}
+                      </h3>
+                      
+                      <p className="text-gray-400 mb-6 line-clamp-3 flex-1">
+                        {article.excerpt}
+                      </p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                        <div className="flex items-center gap-2">
+                          <SafeImage
+                            image={article.author?.image}
+                            alt={article.author?.name || "Auteur"}
+                            width={32}
+                            height={32}
+                            className="w-8 h-8 rounded-full object-cover border border-white/20"
+                            fallbackText={article.author?.name?.charAt(0) || "A"}
+                          />
+                          <span className="text-sm text-gray-400">{article.author?.name || "Auteur inconnu"}</span>
+                        </div>
+                        
+                        <span className="text-xs text-gray-500">
+                          {formatDate(article.publishedAt)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </Link>
-              </motion.article>
+              </motion.div>
             ))}
           </div>
-        ) : (
-          filteredArticles.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-xl text-gray-400">Aucun article trouvé pour cette catégorie.</p>
-            </div>
-          )
-        )}
-      </section>
+        </section>
+      )}
       
       {/* Newsletter Section */}
       <section className="container mb-20">
-        <div className="bg-gradient-to-r from-accent-blue/20 to-accent-turquoise/20 backdrop-blur-sm rounded-2xl p-8 md:p-12">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Restez informé</h2>
-            <p className="text-gray-300 mb-8">
-              Recevez les derniers articles et actualités directement dans votre boîte mail.
-            </p>
-            <NewsletterForm />
-          </div>
-        </div>
+        <NewsletterForm />
       </section>
     </ErrorBoundary>
   );
 };
+
+export default CategoryPage;

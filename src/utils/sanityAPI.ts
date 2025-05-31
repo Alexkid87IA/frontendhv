@@ -14,7 +14,10 @@ export async function getAllArticles(): Promise<SanityArticle[]> {
   }`;
 
   try {
-    return await sanityClient.fetch(query);
+    console.log("Fetching all articles from Sanity...");
+    const articles = await sanityClient.fetch(query);
+    console.log(`Successfully fetched ${articles.length} articles from Sanity`);
+    return articles;
   } catch (error) {
     console.error("Error fetching all articles:", error);
     throw error;
@@ -34,9 +37,12 @@ export async function getArticlesByCategory(categorySlug: string): Promise<Sanit
   }`;
 
   try {
-    return await sanityClient.fetch(query, { categorySlug });
+    console.log(`Fetching articles for category: ${categorySlug}`);
+    const articles = await sanityClient.fetch(query, { categorySlug });
+    console.log(`Successfully fetched ${articles.length} articles for category: ${categorySlug}`);
+    return articles;
   } catch (error) {
-    console.error("Error fetching articles by category:", error);
+    console.error(`Error fetching articles for category ${categorySlug}:`, error);
     throw error;
   }
 }
@@ -51,9 +57,12 @@ export async function getCategoryBySlug(slug: string): Promise<any | null> {
   }`;
 
   try {
-    return await sanityClient.fetch(query, { slug });
+    console.log(`Fetching category details for slug: ${slug}`);
+    const category = await sanityClient.fetch(query, { slug });
+    console.log(`Category details for ${slug}:`, category ? "Found" : "Not found");
+    return category;
   } catch (error) {
-    console.error("Error fetching category by slug:", error);
+    console.error(`Error fetching category by slug ${slug}:`, error);
     throw error;
   }
 }

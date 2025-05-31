@@ -12,6 +12,7 @@ import { ErrorMessage } from "../components/common/ErrorMessage";
 import { getArticleBySlug, getAllArticles } from "../utils/sanityAPI";
 import { ArticleSidebar } from "../components/sections/ArticleSidebar"; 
 import { urlFor } from "../utils/sanityClient";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 
 export interface SanityImage {
   _type: "image";
@@ -71,7 +72,7 @@ const sectionVariants = {
     y: 0,
     transition: {
       delay: i * 0.2,
-      duration: 0.6,
+      duration: 0.8,
       ease: "easeOut",
     },
   }),
@@ -119,17 +120,22 @@ export const ArticlePage = () => {
       }
     };
     loadArticle();
+    
+    // Remonter en haut de la page lors du chargement d'un nouvel article
+    window.scrollTo(0, 0);
   }, [slug]);
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-20 flex justify-center items-center min-h-screen bg-background-dark"><LoadingSpinner /></div>
+      <div className="flex justify-center items-center min-h-screen bg-background-dark">
+        <LoadingSpinner />
+      </div>
     );
   }
 
   if (error || !article) {
     return (
-      <div className="container mx-auto py-20 min-h-screen bg-background-dark">
+      <div className="container mx-auto py-32 min-h-screen bg-background-dark">
         <ErrorMessage
           title={error === "Article non trouvé" ? "Article non trouvé" : "Erreur"}
           message={error || "L'article n'a pas pu être chargé."}
@@ -149,25 +155,27 @@ export const ArticlePage = () => {
     date: article.publishedAt ? new Date(article.publishedAt).toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }) : "Date inconnue",
     readingTime: "~" + Math.ceil((article.body?.length || 200 * 5) / 200 / 5) + " min",
     category: article.categories && article.categories.length > 0 ? article.categories[0].title : "Non catégorisé", 
-    image: article.mainImage 
+    image: article.mainImage,
+    publishedAt: article.publishedAt,
+    author: article.author
   };
   
   const seoImageUrl = article.mainImage ? urlFor(article.mainImage).width(1200).height(630).fit("crop").auto("format").url() : undefined;
 
   return (
-    <>
+    <ErrorBoundary>
       <SEO
         title={article.title}
         description={article.excerpt}
         image={seoImageUrl}
       />
-      <div className="relative pb-16 md:pb-24 text-white bg-background-dark overflow-x-hidden">
+      <div className="relative text-white bg-background-dark overflow-x-hidden">
         <ArticleProgress />
 
-        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 pt-0">
-          <ArticleHeader article={headerData} />
+        <ArticleHeader article={headerData} />
 
-          <div className="flex flex-col lg:flex-row lg:gap-x-12 xl:gap-x-16">
+        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 pb-20 md:pb-28 lg:pb-32">
+          <div className="flex flex-col lg:flex-row lg:gap-x-16 xl:gap-x-20 pt-12 md:pt-16 lg:pt-20">
             <motion.main 
               className="w-full lg:w-2/3 lg:max-w-3xl xl:max-w-4xl"
               custom={1}
@@ -178,29 +186,34 @@ export const ArticlePage = () => {
               <ArticleContent content={article.body} /> 
               
               <motion.div 
-                className="mt-12 md:mt-16"
+                className="mt-20 md:mt-24"
                 custom={2}
                 initial="hidden"
                 animate="visible"
                 variants={sectionVariants}
               >
+                <h2 className="text-2xl md:text-3xl font-bold mb-10 text-white flex items-center">
+                  <span className="w-1.5 h-6 bg-accent-blue rounded-full mr-3"></span>
+                  Articles similaires
+                </h2>
                 <ExploreArticlesSection />
               </motion.div>
 
               {showComments && (
                 <motion.div 
-                  className="mt-12 border-t border-white/10 pt-8"
+                  className="mt-20 border-t border-white/10 pt-12"
                   custom={3}
                   initial="hidden"
                   animate="visible"
                   variants={sectionVariants}
                 >
-                  <h3 className="text-2xl font-bold mb-6">Discussion</h3>
+                  <h3 className="text-2xl font-bold mb-8">Discussion</h3>
                   <p className="text-gray-400">Les commentaires seront bientôt disponibles.</p>
                 </motion.div>
               )}
+              
               <motion.section 
-                className="mt-16 md:mt-20"
+                className="mt-20 md:mt-24"
                 custom={showComments ? 4 : 3}
                 initial="hidden"
                 animate="visible"
@@ -211,7 +224,7 @@ export const ArticlePage = () => {
             </motion.main>
 
             <motion.div 
-              className="w-full lg:w-1/3 mt-12 lg:mt-0"
+              className="w-full lg:w-1/3 mt-20 lg:mt-0"
               custom={1.5}
               initial="hidden"
               animate="visible"
@@ -225,7 +238,7 @@ export const ArticlePage = () => {
           </div>
         </div>
       </div>
-    </>
+    </ErrorBoundary>
   );
 };
 
