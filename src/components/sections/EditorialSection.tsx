@@ -76,3 +76,5 @@ export default function EditorialSection() {
     </section>
   );
 }
+
+export { EditorialSection }
