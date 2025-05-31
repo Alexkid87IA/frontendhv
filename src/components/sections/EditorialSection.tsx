@@ -8,40 +8,40 @@ export default function EditorialSection() {
       {[
         {
           title: "Story",
+          subtitle: "Pour t'inspirer",
           icon: BookOpen,
           tag: "Story",
           image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
-          excerpt: "Histoires d'entrepreneurs qui transforment leur vision en réalité",
           link: "/rubrique/story",
           gradient: "from-amber-500 to-orange-500",
           overlayGradient: "from-amber-900/80 via-black/50 to-transparent"
         },
         {
           title: "Business",
+          subtitle: "Pour faire du chiffre",
           icon: Briefcase,
           tag: "Business",
           image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
-          excerpt: "Stratégies et innovations qui façonnent le futur",
           link: "/rubrique/business",
           gradient: "from-blue-500 to-cyan-500",
           overlayGradient: "from-blue-900/80 via-black/50 to-transparent"
         },
         {
           title: "Mental",
+          subtitle: "Pour ta tête",
           icon: Brain,
           tag: "Mental",
           image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80",
-          excerpt: "Outils et méthodes pour une psychologie de champion",
           link: "/rubrique/mental",
           gradient: "from-purple-500 to-violet-500",
           overlayGradient: "from-purple-900/80 via-black/50 to-transparent"
         },
         {
           title: "Society",
+          subtitle: "Pour ta culture",
           icon: Users,
           tag: "Society",
           image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
-          excerpt: "Analyse des tendances qui redéfinissent notre monde",
           link: "/rubrique/society",
           gradient: "from-emerald-500 to-teal-500",
           overlayGradient: "from-emerald-900/80 via-black/50 to-transparent"
@@ -69,9 +69,8 @@ export default function EditorialSection() {
                 {category.tag}
               </div>
               <h3 className="text-xl font-bold mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-500">
-                {category.title}
+                {category.subtitle}
               </h3>
-              <p className="text-sm text-white/80 line-clamp-2">{category.excerpt}</p>
             </div>
           </Link>
         );
