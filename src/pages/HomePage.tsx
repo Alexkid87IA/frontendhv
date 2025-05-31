@@ -7,6 +7,7 @@ import { HomeArticlesSection } from '../components/sections/HomeArticlesSection'
 import { EditorialSection } from '../components/sections/EditorialSection';
 import { DebateSection } from '../components/sections/DebateSection';
 import ContentSection from '../components/sections/ContentSection';
+import { ClubSection } from '../components/sections/ClubSection';
 import SimpleFooter from '../components/layout/SimpleFooter';
 
 export const HomePage = () => {
@@ -28,6 +29,7 @@ export const HomePage = () => {
         <AmuseBoucheSection />
         <HomeArticlesSection />
         <EditorialSection />
+        <ClubSection />
         <ContentSection 
           title="L'émission"
           description="Des conversations authentiques avec ceux qui façonnent le monde de demain"
