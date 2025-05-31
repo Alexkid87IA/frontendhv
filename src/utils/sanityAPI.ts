@@ -21,6 +21,43 @@ export async function getAllArticles(): Promise<SanityArticle[]> {
   }
 }
 
+export async function getArticlesByCategory(categorySlug: string): Promise<SanityArticle[]> {
+  const query = `*[_type == "article" && $categorySlug in categories[]->slug.current] | order(publishedAt desc) {
+    _id,
+    title,
+    slug,
+    mainImage,
+    excerpt,
+    publishedAt,
+    "categories": categories[]->{ _id, title, slug },
+    "author": author->{ name, slug, image }
+  }`;
+
+  try {
+    return await sanityClient.fetch(query, { categorySlug });
+  } catch (error) {
+    console.error("Error fetching articles by category:", error);
+    throw error;
+  }
+}
+
+export async function getCategoryBySlug(slug: string): Promise<any | null> {
+  const query = `*[_type == "category" && slug.current == $slug][0] {
+    _id,
+    title,
+    slug,
+    description,
+    image
+  }`;
+
+  try {
+    return await sanityClient.fetch(query, { slug });
+  } catch (error) {
+    console.error("Error fetching category by slug:", error);
+    throw error;
+  }
+}
+
 export async function getArticleBySlug(slug: string): Promise<SanityArticle | null> {
   const query = `*[_type == "article" && slug.current == $slug][0] {
     _id,
