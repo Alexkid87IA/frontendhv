@@ -8,70 +8,9 @@ import { LoadingSpinner } from "../components/common/LoadingSpinner";
 import { ErrorMessage } from "../components/common/ErrorMessage";
 import { getSEOForCategory } from "../utils/seo.config";
 import { CategoryFilter } from "../components/common/CategoryFilter";
-
-// Données de démonstration pour le design
-const mockArticles = [
-  {
-    _id: "1",
-    title: "Comment développer une psychologie d'entrepreneur",
-    slug: { current: "psychologie-entrepreneur" },
-    excerpt: "Les clés psychologiques qui font la différence entre réussite et échec dans l'entrepreneuriat moderne.",
-    mainImage: "https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?auto=format&fit=crop&q=80",
-    publishedAt: "2024-05-01",
-    categories: [{ _id: "cat1", title: "Mental", slug: { current: "mental" } }],
-    author: { name: "Roger Ormières", image: "https://yt3.googleusercontent.com/JoLqbdLoPqNLoBUYorqoeyht0KT5uyehGL5ppcCIu5s5PAOeMXi86FoULWWjE2VpJnBKdYPmNj8=s900-c-k-c0x00ffffff-no-rj" }
-  },
-  {
-    _id: "2",
-    title: "La résilience face à l'échec : transformer les obstacles en opportunités",
-    slug: { current: "resilience-echec" },
-    excerpt: "Comment les entrepreneurs à succès utilisent les échecs comme tremplins vers la réussite et développent une mentalité de croissance.",
-    mainImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80",
-    publishedAt: "2024-04-28",
-    categories: [{ _id: "cat1", title: "Mental", slug: { current: "mental" } }],
-    author: { name: "Alexia Delvaux", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80" }
-  },
-  {
-    _id: "3",
-    title: "Les habitudes quotidiennes des leaders exceptionnels",
-    slug: { current: "habitudes-leaders" },
-    excerpt: "Découvrez les routines matinales, techniques de productivité et pratiques mentales qui distinguent les grands leaders.",
-    mainImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80",
-    publishedAt: "2024-04-25",
-    categories: [{ _id: "cat1", title: "Mental", slug: { current: "mental" } }],
-    author: { name: "Victor Sorel", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80" }
-  },
-  {
-    _id: "4",
-    title: "Méditation et performance : le secret des entrepreneurs zen",
-    slug: { current: "meditation-performance" },
-    excerpt: "Comment la pratique régulière de la méditation peut transformer votre leadership et booster votre productivité.",
-    mainImage: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80",
-    publishedAt: "2024-04-22",
-    categories: [{ _id: "cat1", title: "Mental", slug: { current: "mental" } }],
-    author: { name: "Roger Ormières", image: "https://yt3.googleusercontent.com/JoLqbdLoPqNLoBUYorqoeyht0KT5uyehGL5ppcCIu5s5PAOeMXi86FoULWWjE2VpJnBKdYPmNj8=s900-c-k-c0x00ffffff-no-rj" }
-  },
-  {
-    _id: "5",
-    title: "L'intelligence émotionnelle : le superpower des leaders modernes",
-    slug: { current: "intelligence-emotionnelle" },
-    excerpt: "Pourquoi la capacité à comprendre et gérer ses émotions est devenue indispensable pour diriger efficacement.",
-    mainImage: "https://images.unsplash.com/photo-1544717302-de2939b7ef71?auto=format&fit=crop&q=80",
-    publishedAt: "2024-04-18",
-    categories: [{ _id: "cat1", title: "Mental", slug: { current: "mental" } }],
-    author: { name: "Lila Moreno", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80" }
-  },
-  {
-    _id: "6",
-    title: "Le pouvoir de la visualisation pour atteindre ses objectifs",
-    slug: { current: "pouvoir-visualisation" },
-    excerpt: "Comment programmer votre cerveau pour le succès grâce à des techniques de visualisation utilisées par les athlètes de haut niveau.",
-    mainImage: "https://images.unsplash.com/photo-1506377711776-dbdc2f3c20d9?auto=format&fit=crop&q=80",
-    publishedAt: "2024-04-15",
-    categories: [{ _id: "cat1", title: "Mental", slug: { current: "mental" } }],
-    author: { name: "Émile Chazal", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80" }
-  }
-];
+import { getArticlesByCategory, getCategoryBySlug } from "../utils/sanityAPI";
+import { SafeImage } from "../components/common/SafeImage";
+import { ErrorBoundary } from "../components/common/ErrorBoundary";
 
 // Catégories pour le filtre
 const categories = [
@@ -81,61 +20,102 @@ const categories = [
   { id: 'featured', name: 'À la une' }
 ];
 
+// Données de secours en cas d'erreur
+const fallbackCategoryDetails = {
+  "mental": {
+    title: "Mental",
+    description: "Développez une psychologie de champion. Stratégies mentales, résilience et développement personnel.",
+    image: "https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?auto=format&fit=crop&q=80",
+    color: "from-purple-600 to-indigo-600"
+  },
+  "business": {
+    title: "Business & Innovation",
+    description: "Explorez les nouvelles frontières du business et de l'innovation. Analyses, success stories et insights.",
+    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
+    color: "from-blue-600 to-cyan-600"
+  },
+  "recits": {
+    title: "Récits",
+    description: "Des histoires authentiques qui redéfinissent le possible. Parcours inspirants et transformations remarquables.",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
+    color: "from-amber-600 to-orange-600"
+  },
+  "culture": {
+    title: "Culture & Société",
+    description: "Décryptez les tendances culturelles et les mouvements qui façonnent notre société contemporaine.",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
+    color: "from-emerald-600 to-teal-600"
+  }
+};
+
 export const CategoryPage = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
-  const [articles, setArticles] = useState(mockArticles);
+  const [articles, setArticles] = useState<any[]>([]);
   const [categoryDetails, setCategoryDetails] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
+  const [useFallback, setUseFallback] = useState(false);
 
-  // Simuler le chargement des données de catégorie
+  // Charger les données de catégorie et les articles depuis Sanity
   useEffect(() => {
-    setIsLoading(true);
-    
-    // Simuler un délai de chargement
-    const timer = setTimeout(() => {
-      // Définir les détails de la catégorie en fonction du slug
-      const categoryMap: Record<string, any> = {
-        "mental": {
-          title: "Mental",
-          description: "Développez une psychologie de champion. Stratégies mentales, résilience et développement personnel.",
-          image: "https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?auto=format&fit=crop&q=80",
-          color: "from-purple-600 to-indigo-600"
-        },
-        "business": {
-          title: "Business & Innovation",
-          description: "Explorez les nouvelles frontières du business et de l'innovation. Analyses, success stories et insights.",
-          image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
-          color: "from-blue-600 to-cyan-600"
-        },
-        "recits": {
-          title: "Récits",
-          description: "Des histoires authentiques qui redéfinissent le possible. Parcours inspirants et transformations remarquables.",
-          image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
-          color: "from-amber-600 to-orange-600"
-        },
-        "culture": {
-          title: "Culture & Société",
-          description: "Décryptez les tendances culturelles et les mouvements qui façonnent notre société contemporaine.",
-          image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
-          color: "from-emerald-600 to-teal-600"
+    const fetchCategoryData = async () => {
+      if (!categorySlug) return;
+      
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        console.log(`Chargement des données pour la catégorie: ${categorySlug}`);
+        
+        // Récupérer les détails de la catégorie
+        const categoryData = await getCategoryBySlug(categorySlug);
+        
+        if (!categoryData && !fallbackCategoryDetails[categorySlug as keyof typeof fallbackCategoryDetails]) {
+          setError(`La catégorie "${categorySlug}" n'existe pas.`);
+          setIsLoading(false);
+          return;
         }
-      };
-      
-      if (categorySlug && categoryMap[categorySlug]) {
-        setCategoryDetails(categoryMap[categorySlug]);
-        setError(null);
-      } else {
-        setError(`La catégorie "${categorySlug}" n'existe pas.`);
+        
+        // Utiliser les données de secours si nécessaire
+        if (!categoryData) {
+          console.log(`Utilisation des données de secours pour la catégorie: ${categorySlug}`);
+          setCategoryDetails(fallbackCategoryDetails[categorySlug as keyof typeof fallbackCategoryDetails]);
+          setUseFallback(true);
+        } else {
+          console.log(`Données de catégorie récupérées avec succès: ${categoryData.title}`);
+          setCategoryDetails({
+            ...categoryData,
+            color: fallbackCategoryDetails[categorySlug as keyof typeof fallbackCategoryDetails]?.color || "from-blue-600 to-cyan-600"
+          });
+        }
+        
+        // Récupérer les articles de la catégorie
+        const articlesData = await getArticlesByCategory(categorySlug);
+        console.log(`${articlesData.length} articles récupérés pour la catégorie: ${categorySlug}`);
+        
+        if (articlesData.length === 0) {
+          console.warn(`Aucun article trouvé pour la catégorie: ${categorySlug}`);
+        }
+        
+        setArticles(articlesData);
+      } catch (err) {
+        console.error(`Erreur lors du chargement des données pour la catégorie ${categorySlug}:`, err);
+        setError(`Une erreur est survenue lors du chargement des données. Veuillez réessayer plus tard.`);
+        
+        // Utiliser les données de secours en cas d'erreur
+        if (fallbackCategoryDetails[categorySlug as keyof typeof fallbackCategoryDetails]) {
+          setCategoryDetails(fallbackCategoryDetails[categorySlug as keyof typeof fallbackCategoryDetails]);
+          setUseFallback(true);
+        }
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
-    }, 800);
+    };
     
-    return () => clearTimeout(timer);
+    fetchCategoryData();
   }, [categorySlug]);
 
   // Filtrer les articles en fonction de la recherche et du filtre sélectionné
@@ -184,7 +164,7 @@ export const CategoryPage = () => {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <SEO
         title={`${categoryDetails.title} | Roger Ormières`}
         description={categoryDetails.description}
@@ -195,7 +175,7 @@ export const CategoryPage = () => {
       <section className="relative pt-32 pb-20">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-transparent" />
-          <img 
+          <SafeImage 
             src={categoryDetails.image} 
             alt={categoryDetails.title}
             className="absolute inset-0 w-full h-full object-cover opacity-20"
@@ -264,8 +244,17 @@ export const CategoryPage = () => {
         </div>
       </section>
       
+      {/* Message si utilisation des données de secours */}
+      {useFallback && (
+        <div className="container mb-8">
+          <div className="bg-amber-900/20 border border-amber-500/20 rounded-lg p-4 text-amber-200">
+            <p>Affichage des données de secours. La connexion au CMS est temporairement indisponible.</p>
+          </div>
+        </div>
+      )}
+      
       {/* Featured Article */}
-      {filteredArticles.length > 0 && (
+      {filteredArticles.length > 0 ? (
         <section className="container mb-12">
           <Link to={`/article/${filteredArticles[0].slug.current}`} className="group">
             <motion.div
@@ -274,7 +263,7 @@ export const CategoryPage = () => {
               transition={{ duration: 0.6 }}
               className="relative aspect-[21/9] rounded-2xl overflow-hidden"
             >
-              <img
+              <SafeImage
                 src={filteredArticles[0].mainImage}
                 alt={filteredArticles[0].title}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -284,13 +273,13 @@ export const CategoryPage = () => {
               
               <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3">
                 <div className="flex items-center gap-3 mb-4">
-                  <img
-                    src={filteredArticles[0].author.image}
-                    alt={filteredArticles[0].author.name}
+                  <SafeImage
+                    src={filteredArticles[0].author?.image}
+                    alt={filteredArticles[0].author?.name || "Auteur"}
                     className="w-10 h-10 rounded-full object-cover border-2 border-white"
                   />
                   <div>
-                    <span className="text-sm text-gray-300">{filteredArticles[0].author.name}</span>
+                    <span className="text-sm text-gray-300">{filteredArticles[0].author?.name || "Auteur"}</span>
                     <span className="text-xs text-gray-400 block">{formatDate(filteredArticles[0].publishedAt)}</span>
                   </div>
                 </div>
@@ -311,80 +300,82 @@ export const CategoryPage = () => {
             </motion.div>
           </Link>
         </section>
+      ) : (
+        <section className="container mb-12">
+          <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/5 rounded-xl p-8 text-center">
+            <h3 className="text-xl font-semibold mb-2">Aucun article trouvé</h3>
+            <p className="text-gray-400">Aucun article n'est disponible pour cette catégorie pour le moment.</p>
+          </div>
+        </section>
       )}
       
       {/* Articles Grid */}
-      <section className="container mb-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredArticles.slice(1).map((article, index) => (
-            <motion.article
-              key={article._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="group bg-neutral-900/50 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-accent-blue/5"
-            >
-              <Link to={`/article/${article.slug.current}`} className="block">
-                <div className="relative aspect-video overflow-hidden">
-                  <img
-                    src={article.mainImage}
-                    alt={article.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                  
-                  {article.categories && article.categories.length > 0 && (
-                    <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                      {article.categories.map((category) => (
-                        <span
-                          key={category._id}
-                          className={`px-3 py-1 bg-purple-600 text-white text-xs font-medium rounded-full`}
-                        >
-                          {category.title}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <img
-                      src={article.author.image}
-                      alt={article.author.name}
-                      className="w-8 h-8 rounded-full object-cover"
+      {filteredArticles.length > 1 && (
+        <section className="container mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredArticles.slice(1).map((article, index) => (
+              <motion.article
+                key={article._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                className="group bg-neutral-900/50 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-accent-blue/5"
+              >
+                <Link to={`/article/${article.slug.current}`} className="block">
+                  <div className="relative aspect-video overflow-hidden">
+                    <SafeImage
+                      src={article.mainImage}
+                      alt={article.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    <div className="flex flex-col">
-                      <span className="text-sm text-gray-300">{article.author.name}</span>
-                      <span className="text-xs text-gray-500">{formatDate(article.publishedAt)}</span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <SafeImage
+                        src={article.author?.image}
+                        alt={article.author?.name || "Auteur"}
+                        className="w-8 h-8 rounded-full object-cover border border-white/30"
+                      />
+                      <div>
+                        <span className="text-sm text-gray-300">{article.author?.name || "Auteur"}</span>
+                        <span className="text-xs text-gray-500 block">{formatDate(article.publishedAt)}</span>
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold mb-3 group-hover:text-accent-blue transition-colors line-clamp-2">
+                      {article.title}
+                    </h3>
+                    
+                    <p className="text-gray-400 mb-4 line-clamp-2">
+                      {article.excerpt}
+                    </p>
+                    
+                    <div className="inline-flex items-center gap-1 text-sm text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                      <span>Lire l'article</span>
+                      <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
-                  
-                  <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-accent-blue transition-colors">
-                    {article.title}
-                  </h3>
-                  
-                  <p className="text-gray-400 text-sm mb-4 line-clamp-3">
-                    {article.excerpt}
-                  </p>
-                  
-                  <div className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
-                    <span>Lire l'article</span>
-                    <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </motion.article>
-          ))}
-        </div>
-      </section>
+                </Link>
+              </motion.article>
+            ))}
+          </div>
+        </section>
+      )}
       
       {/* Newsletter Section */}
       <section className="container mb-20">
-        <NewsletterForm />
+        <div className="bg-gradient-to-br from-accent-blue/20 to-accent-turquoise/10 backdrop-blur-sm border border-white/5 rounded-2xl p-8 md:p-12">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Restez informé</h2>
+            <p className="text-gray-300 mb-8">
+              Recevez les derniers articles et analyses directement dans votre boîte mail.
+            </p>
+            <NewsletterForm />
+          </div>
+        </div>
       </section>
-    </>
+    </ErrorBoundary>
   );
 };
-
-export default CategoryPage;
