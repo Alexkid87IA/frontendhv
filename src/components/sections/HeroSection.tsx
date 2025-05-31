@@ -8,7 +8,7 @@ import ErrorBoundary from '../common/ErrorBoundary';
 export const HeroSection = () => {
   return (
     <ErrorBoundary>
-      <section className="relative min-h-[80vh] flex items-center pt-16 pb-20 overflow-hidden">
+      <section className="relative min-h-[60vh] flex items-center pt-12 pb-16 overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
