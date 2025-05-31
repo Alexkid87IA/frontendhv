@@ -41,6 +41,12 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
       title: "Innovation et développement durable",
       image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
       description: "Concilier croissance et responsabilité environnementale dans l'entrepreneuriat moderne."
+    },
+    {
+      id: '5',
+      title: "Leadership et management d'équipe",
+      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80",
+      description: "Les meilleures pratiques pour inspirer et diriger des équipes performantes."
     }
   ];
 
