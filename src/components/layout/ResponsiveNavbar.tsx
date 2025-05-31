@@ -11,34 +11,10 @@ export const ResponsiveNavbar = () => {
   const { visible } = useScrollDirection();
 
   const menuItems = [
-    { 
-      label: 'Story', 
-      subtitle: 'Pour t\'inspirer',
-      path: '/rubrique/recits', 
-      logo: '/src/assets/logos/LOGO_HV STORY.svg', 
-      slug: 'recits' 
-    },
-    { 
-      label: 'Business', 
-      subtitle: 'Pour faire du chiffre',
-      path: '/rubrique/business', 
-      logo: '/src/assets/logos/LOGO_HV BUSINESS.svg', 
-      slug: 'business' 
-    },
-    { 
-      label: 'Mental', 
-      subtitle: 'Pour ta tête',
-      path: '/rubrique/mental', 
-      logo: '/src/assets/logos/LOGO_HV PSYCHO.svg', 
-      slug: 'mental' 
-    },
-    { 
-      label: 'Society', 
-      subtitle: 'Pour ta culture',
-      path: '/rubrique/society', 
-      logo: '/src/assets/logos/LOGO_HV SOCIETY.svg', 
-      slug: 'society' 
-    }
+    { label: 'Story', path: '/rubrique/recits', slug: 'recits' },
+    { label: 'Business', path: '/rubrique/business', slug: 'business' },
+    { label: 'Mental', path: '/rubrique/mental', slug: 'mental' },
+    { label: 'Society', path: '/rubrique/society', slug: 'society' }
   ];
 
   const handleLogoClick = () => {
@@ -97,7 +73,7 @@ export const ResponsiveNavbar = () => {
         {/* Desktop Navigation */}
         <div className="hidden lg:flex flex-1 items-center justify-between ml-6">
           <div className="flex-1 flex justify-center">
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-8">
               {menuItems.map((item) => {
                 const isActive = location.pathname === item.path || 
                                 location.pathname.startsWith(`/rubrique/${item.slug}`);
@@ -106,21 +82,13 @@ export const ResponsiveNavbar = () => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`group flex flex-col items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                    className={`text-lg font-medium transition-colors ${
                       isActive 
-                        ? "bg-white/10" 
-                        : "hover:bg-white/5"
+                        ? "text-accent-blue" 
+                        : "text-white hover:text-accent-blue"
                     }`}
                   >
-                    <img 
-                      src={item.logo} 
-                      alt={item.label}
-                      className="h-8 w-8 transition-transform duration-300 group-hover:scale-110"
-                    />
-                    <div className="flex flex-col items-center">
-                      <span className="text-sm font-medium text-white">{item.label}</span>
-                      <span className="text-xs text-gray-400">{item.subtitle}</span>
-                    </div>
+                    {item.label}
                   </Link>
                 );
               })}
@@ -201,22 +169,14 @@ export const ResponsiveNavbar = () => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-4 p-4 rounded-lg transition-all duration-200 ${
+                    className={`block px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
                       isActive 
-                        ? 'bg-white/10' 
-                        : 'hover:bg-white/5'
+                        ? 'text-accent-blue' 
+                        : 'text-white hover:text-accent-blue'
                     }`}
                     onClick={() => setIsOpen(false)}
                   >
-                    <img 
-                      src={item.logo} 
-                      alt={item.label}
-                      className="h-10 w-10"
-                    />
-                    <div className="flex flex-col">
-                      <span className="font-medium text-white">{item.label}</span>
-                      <span className="text-sm text-gray-400">{item.subtitle}</span>
-                    </div>
+                    {item.label}
                   </Link>
                 );
               })}
