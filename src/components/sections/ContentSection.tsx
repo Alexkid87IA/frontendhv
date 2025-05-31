@@ -81,6 +81,19 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
     }
   };
 
+  const getSectionLabel = (type: string) => {
+    switch (type) {
+      case 'emission':
+        return 'Le podcast High Value';
+      case 'business-idea':
+        return 'Des études de cas';
+      case 'success-story':
+        return 'Des parcours incroyables';
+      default:
+        return '';
+    }
+  };
+
   return (
     <ErrorBoundary>
       <section className="py-20 relative overflow-hidden">
@@ -94,12 +107,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
             className="text-center mb-12"
           >
             <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-4">
-              {sectionType === 'emission' 
-                ? 'Émissions'
-                : sectionType === 'business-idea'
-                ? 'Idée business'
-                : 'Success Stories'
-              }
+              {getSectionLabel(sectionType)}
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               {title}
