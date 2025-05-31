@@ -8,7 +8,7 @@ import ErrorBoundary from '../common/ErrorBoundary';
 export const HeroSection = () => {
   return (
     <ErrorBoundary>
-      <section className="relative min-h-screen flex items-center pt-40 pb-20 overflow-hidden">
+      <section className="relative min-h-[80vh] flex items-center pt-32 pb-20 overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
@@ -32,7 +32,7 @@ export const HeroSection = () => {
                   Média indépendant
                 </span>
 
-                <h1 className="text-4xl md:text-5xl lg:text-7xl font-montserrat font-bold leading-tight">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-montserrat font-bold leading-tight">
                   Développe ton{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-turquoise">
                     mindset
@@ -119,6 +119,55 @@ export const HeroSection = () => {
               <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-accent-turquoise to-accent-blue rounded-full blur-2xl opacity-20" />
             </motion.div>
           </div>
+
+          {/* Latest Articles Grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12"
+          >
+            {[1, 2, 3].map((_, index) => (
+              <Link
+                key={index}
+                to={`/article/exemple-${index + 1}`}
+                className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden hover:border-accent-blue/30 transition-all duration-300"
+              >
+                <div className="relative aspect-video">
+                  <img
+                    src={`https://images.unsplash.com/photo-${[
+                      "1517245386807-bb43f82c33c4",
+                      "1522202176988-66273c2fd55f",
+                      "1516321318423-f06f85e504b3"
+                    ][index]}?auto=format&fit=crop&q=80`}
+                    alt="Article"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold mb-2 text-white group-hover:text-accent-blue transition-colors">
+                    {[
+                      "L'art de la résilience entrepreneuriale",
+                      "Comment développer son leadership",
+                      "Les clés d'une communication impactante"
+                    ][index]}
+                  </h3>
+                  <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+                    {[
+                      "Découvrez comment transformer les obstacles en opportunités",
+                      "Les qualités essentielles d'un leader moderne",
+                      "Techniques pour captiver votre audience"
+                    ][index]}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500">Il y a 3 jours</span>
+                    <ArrowRight size={16} className="text-accent-blue transform group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </motion.div>
         </div>
       </section>
     </ErrorBoundary>
