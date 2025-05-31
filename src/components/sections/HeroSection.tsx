@@ -8,7 +8,7 @@ import ErrorBoundary from '../common/ErrorBoundary';
 export const HeroSection = () => {
   return (
     <ErrorBoundary>
-      <section className="relative min-h-[50vh] flex items-center pt-8 pb-12 overflow-hidden">
+      <section className="relative min-h-[40vh] flex items-center pt-6 pb-8 overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
@@ -19,20 +19,20 @@ export const HeroSection = () => {
         </div>
 
         <div className="container relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
             {/* Left Column - Text Content */}
             <div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="space-y-4"
+                className="space-y-3"
               >
                 <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium">
                   Média indépendant
                 </span>
 
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-montserrat font-bold leading-tight">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-montserrat font-bold leading-tight">
                   Développe ton{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-turquoise">
                     mindset
@@ -40,12 +40,12 @@ export const HeroSection = () => {
                   d'exception
                 </h1>
 
-                <p className="text-xl text-gray-300 max-w-2xl">
+                <p className="text-lg text-gray-300 max-w-2xl">
                   Découvre les histoires qui transforment, les stratégies qui font la différence, 
                   et développe ta psychologie de champion.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <div className="flex flex-col sm:flex-row gap-4 pt-3">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -54,7 +54,7 @@ export const HeroSection = () => {
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
                     <Link
                       to="/articles"
-                      className="relative flex items-center justify-center gap-2 bg-black px-8 py-4 rounded-xl text-white group-hover:text-white/90 transition-colors"
+                      className="relative flex items-center justify-center gap-2 bg-black px-6 py-3 rounded-xl text-white group-hover:text-white/90 transition-colors"
                     >
                       <span>Explorer les articles</span>
                       <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
@@ -67,7 +67,7 @@ export const HeroSection = () => {
                   >
                     <Link
                       to="/create-with-roger"
-                      className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-xl transition-colors"
+                      className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl transition-colors"
                     >
                       <Sparkles className="w-5 h-5" />
                       <span>Créer avec Roger</span>
@@ -125,7 +125,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6"
           >
             {[1, 2, 3].map((_, index) => (
               <Link
