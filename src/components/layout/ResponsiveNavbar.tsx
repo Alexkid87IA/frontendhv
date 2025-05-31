@@ -11,7 +11,7 @@ export const ResponsiveNavbar = () => {
   const { visible } = useScrollDirection();
 
   const menuItems = [
-    { label: 'Story', path: '/rubrique/recits', slug: 'recits' },
+    { label: 'Story', path: '/rubrique/story', slug: 'story' },
     { label: 'Business', path: '/rubrique/business', slug: 'business' },
     { label: 'Mental', path: '/rubrique/mental', slug: 'mental' },
     { label: 'Society', path: '/rubrique/society', slug: 'society' }
