@@ -56,7 +56,7 @@ export default function EditorialSection() {
           <Link 
             key={index}
             to={category.link}
-            className="relative overflow-hidden rounded-lg group h-64"
+            className="relative overflow-hidden rounded-lg group h-[320px]"
           >
             <div className="absolute inset-0">
               <img 
@@ -68,7 +68,7 @@ export default function EditorialSection() {
               <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
             </div>
             <div className="relative h-full flex flex-col justify-end p-6 text-white">
-              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r ${category.gradient} mb-3 w-fit`}>
+              <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm bg-gradient-to-r ${category.gradient} mb-4 w-fit`}>
                 <Icon className="w-4 h-4 mr-2" />
                 {category.tag}
               </div>
