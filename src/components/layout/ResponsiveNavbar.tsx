@@ -11,10 +11,10 @@ export const ResponsiveNavbar = () => {
   const { visible } = useScrollDirection();
 
   const menuItems = [
-    { label: 'Story', path: '/rubrique/story', icon: BookOpen, slug: 'story' },
+    { label: 'Récits', path: '/rubrique/recits', icon: BookOpen, slug: 'recits' },
     { label: 'Business', path: '/rubrique/business', icon: Briefcase, slug: 'business' },
     { label: 'Mental', path: '/rubrique/mental', icon: Brain, slug: 'mental' },
-    { label: 'Society', path: '/rubrique/society', icon: Users, slug: 'society' },
+    { label: 'Culture', path: '/rubrique/culture', icon: Users, slug: 'culture' },
     { label: 'Émissions', path: '/emissions', icon: Film, slug: 'emissions' }
   ];
 
@@ -115,22 +115,13 @@ export const ResponsiveNavbar = () => {
             >
               <Link
                 to="/coaching"
-                className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300"
-              >
-                {/* Animated gradient border */}
-                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue to-accent-turquoise opacity-70 blur-[1px] transition-opacity duration-300 group-hover:opacity-100"></span>
-                
-                {/* Background with glass effect */}
-                <span className={`absolute inset-[1.5px] rounded-md bg-black/80 z-0 ${
+                className={`relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300 whitespace-nowrap border ${
                   location.pathname === "/coaching" 
-                  ? "bg-gradient-to-r from-accent-blue/20 to-accent-turquoise/20"
-                  : ""
-                }`}></span>
-                
-                {/* Text with shadow for better readability */}
-                <span className="relative z-10 flex items-center gap-1.5 text-white drop-shadow-sm">
-                  Coaching
-                </span>
+                  ? "bg-accent-blue text-white border-accent-blue shadow-lg"
+                  : "bg-white/5 hover:bg-accent-blue/10 text-white hover:text-accent-blue border-white/10 hover:border-accent-blue/50"
+                }`}
+              >
+                Coaching
               </Link>
             </motion.div>
             
@@ -142,19 +133,14 @@ export const ResponsiveNavbar = () => {
             >
               <Link
                 to="/create-with-roger"
-                className="relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300"
+                className={`relative inline-flex items-center justify-center overflow-hidden rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-300 whitespace-nowrap shadow-md border border-transparent ${
+                  location.pathname === "/create-with-roger"
+                  ? "bg-gradient-to-r from-accent-blue to-accent-turquoise text-white ring-2 ring-accent-blue"
+                  : "bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-accent-blue hover:to-accent-turquoise text-white"
+                }`}
               >
-                {/* Animated gradient background - Using blue */}
-                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue to-accent-turquoise opacity-100"></span>
-                
-                {/* Animated glow effect - Using blue */}
-                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-accent-blue to-accent-turquoise blur-[2px] opacity-50 animate-pulse"></span>
-                
-                {/* Content */}
-                <span className="relative z-10 flex items-center gap-2 text-white">
-                  <Sparkles className="w-4 h-4 animate-pulse" />
-                  <span className="font-medium">Votre histoire</span>
-                </span>
+                <Sparkles className="w-4 h-4" />
+                Votre histoire
               </Link>
             </motion.div>
           </div>
@@ -170,7 +156,6 @@ export const ResponsiveNavbar = () => {
             aria-controls="mobile-menu"
             aria-label="Menu principal"
           >
-            <span className="sr-only">{isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}</span>
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -199,12 +184,12 @@ export const ResponsiveNavbar = () => {
                     to={item.path}
                     className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 text-base font-medium ${
                       isActive 
-                        ? 'text-accent-blue bg-accent-blue/10' 
+                        ? 'text-accent-turquoise bg-accent-blue/20' 
                         : 'text-white hover:text-accent-blue hover:bg-white/5'
                     }`}
                     onClick={() => setIsOpen(false)}
                   >
-                    <Icon size={20} className={isActive ? 'text-accent-blue' : 'text-gray-400'} />
+                    <Icon size={20} className={isActive ? 'text-accent-turquoise' : 'text-gray-400'} />
                     <span>{item.label}</span>
                   </Link>
                 );
@@ -212,42 +197,25 @@ export const ResponsiveNavbar = () => {
             </div>
 
             <div className="px-4 space-y-4 pt-4 border-t border-white/10">
-              {/* Mobile Coaching Button */}
-              <div className="relative overflow-hidden rounded-lg group">
-                {/* Animated gradient border */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-lg opacity-70 group-hover:opacity-100 blur-sm transition-all duration-300 group-hover:blur"></div>
-                
-                <Link
-                  to="/coaching"
-                  className="relative flex items-center justify-center w-full px-6 py-3.5 bg-black text-white font-medium rounded-lg overflow-hidden group-hover:shadow-lg transition-all duration-300"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {/* Subtle animated background */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-accent-blue/20 to-accent-turquoise/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                  
-                  {/* Text with subtle animation */}
-                  <span className="relative z-10 text-base">Coaching</span>
-                </Link>
-              </div>
-              
-              {/* Mobile Votre Histoire Button */}
-              <div className="relative overflow-hidden rounded-lg group">
-                {/* Animated gradient background - Using blue */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-lg opacity-80 group-hover:opacity-100 blur-sm transition-all duration-300 animate-pulse"></div>
-                
-                <Link
-                  to="/create-with-roger"
-                  className="relative flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-black text-white font-medium rounded-lg overflow-hidden group-hover:shadow-lg transition-all duration-300"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {/* Subtle animated background */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-accent-blue/20 to-accent-turquoise/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                  
-                  {/* Icon and text with subtle animation */}
-                  <Sparkles className="w-5 h-5 text-white" />
-                  <span className="relative z-10 text-base">Votre histoire</span>
-                </Link>
-              </div>
+              <Link
+                to="/coaching"
+                className={`block w-full text-center px-4 py-3 rounded-lg font-medium transition-all duration-200 text-base ${
+                  location.pathname === '/coaching' 
+                  ? 'bg-accent-blue text-white shadow-lg'
+                  : 'bg-white/5 hover:bg-white/10 text-white'
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Coaching
+              </Link>
+              <Link
+                to="/create-with-roger"
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-accent-turquoise hover:to-accent-blue text-white w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 text-base shadow-md"
+                onClick={() => setIsOpen(false)}
+              >
+                <Sparkles className="w-5 h-5" />
+                <span>Votre histoire</span>
+              </Link>
             </div>
           </motion.div>
         )}
