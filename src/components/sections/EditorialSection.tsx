@@ -15,17 +15,17 @@ export const EditorialSection = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
           {
-            title: "Story",
+            title: "Récits de vie",
             icon: BookOpen,
             tag: "Récits",
             image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
             excerpt: "Des parcours inspirants qui redéfinissent le possible",
-            link: "/rubrique/story",
+            link: "/rubrique/recits",
             gradient: "from-amber-500 to-orange-500",
             overlayGradient: "from-amber-900/80 via-black/50 to-transparent"
           },
           {
-            title: "Business",
+            title: "Business & innovation",
             icon: Briefcase,
             tag: "Innovation",
             image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
@@ -45,12 +45,12 @@ export const EditorialSection = () => {
             overlayGradient: "from-purple-900/80 via-black/50 to-transparent"
           },
           {
-            title: "Society",
+            title: "Culture & société",
             icon: Users,
             tag: "Culture",
             image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
             excerpt: "Décrypter les mutations de notre époque",
-            link: "/rubrique/society",
+            link: "/rubrique/culture",
             gradient: "from-emerald-500 to-teal-500",
             overlayGradient: "from-emerald-900/80 via-black/50 to-transparent"
           }
