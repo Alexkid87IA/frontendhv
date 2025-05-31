@@ -87,12 +87,12 @@ export const EditorialSection = () => {
 
               {/* Content */}
               <div className="relative h-full p-4 md:p-8 flex flex-col">
-                {/* Logo */}
+                {/* Logo - Taille augmentée */}
                 <div className="mb-auto">
                   <img 
                     src={universe.logo} 
                     alt={`Logo ${universe.title}`}
-                    className="w-10 h-10 md:w-12 md:h-12 transition-transform duration-300 group-hover:scale-110"
+                    className="w-16 h-16 md:w-20 md:h-20 transition-transform duration-300 group-hover:scale-110"
                   />
                 </div>
 
