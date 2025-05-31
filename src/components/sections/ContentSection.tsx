@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
 
@@ -12,7 +12,6 @@ interface ContentSectionProps {
 }
 
 const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sectionType }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -21,78 +20,27 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
   const items = [
     {
       id: '1',
-      title: sectionType === 'emission' 
-        ? "Comment développer un mindset d'exception" 
-        : sectionType === 'business-idea'
-        ? "SaaS IA pour la vente B2B"
-        : "De 0 à 1M€ en 8 mois",
+      title: "Comment développer un mindset d'exception",
       image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80",
-      excerpt: sectionType === 'emission'
-        ? "Une conversation inspirante sur le développement personnel et la réussite"
-        : sectionType === 'business-idea'
-        ? "Une opportunité dans le marché en pleine expansion de l'IA pour les ventes"
-        : "L'histoire de TechInno, une startup qui a su trouver son product-market fit",
-      author: {
-        name: "Roger Ormières",
-        image: "https://yt3.googleusercontent.com/JoLqbdLoPqNLoBUYorqoeyht0KT5uyehGL5ppcCIu5s5PAOeMXi86FoULWWjE2VpJnBKdYPmNj8=s900-c-k-c0x00ffffff-no-rj"
-      },
-      duration: "45:00",
-      date: "2024-03-15",
-      metrics: sectionType === 'business-idea' 
-        ? { market: "€8.5B", growth: "45%", margin: "89%" }
-        : sectionType === 'success-story'
-        ? { revenue: "1M€", time: "8 mois", team: "5" }
-        : undefined
+      description: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible."
     },
     {
       id: '2',
-      title: sectionType === 'emission'
-        ? "L'art de la résilience entrepreneuriale"
-        : sectionType === 'business-idea'
-        ? "Marketplace Impact Environnemental"
-        : "Levée de fonds de 2.5M€",
+      title: "L'art de la résilience entrepreneuriale",
       image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
-      excerpt: sectionType === 'emission'
-        ? "Comment transformer les obstacles en opportunités"
-        : sectionType === 'business-idea'
-        ? "Une plateforme B2B pour la transition écologique des entreprises"
-        : "Comment EcoFlow a convaincu les investisseurs en série A",
-      author: {
-        name: "Sarah Chen",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80"
-      },
-      duration: "52:00",
-      date: "2024-03-08",
-      metrics: sectionType === 'business-idea'
-        ? { market: "€12B", growth: "35%", margin: "75%" }
-        : sectionType === 'success-story'
-        ? { revenue: "2.5M€", time: "12 mois", team: "12" }
-        : undefined
+      description: "Comment transformer les obstacles en opportunités et rebondir face aux défis."
     },
     {
       id: '3',
-      title: sectionType === 'emission'
-        ? "Innovation et développement durable"
-        : sectionType === 'business-idea'
-        ? "EdTech Métavers"
-        : "Expansion internationale réussie",
+      title: "Les clés d'une communication impactante",
       image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
-      excerpt: sectionType === 'emission'
-        ? "Concilier croissance et responsabilité environnementale"
-        : sectionType === 'business-idea'
-        ? "Formation professionnelle en réalité virtuelle"
-        : "Comment DigitalNow s'est développé dans 5 pays en 18 mois",
-      author: {
-        name: "Thomas Martin",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80"
-      },
-      duration: "38:00",
-      date: "2024-03-01",
-      metrics: sectionType === 'business-idea'
-        ? { market: "€5B", growth: "55%", margin: "82%" }
-        : sectionType === 'success-story'
-        ? { revenue: "5M€", time: "18 mois", team: "25" }
-        : undefined
+      description: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence."
+    },
+    {
+      id: '4',
+      title: "Innovation et développement durable",
+      image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
+      description: "Concilier croissance et responsabilité environnementale dans l'entrepreneuriat moderne."
     }
   ];
 
@@ -141,10 +89,10 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
           >
             <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-4">
               {sectionType === 'emission' 
-                ? 'Émission'
+                ? 'Émissions'
                 : sectionType === 'business-idea'
-                ? 'Opportunité Business'
-                : 'Success Story'
+                ? 'Idées Business'
+                : 'Success Stories'
               }
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -192,19 +140,14 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex-none w-[400px]"
-                  onMouseEnter={() => setActiveIndex(index)}
+                  className="flex-none w-[300px]"
                 >
                   <Link 
-                    to={`/${sectionType === 'emission' 
-                      ? 'emission' 
-                      : sectionType === 'business-idea'
-                      ? 'business-idea'
-                      : 'success-story'}/${item.id}`} 
+                    to={`/${sectionType}/${item.id}`} 
                     className="block group"
                   >
                     <div className="relative bg-gradient-to-br from-neutral-900 to-black border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 hover:scale-[1.02]">
-                      <div className="relative aspect-video w-full overflow-hidden">
+                      <div className="relative aspect-[4/3] w-full overflow-hidden">
                         <SafeImage
                           image={item.image}
                           alt={item.title}
@@ -215,84 +158,22 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                         {/* Overlay gradients */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
                         <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
-
-                        {/* Play button for emissions */}
-                        {sectionType === 'emission' && (
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <motion.div
-                              whileHover={{ scale: 1.1 }}
-                              className="w-16 h-16 flex items-center justify-center rounded-full bg-accent-blue"
-                            >
-                              <Play size={24} className="text-white ml-1" />
-                            </motion.div>
-                          </div>
-                        )}
                       </div>
                       
                       <div className="p-6">
-                        {/* Author */}
-                        <div className="flex items-center gap-3 mb-4">
-                          <SafeImage
-                            image={item.author.image}
-                            alt={item.author.name}
-                            width={40}
-                            height={40}
-                            className="w-10 h-10 rounded-full object-cover"
-                            fallbackText={item.author.name.charAt(0)}
-                          />
-                          <div>
-                            <span className="block text-sm font-medium text-white">
-                              {item.author.name}
-                            </span>
-                            <span className="text-xs text-gray-400">
-                              {new Date(item.date).toLocaleDateString('fr-FR', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                              })}
-                            </span>
-                          </div>
-                        </div>
-
-                        <h3 className="text-xl font-semibold tracking-tight leading-tight mb-2 text-white group-hover:text-accent-blue transition-colors line-clamp-2">
+                        <h3 className="text-lg font-semibold tracking-tight leading-tight mb-3 text-white group-hover:text-accent-blue transition-colors line-clamp-2">
                           {item.title}
                         </h3>
-
+                        
                         <p className="text-gray-400 text-sm line-clamp-2 mb-4">
-                          {item.excerpt}
+                          {item.description}
                         </p>
 
-                        {/* Metrics */}
-                        {item.metrics && (
-                          <div className="grid grid-cols-3 gap-4 mb-4">
-                            {Object.entries(item.metrics).map(([key, value], idx) => (
-                              <div key={idx} className="text-center">
-                                <div className="text-lg font-bold text-accent-blue">
-                                  {value}
-                                </div>
-                                <div className="text-xs text-gray-400 capitalize">
-                                  {key}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        
-                        {/* Duration for emissions */}
-                        {sectionType === 'emission' && (
-                          <div className="text-sm text-gray-400">
-                            Durée : {item.duration}
-                          </div>
-                        )}
-
-                        {/* Progress bar */}
-                        <div className="h-1 bg-white/10 rounded-full overflow-hidden mt-4">
-                          <motion.div
-                            initial={{ width: "0%" }}
-                            animate={{ width: activeIndex === index ? "30%" : "0%" }}
-                            transition={{ duration: 0.3 }}
-                            className="h-full bg-accent-blue"
-                          />
+                        <div className="flex items-center justify-end">
+                          <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                            <span>Découvrir</span>
+                            <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
+                          </span>
                         </div>
                       </div>
                     </div>
