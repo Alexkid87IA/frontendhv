@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Play, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAmuseBouches } from "../../utils/sanityAPI";
 import type { SanityArticle } from "../../pages/ArticlePage";
 import { urlFor } from "../../utils/sanityImage";
@@ -157,26 +157,6 @@ const AmuseBoucheSection = ({
                         {/* Overlay gradients */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
                         <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
-                        
-                        {/* Play button */}
-                        <motion.div
-                          initial={false}
-                          animate={{ 
-                            scale: activeIndex === index ? 1.1 : 1,
-                            opacity: activeIndex === index ? 1 : 0.8
-                          }}
-                          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                        >
-                          <div className="w-16 h-16 bg-accent-blue/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-accent-blue transform transition-all duration-300 group-hover:bg-accent-blue/40">
-                            <Play className="w-6 h-6 text-white" />
-                          </div>
-                        </motion.div>
-
-                        {/* Duration badge */}
-                        <div className="absolute top-4 right-4 px-3 py-1.5 bg-black/60 backdrop-blur-sm rounded-full flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-accent-blue" />
-                          <span className="text-xs font-medium">3:24</span>
-                        </div>
                       </div>
                       
                       <div className="p-4">
