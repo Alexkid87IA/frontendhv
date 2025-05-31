@@ -97,7 +97,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
               {sectionType === 'emission' 
                 ? 'Émissions'
                 : sectionType === 'business-idea'
-                ? 'Idées Business'
+                ? 'Idée business'
                 : 'Success Stories'
               }
             </span>
