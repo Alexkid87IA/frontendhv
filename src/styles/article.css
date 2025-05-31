@@ -1,0 +1,117 @@
+/* Styles globaux pour la page article */
+.shadow-text {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+/* Styles pour la première lettre du contenu */
+.article-content p:first-of-type::first-letter {
+  font-size: 3.5rem;
+  line-height: 1;
+  font-weight: 700;
+  float: left;
+  margin-right: 0.75rem;
+  margin-top: 0.25rem;
+  color: var(--accent-blue, #3b82f6);
+  font-family: serif;
+}
+
+/* Amélioration des styles pour les éléments de contenu */
+.article-content h1, 
+.article-content h2, 
+.article-content h3, 
+.article-content h4 {
+  position: relative;
+}
+
+.article-content h2::before {
+  content: '';
+  position: absolute;
+  left: -1rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 4px;
+  background: linear-gradient(to bottom, var(--accent-blue, #3b82f6), var(--accent-turquoise, #06b6d4));
+  border-radius: 4px;
+}
+
+/* Amélioration des liens et des éléments interactifs */
+.article-content a {
+  position: relative;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.article-content a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Styles pour les images et les médias */
+.article-content figure {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.article-content figure:hover {
+  transform: scale(1.01);
+}
+
+/* Styles pour les blockquotes */
+.article-content blockquote {
+  position: relative;
+}
+
+.article-content blockquote::before {
+  content: '"';
+  position: absolute;
+  top: -1.5rem;
+  left: 1rem;
+  font-size: 4rem;
+  font-family: serif;
+  color: var(--accent-blue, #3b82f6);
+  opacity: 0.2;
+}
+
+/* Styles pour les listes */
+.article-content ul li::marker,
+.article-content ol li::marker {
+  color: var(--accent-blue, #3b82f6);
+}
+
+/* Styles pour les éléments de partage */
+.share-button {
+  transition: all 0.2s ease;
+}
+
+.share-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Animations subtiles pour améliorer l'expérience */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.article-content > * {
+  animation: fadeIn 0.5s ease forwards;
+  animation-play-state: paused;
+}
+
+.article-content.in-view > * {
+  animation-play-state: running;
+}
+
+/* Styles responsifs */
+@media (max-width: 768px) {
+  .article-content p:first-of-type::first-letter {
+    font-size: 3rem;
+  }
+  
+  .article-content h2::before {
+    left: -0.75rem;
+  }
+}
