@@ -12,31 +12,36 @@ export const ResponsiveNavbar = () => {
 
   const menuItems = [
     { 
-      label: 'Pour t\'inspirer', 
+      label: 'Story', 
+      subtitle: 'Pour t\'inspirer',
       path: '/rubrique/recits', 
       logo: '/src/assets/logos/LOGO_HV STORY.svg', 
       slug: 'recits' 
     },
     { 
-      label: 'Pour faire du chiffre', 
+      label: 'Business', 
+      subtitle: 'Pour faire du chiffre',
       path: '/rubrique/business', 
       logo: '/src/assets/logos/LOGO_HV BUSINESS.svg', 
       slug: 'business' 
     },
     { 
-      label: 'Pour ta tête', 
+      label: 'Mental', 
+      subtitle: 'Pour ta tête',
       path: '/rubrique/mental', 
       logo: '/src/assets/logos/LOGO_HV PSYCHO.svg', 
       slug: 'mental' 
     },
     { 
-      label: 'Pour ta culture', 
+      label: 'Society', 
+      subtitle: 'Pour ta culture',
       path: '/rubrique/society', 
       logo: '/src/assets/logos/LOGO_HV SOCIETY.svg', 
       slug: 'society' 
     },
     { 
       label: 'Émissions', 
+      subtitle: 'Pour t\'enrichir',
       path: '/emissions', 
       logo: '/src/assets/logos/LOGO_HV MEDIA.svg', 
       slug: 'emissions' 
@@ -113,7 +118,7 @@ export const ResponsiveNavbar = () => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`group flex items-center gap-1.5 px-4 py-3 rounded-md transition-all duration-300 text-sm font-medium ${
+                    className={`group flex flex-col items-center gap-1 px-4 py-3 rounded-md transition-all duration-300 text-sm font-medium ${
                       isActive 
                         ? "text-white bg-gradient-to-r from-accent-blue/20 to-transparent" 
                         : "text-white/80 hover:text-white hover:bg-white/5"
@@ -124,7 +129,7 @@ export const ResponsiveNavbar = () => {
                       alt={item.label}
                       className="h-6 w-6"
                     />
-                    <span>{item.label}</span>
+                    <span>{item.subtitle}</span>
                   </Link>
                 );
               })}
@@ -219,7 +224,10 @@ export const ResponsiveNavbar = () => {
                       alt={item.label}
                       className="h-6 w-6"
                     />
-                    <span>{item.label}</span>
+                    <div className="flex flex-col">
+                      <span>{item.label}</span>
+                      <span className="text-sm text-gray-400">{item.subtitle}</span>
+                    </div>
                   </Link>
                 );
               })}
