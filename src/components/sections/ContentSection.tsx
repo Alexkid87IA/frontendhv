@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
-import { sanityClient } from '../../utils/sanityClient';
+import { getContentItems } from '../../utils/sanityAPI';
+import { SanityPodcast, SanityCaseStudy, SanitySuccessStory } from '../../types/sanity';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 
 interface ContentSectionProps {
@@ -13,15 +14,7 @@ interface ContentSectionProps {
   sectionType: 'emission' | 'business-idea' | 'success-story';
 }
 
-interface ContentItem {
-  _id: string;
-  title: string;
-  mainImage?: any;
-  excerpt?: string;
-  slug?: {
-    current: string;
-  };
-}
+type ContentItem = SanityPodcast | SanityCaseStudy | SanitySuccessStory;
 
 // Données mockées pour fallback
 const mockItems = {
@@ -30,61 +23,66 @@ const mockItems = {
       _id: '1',
       title: "Comment développer un mindset d'exception",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-1',
-          url: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible.",
-      slug: { current: 'mindset-exception' }
+      slug: { _type: "slug", current: 'mindset-exception' }
     },
     {
       _id: '2',
       title: "L'art de la résilience entrepreneuriale",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-2',
-          url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Comment transformer les obstacles en opportunités et rebondir face aux défis.",
-      slug: { current: 'resilience-entrepreneuriale' }
+      slug: { _type: "slug", current: 'resilience-entrepreneuriale' }
     },
     {
       _id: '3',
       title: "Les clés d'une communication impactante",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-3',
-          url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence.",
-      slug: { current: 'communication-impactante' }
+      slug: { _type: "slug", current: 'communication-impactante' }
     },
     {
       _id: '4',
       title: "Innovation et développement durable",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-4',
-          url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Concilier croissance et responsabilité environnementale dans l'entrepreneuriat moderne.",
-      slug: { current: 'innovation-developpement-durable' }
+      slug: { _type: "slug", current: 'innovation-developpement-durable' }
     },
     {
       _id: '5',
       title: "Leadership et management d'équipe",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-5',
-          url: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Les meilleures pratiques pour inspirer et diriger des équipes performantes.",
-      slug: { current: 'leadership-management' }
+      slug: { _type: "slug", current: 'leadership-management' }
     }
   ],
   'business-idea': [
@@ -92,61 +90,66 @@ const mockItems = {
       _id: '6',
       title: "Étude de cas : La transformation digitale de Carrefour",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-6',
-          url: "https://images.unsplash.com/photo-1556742031-c6961e8560b0?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Comment le géant de la distribution a réinventé son modèle commercial face à Amazon.",
-      slug: { current: 'transformation-digitale-carrefour' }
+      slug: { _type: "slug", current: 'transformation-digitale-carrefour' }
     },
     {
       _id: '7',
       title: "Comment Decathlon a conquis le marché mondial",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-7',
-          url: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Stratégie d'expansion et innovation produit : les clés du succès international.",
-      slug: { current: 'decathlon-marche-mondial' }
+      slug: { _type: "slug", current: 'decathlon-marche-mondial' }
     },
     {
       _id: '8',
       title: "Le modèle disruptif de Free dans les télécoms",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-8',
-          url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Comment Xavier Niel a bouleversé le marché des télécommunications en France.",
-      slug: { current: 'modele-disruptif-free' }
+      slug: { _type: "slug", current: 'modele-disruptif-free' }
     },
     {
       _id: '9',
       title: "La stratégie de contenu de Michelin",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-9',
-          url: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Du guide gastronomique aux pneus : l'histoire d'une stratégie de contenu centenaire.",
-      slug: { current: 'strategie-contenu-michelin' }
+      slug: { _type: "slug", current: 'strategie-contenu-michelin' }
     },
     {
       _id: '10',
       title: "Comment BlaBlaCar a créé un nouveau marché",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-10',
-          url: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "L'histoire de la licorne française qui a révolutionné le covoiturage en Europe.",
-      slug: { current: 'blablacar-nouveau-marche' }
+      slug: { _type: "slug", current: 'blablacar-nouveau-marche' }
     }
   ],
   'success-story': [
@@ -154,61 +157,66 @@ const mockItems = {
       _id: '11',
       title: "De l'échec à la réussite : l'histoire de Michel et Augustin",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-11',
-          url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Comment deux amis ont créé une marque alimentaire iconique après plusieurs échecs.",
-      slug: { current: 'michel-augustin-success' }
+      slug: { _type: "slug", current: 'michel-augustin-success' }
     },
     {
       _id: '12',
       title: "Le parcours inspirant de Maud Fontenoy",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-12',
-          url: "https://images.unsplash.com/photo-1484627147104-f5197bcd6651?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "De la traversée des océans à la défense de l'environnement : un leadership exemplaire.",
-      slug: { current: 'parcours-maud-fontenoy' }
+      slug: { _type: "slug", current: 'parcours-maud-fontenoy' }
     },
     {
       _id: '13',
       title: "Comment Octave Klaba a bâti OVH",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-13',
-          url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "L'histoire du champion français du cloud computing qui défie les géants américains.",
-      slug: { current: 'octave-klaba-ovh' }
+      slug: { _type: "slug", current: 'octave-klaba-ovh' }
     },
     {
       _id: '14',
       title: "Catherine Barba : pionnière du e-commerce français",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-14',
-          url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Le parcours d'une entrepreneuse visionnaire qui a su anticiper la révolution digitale.",
-      slug: { current: 'catherine-barba-ecommerce' }
+      slug: { _type: "slug", current: 'catherine-barba-ecommerce' }
     },
     {
       _id: '15',
       title: "Marc Simoncini : de Meetic à Angell Bike",
       mainImage: {
+        _type: "image",
         asset: {
           _ref: 'image-15',
-          url: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&q=80"
+          _type: "reference"
         }
       },
       excerpt: "Le parcours d'un serial entrepreneur français qui réinvente la mobilité urbaine.",
-      slug: { current: 'marc-simoncini-parcours' }
+      slug: { _type: "slug", current: 'marc-simoncini-parcours' }
     }
   ]
 };
@@ -219,64 +227,35 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [items, setItems] = useState<ContentItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [dataSource, setDataSource] = useState('mock');
+  const [error, setError] = useState<string | null>(null);
+  const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         
-        // Requête Sanity adaptée au type de contenu
-        let query = '';
-        
-        switch(sectionType) {
-          case 'emission':
-            query = `*[_type == "podcast"] | order(publishedAt desc)[0...5] {
-              _id,
-              title,
-              mainImage,
-              excerpt,
-              slug
-            }`;
-            break;
-          case 'business-idea':
-            query = `*[_type == "caseStudy"] | order(publishedAt desc)[0...5] {
-              _id,
-              title,
-              mainImage,
-              excerpt,
-              slug
-            }`;
-            break;
-          case 'success-story':
-            query = `*[_type == "successStory"] | order(publishedAt desc)[0...5] {
-              _id,
-              title,
-              mainImage,
-              excerpt,
-              slug
-            }`;
-            break;
-        }
-        
-        const result = await sanityClient.fetch(query);
+        const result = await getContentItems(sectionType, 5);
         
         if (result && result.length > 0) {
           setItems(result);
-          setDataSource('sanity');
+          setDataSource('cms');
           console.log(`Contenu ${sectionType} récupéré depuis Sanity CMS`);
         } else {
           // Fallback vers les données mockées
-          setItems(mockItems[sectionType]);
+          setItems(mockItems[sectionType] as ContentItem[]);
           setDataSource('mock');
-          console.log(`Utilisation des données mockées pour ${sectionType} (fallback)`);
+          console.log(`Aucun contenu trouvé dans Sanity pour ${sectionType}, utilisation des données mockées`);
         }
-      } catch (error) {
-        console.error(`Erreur lors de la récupération du contenu ${sectionType}:`, error);
+      } catch (err) {
+        console.error(`Erreur lors de la récupération du contenu ${sectionType}:`, err);
+        setError(`Impossible de charger le contenu ${sectionType}`);
+        
         // Fallback vers les données mockées en cas d'erreur
-        setItems(mockItems[sectionType]);
+        setItems(mockItems[sectionType] as ContentItem[]);
         setDataSource('mock');
-        console.log(`Utilisation des données mockées pour ${sectionType} suite à une erreur`);
+        console.log(`Erreur de chargement depuis Sanity pour ${sectionType}, utilisation des données mockées`);
       } finally {
         setIsLoading(false);
       }
@@ -340,6 +319,23 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
     );
   }
 
+  if (error && !items.length) {
+    return (
+      <section className="py-20">
+        <div className="container">
+          <div className="text-center text-red-500">
+            <p>{error}</p>
+            <p className="mt-2">Veuillez réessayer ultérieurement.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!items.length) {
+    return null;
+  }
+
   return (
     <ErrorBoundary>
       <section className="py-20 relative overflow-hidden">
@@ -373,9 +369,9 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                 onClick={() => scroll("left")}
                 disabled={!canScrollLeft}
                 className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                aria-label="Précédent"
+                aria-label={`Voir les ${sectionType === 'emission' ? 'podcasts' : sectionType === 'business-idea' ? 'études de cas' : 'success stories'} précédents`}
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-5 h-5" aria-hidden="true" />
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -383,9 +379,9 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                 onClick={() => scroll("right")}
                 disabled={!canScrollRight}
                 className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                aria-label="Suivant"
+                aria-label={`Voir les ${sectionType === 'emission' ? 'podcasts' : sectionType === 'business-idea' ? 'études de cas' : 'success stories'} suivants`}
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-5 h-5" aria-hidden="true" />
               </motion.button>
             </div>
 
@@ -393,6 +389,8 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
             <div
               ref={scrollRef}
               className="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"
+              role="region"
+              aria-label={`Carrousel de ${sectionType === 'emission' ? 'podcasts' : sectionType === 'business-idea' ? 'études de cas' : 'success stories'}`}
             >
               {items.map((item, index) => (
                 <motion.div
@@ -406,6 +404,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                   <Link 
                     to={`/${sectionType}/${item.slug?.current}`} 
                     className="block group"
+                    aria-label={item.title}
                   >
                     <div className="relative bg-gradient-to-br from-neutral-900 to-black border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 hover:scale-[1.02]">
                       <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -414,6 +413,8 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                           alt={item.title}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                           fallbackText={item.title}
+                          width={300}
+                          height={225}
                         />
                         
                         {/* Overlay gradients */}
@@ -433,7 +434,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                         <div className="flex items-center justify-end">
                           <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
                             <span>Découvrir</span>
-                            <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
+                            <ArrowRight size={16} aria-hidden="true" />
                           </span>
                         </div>
                       </div>

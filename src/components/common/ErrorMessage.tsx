@@ -1,25 +1,48 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 interface ErrorMessageProps {
-  title?: string;
   message: string;
+  suggestion?: string;
+  retry?: () => void;
+  className?: string;
 }
 
-export const ErrorMessage: React.FC<ErrorMessageProps> = ({ 
-  title = "Une erreur est survenue",
-  message 
+export const ErrorMessage: React.FC<ErrorMessageProps> = ({
+  message,
+  suggestion = "Veuillez réessayer ultérieurement.",
+  retry,
+  className = ''
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 text-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className={`flex flex-col items-center justify-center p-6 rounded-lg bg-red-900/20 border border-red-500/30 ${className}`}
+      role="alert"
+      aria-live="assertive"
     >
-      <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-      <h2 className="text-xl font-bold mb-2">{title}</h2>
-      <p className="text-tertiary">{message}</p>
+      <div className="flex items-center justify-center mb-4">
+        <AlertCircle size={32} className="text-red-500" aria-hidden="true" />
+      </div>
+      <h3 className="text-lg font-semibold text-red-400 mb-2">
+        {message}
+      </h3>
+      <p className="text-gray-300 text-center mb-4">
+        {suggestion}
+      </p>
+      {retry && (
+        <button
+          onClick={retry}
+          className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-md transition-colors"
+          aria-label="Réessayer"
+        >
+          Réessayer
+        </button>
+      )}
     </motion.div>
   );
 };
+
+export default ErrorMessage;

@@ -4,51 +4,24 @@ import { Link } from 'react-router-dom';
 import { MessageSquare, ArrowRight, ThumbsUp, ThumbsDown } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
-import { sanityClient } from '../../utils/sanityClient';
-import { urlFor } from '../../utils/sanityImage';
+import { getFeaturedDebate } from '../../utils/sanityAPI';
+import { SanityDebate } from '../../types/sanity';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 
-// Types pour les débats
-interface DebateAuthor {
-  name: string;
-  role: string;
-  image: any;
-}
-
-interface DebateOpinion {
-  position: string;
-  author: DebateAuthor;
-  arguments: string[];
-  votes: number;
-}
-
-interface DebateStats {
-  totalVotes: number;
-  comments: number;
-  shares: string;
-}
-
-interface Debate {
-  _id: string;
-  title: string;
-  description: string;
-  image: any;
-  slug?: {
-    current: string;
-  };
-  opinions: DebateOpinion[];
-  moderator: DebateAuthor;
-  stats: DebateStats;
-  featured?: boolean;
-}
-
 // Données mockées pour fallback
-const mockDebate = {
+const mockDebate: SanityDebate = {
   _id: "mock-debate-1",
   title: "L'IA va-t-elle remplacer les entrepreneurs ?",
   description: "Un débat passionnant sur l'impact de l'intelligence artificielle dans l'entrepreneuriat",
-  image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80",
+  image: {
+    _type: "image",
+    asset: {
+      _ref: "image-mock-1",
+      _type: "reference"
+    }
+  },
   slug: {
+    _type: "slug",
     current: "ia-entrepreneurs"
   },
   opinions: [
@@ -57,7 +30,13 @@ const mockDebate = {
       author: {
         name: "Sarah Chen",
         role: "CEO IA Solutions",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80"
+        image: {
+          _type: "image",
+          asset: {
+            _ref: "image-mock-2",
+            _type: "reference"
+          }
+        }
       },
       arguments: [
         "L'IA peut analyser des données plus rapidement qu'un humain",
@@ -71,7 +50,13 @@ const mockDebate = {
       author: {
         name: "Marc Dubois",
         role: "Expert Innovation",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80"
+        image: {
+          _type: "image",
+          asset: {
+            _ref: "image-mock-3",
+            _type: "reference"
+          }
+        }
       },
       arguments: [
         "L'entrepreneuriat nécessite une intelligence émotionnelle",
@@ -84,7 +69,13 @@ const mockDebate = {
   moderator: {
     name: "Elena Rodriguez",
     role: "Startup Advisor",
-    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80"
+    image: {
+      _type: "image",
+      asset: {
+        _ref: "image-mock-4",
+        _type: "reference"
+      }
+    }
   },
   stats: {
     totalVotes: 557,
@@ -94,7 +85,7 @@ const mockDebate = {
 };
 
 export const DebateSection = () => {
-  const [debate, setDebate] = useState<Debate | null>(null);
+  const [debate, setDebate] = useState<SanityDebate | null>(null);
   const [userVote, setUserVote] = useState<"pour" | "contre" | null>(null);
   const [votes, setVotes] = useState({
     pour: 0,
@@ -110,25 +101,13 @@ export const DebateSection = () => {
         setIsLoading(true);
         setError(null);
         
-        // Requête GROQ pour récupérer le débat à la une
-        const query = `*[_type == "debate" && featured == true][0] {
-          _id,
-          title,
-          description,
-          image,
-          slug,
-          opinions,
-          moderator,
-          stats
-        }`;
-        
-        const result = await sanityClient.fetch(query);
+        const result = await getFeaturedDebate();
         
         if (result) {
           setDebate(result);
           setVotes({
-            pour: result.opinions.find((o: any) => o.position === "Pour")?.votes || 0,
-            contre: result.opinions.find((o: any) => o.position === "Contre")?.votes || 0
+            pour: result.opinions.find((o) => o.position === "Pour")?.votes || 0,
+            contre: result.opinions.find((o) => o.position === "Contre")?.votes || 0
           });
           setDataSource('cms');
           console.log("Débat récupéré depuis Sanity CMS");
@@ -258,7 +237,7 @@ export const DebateSection = () => {
                 <div className="flex items-center justify-center gap-3 mb-8">
                   <div className="w-10 h-10 rounded-full overflow-hidden">
                     <SafeImage
-                      image={dataSource === 'cms' ? debate.moderator.image : debate.moderator.image}
+                      image={debate.moderator.image}
                       alt={debate.moderator.name}
                       width={40}
                       height={40}
@@ -277,7 +256,7 @@ export const DebateSection = () => {
               </div>
 
               {/* Opinions Grid */}
-              <div className="grid md:grid-cols-2 gap-8 mb-12">
+              <div className="grid md:grid-cols-2 gap-8 mb-12" role="group" aria-label="Opinions du débat">
                 {debate.opinions.map((opinion, index) => (
                   <motion.div
                     key={opinion.position}
@@ -290,7 +269,7 @@ export const DebateSection = () => {
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 rounded-full overflow-hidden">
                         <SafeImage
-                          image={dataSource === 'cms' ? opinion.author.image : opinion.author.image}
+                          image={opinion.author.image}
                           alt={opinion.author.name}
                           width={48}
                           height={48}
@@ -317,10 +296,10 @@ export const DebateSection = () => {
                     </div>
 
                     {/* Arguments */}
-                    <ul className="space-y-4 mb-6">
+                    <ul className="space-y-4 mb-6" aria-label={`Arguments ${opinion.position}`}>
                       {opinion.arguments.map((argument, i) => (
                         <li key={i} className="flex items-start gap-3">
-                          <span className="w-1.5 h-1.5 mt-2 rounded-full bg-accent-blue flex-shrink-0" />
+                          <span className="w-1.5 h-1.5 mt-2 rounded-full bg-accent-blue flex-shrink-0" aria-hidden="true" />
                           <span className="text-gray-300">{argument}</span>
                         </li>
                       ))}
@@ -334,11 +313,13 @@ export const DebateSection = () => {
                           ? "bg-accent-blue text-white"
                           : "bg-white/10 hover:bg-white/20 text-white"
                       }`}
+                      aria-pressed={userVote === opinion.position.toLowerCase()}
+                      aria-label={`Voter ${opinion.position}`}
                     >
                       {opinion.position === "Pour" ? (
-                        <ThumbsUp size={18} />
+                        <ThumbsUp size={18} aria-hidden="true" />
                       ) : (
-                        <ThumbsDown size={18} />
+                        <ThumbsDown size={18} aria-hidden="true" />
                       )}
                       <span>Voter {opinion.position}</span>
                     </button>
@@ -362,9 +343,10 @@ export const DebateSection = () => {
                 <Link
                   to={`/debat/${debate.slug?.current || 'ia-entrepreneurs'}`}
                   className="inline-flex items-center gap-2 text-accent-blue hover:text-accent-turquoise transition-colors"
+                  aria-label={`Voir le débat complet sur ${debate.title}`}
                 >
                   <span>Voir le débat complet</span>
-                  <ArrowRight size={18} />
+                  <ArrowRight size={18} aria-hidden="true" />
                 </Link>
               </div>
             </div>

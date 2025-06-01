@@ -1,0 +1,254 @@
+/* Styles pour améliorer l'accessibilité et le contraste */
+
+/* Amélioration du contraste des textes */
+.text-gray-300 {
+  color: #c5c5c5 !important; /* Augmentation du contraste par rapport au fond sombre */
+}
+
+.text-gray-400 {
+  color: #b0b0b0 !important; /* Augmentation du contraste */
+}
+
+.text-gray-500 {
+  color: #9a9a9a !important; /* Augmentation du contraste */
+}
+
+/* Amélioration du contraste des boutons et liens */
+.bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.08) !important; /* Augmentation de l'opacité pour meilleur contraste */
+}
+
+.bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.15) !important; /* Augmentation de l'opacité pour meilleur contraste */
+}
+
+/* Focus styles pour la navigation au clavier */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #00a4f9 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(0, 164, 249, 0.3) !important;
+}
+
+/* Styles pour les éléments interactifs */
+.interactive-element {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.interactive-element:hover {
+  transform: translateY(-2px);
+}
+
+.interactive-element:active {
+  transform: translateY(0);
+}
+
+/* Styles pour les états de chargement et d'erreur */
+.loading-container {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-message {
+  color: #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+/* Styles pour les indicateurs de source de données */
+.data-source-indicator {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #ffc107;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  z-index: 10;
+}
+
+/* Styles pour améliorer la lisibilité des textes sur images */
+.text-on-image {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Styles pour les skip links (accessibilité) */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #00a4f9;
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Styles pour les tooltips accessibles */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 120px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text,
+.tooltip:focus .tooltip-text,
+.tooltip:focus-within .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Styles pour les formulaires accessibles */
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-input:focus {
+  border-color: #00a4f9;
+  box-shadow: 0 0 0 2px rgba(0, 164, 249, 0.3);
+  outline: none;
+}
+
+.form-error {
+  color: #ff6b6b;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Styles pour les boutons accessibles */
+.button-accessible {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.button-accessible::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.button-accessible:hover::after {
+  opacity: 0.1;
+  background-color: white;
+}
+
+.button-accessible:active::after {
+  opacity: 0.2;
+  background-color: black;
+}
+
+/* Styles pour les cartes accessibles */
+.card-accessible {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-accessible:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-accessible:focus-within {
+  outline: 2px solid #00a4f9;
+  outline-offset: 2px;
+}
+
+/* Styles pour les carrousels accessibles */
+.carousel-accessible {
+  position: relative;
+}
+
+.carousel-accessible .carousel-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.carousel-accessible .carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: background-color 0.3s;
+}
+
+.carousel-accessible .carousel-dot.active {
+  background-color: #00a4f9;
+}
+
+.carousel-accessible .carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.carousel-accessible .carousel-button.prev {
+  left: 10px;
+}
+
+.carousel-accessible .carousel-button.next {
+  right: 10px;
+}

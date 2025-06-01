@@ -3,10 +3,84 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAmuseBouches } from "../../utils/sanityAPI";
-import type { SanityArticle } from "../../pages/ArticlePage";
-import { urlFor } from "../../utils/sanityImage";
+import { SanityArticle } from "../../types/sanity";
+import { LoadingSpinner } from "../common/LoadingSpinner";
 import SafeImage from "../common/SafeImage";
 import ErrorBoundary from "../common/ErrorBoundary";
+
+// Données mockées pour fallback
+const mockAmuseBouches: SanityArticle[] = [
+  {
+    _id: '1',
+    title: "Comment développer un mindset d'exception",
+    slug: { _type: "slug", current: 'mindset-exception' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'image-1',
+        _type: "reference"
+      }
+    },
+    excerpt: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible.",
+    publishedAt: "2024-03-20"
+  },
+  {
+    _id: '2',
+    title: "L'art de la résilience entrepreneuriale",
+    slug: { _type: "slug", current: 'resilience-entrepreneuriale' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'image-2',
+        _type: "reference"
+      }
+    },
+    excerpt: "Comment transformer les obstacles en opportunités et rebondir face aux défis.",
+    publishedAt: "2024-03-19"
+  },
+  {
+    _id: '3',
+    title: "Les clés d'une communication impactante",
+    slug: { _type: "slug", current: 'communication-impactante' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'image-3',
+        _type: "reference"
+      }
+    },
+    excerpt: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence.",
+    publishedAt: "2024-03-18"
+  },
+  {
+    _id: '4',
+    title: "Développer sa créativité au quotidien",
+    slug: { _type: "slug", current: 'creativite-quotidien' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'image-4',
+        _type: "reference"
+      }
+    },
+    excerpt: "Techniques et habitudes pour stimuler votre créativité et innover constamment.",
+    publishedAt: "2024-03-17"
+  },
+  {
+    _id: '5',
+    title: "Les habitudes des entrepreneurs à succès",
+    slug: { _type: "slug", current: 'habitudes-entrepreneurs' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'image-5',
+        _type: "reference"
+      }
+    },
+    excerpt: "Découvrez les routines quotidiennes qui font la différence dans votre parcours entrepreneurial.",
+    publishedAt: "2024-03-16"
+  }
+];
 
 const AmuseBoucheSection = ({
   title = "Amuses-bouches",
@@ -18,6 +92,8 @@ const AmuseBoucheSection = ({
   const [videos, setVideos] = useState<SanityArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
+  const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -26,15 +102,32 @@ const AmuseBoucheSection = ({
     const fetchAmuseBouches = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         const amuseBouchesData = await getAmuseBouches(10);
-        setVideos(amuseBouchesData || []);
+        
+        if (amuseBouchesData && amuseBouchesData.length > 0) {
+          setVideos(amuseBouchesData);
+          setDataSource('cms');
+          console.log("Amuses-bouches récupérés depuis Sanity CMS");
+        } else {
+          // Fallback vers les données mockées si aucun résultat
+          setVideos(mockAmuseBouches);
+          setDataSource('mock');
+          console.log("Aucun amuse-bouche trouvé dans Sanity, utilisation des données mockées");
+        }
       } catch (error) {
         console.error("Erreur lors du chargement des amuses-bouches:", error);
-        setVideos([]);
+        setError("Impossible de charger les amuses-bouches");
+        
+        // Fallback vers les données mockées en cas d'erreur
+        setVideos(mockAmuseBouches);
+        setDataSource('mock');
+        console.log("Erreur de chargement depuis Sanity, utilisation des données mockées");
       } finally {
         setIsLoading(false);
       }
     };
+    
     fetchAmuseBouches();
   }, []);
 
@@ -71,9 +164,24 @@ const AmuseBoucheSection = ({
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-10 text-center text-hv-text-primary-maquette">
-        <p>Chargement des amuses-bouches...</p>
-      </div>
+      <section className="relative py-20 overflow-hidden">
+        <div className="container flex justify-center items-center py-20">
+          <LoadingSpinner />
+        </div>
+      </section>
+    );
+  }
+
+  if (error && !videos.length) {
+    return (
+      <section className="py-20">
+        <div className="container">
+          <div className="text-center text-red-500">
+            <p>{error}</p>
+            <p className="mt-2">Veuillez réessayer ultérieurement.</p>
+          </div>
+        </div>
+      </section>
     );
   }
 
@@ -98,6 +206,7 @@ const AmuseBoucheSection = ({
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               {title}
+              {dataSource === 'mock' && <span className="text-sm text-gray-400 ml-2">(démo)</span>}
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               {description}
@@ -113,7 +222,7 @@ const AmuseBoucheSection = ({
                 onClick={() => scroll("left")}
                 disabled={!canScrollLeft}
                 className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                aria-label="Précédent"
+                aria-label="Voir les amuses-bouches précédents"
               >
                 <ChevronLeft className="w-5 h-5" />
               </motion.button>
@@ -123,7 +232,7 @@ const AmuseBoucheSection = ({
                 onClick={() => scroll("right")}
                 disabled={!canScrollRight}
                 className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                aria-label="Suivant"
+                aria-label="Voir les amuses-bouches suivants"
               >
                 <ChevronRight className="w-5 h-5" />
               </motion.button>
@@ -133,6 +242,8 @@ const AmuseBoucheSection = ({
             <div
               ref={scrollRef}
               className="flex space-x-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"
+              role="region"
+              aria-label="Carrousel d'amuses-bouches"
             >
               {videos.map((video, index) => (
                 <motion.div
@@ -152,6 +263,8 @@ const AmuseBoucheSection = ({
                           alt={video.title}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                           fallbackText={video.title}
+                          width={280}
+                          height={498}
                         />
                         
                         {/* Overlay gradients */}

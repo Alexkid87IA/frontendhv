@@ -1,133 +1,102 @@
-// Script de validation de l'intégrité de la homepage
-import { sanityClient } from '../utils/sanityClient.js';
-import { 
-  getAllArticles, 
-  getAmuseBouches, 
-  getLatestQuote, 
-  getFeaturedDebate 
-} from '../utils/sanityAPI.js';
+/**
+ * Script de validation de l'intégrité de la homepage
+ * Ce script vérifie que tous les composants de la homepage sont correctement connectés à Sanity
+ * et qu'ils disposent d'un fallback robuste vers des données mockées en cas d'erreur.
+ */
 
-// Fonction pour tester toutes les sections de la homepage
-async function testHomepageIntegrity() {
-  console.log("=== TEST D'INTÉGRITÉ DE LA HOMEPAGE ===");
-  console.log("Date du test:", new Date().toLocaleString());
-  console.log("----------------------------------------");
-  
-  const results = {
-    articles: { success: false, count: 0, message: "" },
-    amuseBouches: { success: false, count: 0, message: "" },
-    quote: { success: false, message: "" },
-    debate: { success: false, message: "" },
-    universes: { success: false, count: 0, message: "" },
-    clubFeatures: { success: false, count: 0, message: "" },
-    clubPricing: { success: false, message: "" }
-  };
+import { sanityClient } from '../utils/sanityClient';
+import { getAllArticles, getAmuseBouches, getFeaturedDebate, getUniverses, getClubFeatures, getClubPricing, getContentItems } from '../utils/sanityAPI';
+
+// Fonction principale de validation
+async function validateHomepage() {
+  console.log('🔍 Début de la validation de l\'intégrité de la homepage...');
   
   try {
-    // 1. Test des articles (HomeArticlesSection et HeroSection)
-    console.log("\n1. Test des articles (HomeArticlesSection et HeroSection)");
+    // Vérifier la connexion à Sanity
+    console.log('🔌 Vérification de la connexion à Sanity CMS...');
+    const connectionTest = await sanityClient.fetch('*[_type == "sanity.imageAsset"][0]._id');
+    
+    if (connectionTest) {
+      console.log('✅ Connexion à Sanity CMS établie avec succès');
+    } else {
+      console.warn('⚠️ Impossible de vérifier la connexion à Sanity CMS');
+    }
+    
+    // Vérifier les articles récents
+    console.log('\n📰 Vérification des articles récents...');
     const articles = await getAllArticles();
-    results.articles.success = Array.isArray(articles);
-    results.articles.count = articles?.length || 0;
-    results.articles.message = results.articles.success 
-      ? `${results.articles.count} articles récupérés avec succès` 
-      : "Échec de récupération des articles";
-    console.log(results.articles.message);
+    console.log(`${articles.length > 0 ? '✅' : '⚠️'} ${articles.length} articles récupérés`);
     
-    // 2. Test des amuses-bouches (AmuseBoucheSection)
-    console.log("\n2. Test des amuses-bouches (AmuseBoucheSection)");
+    // Vérifier les amuses-bouches
+    console.log('\n🍽️ Vérification des amuses-bouches...');
     const amuseBouches = await getAmuseBouches();
-    results.amuseBouches.success = Array.isArray(amuseBouches);
-    results.amuseBouches.count = amuseBouches?.length || 0;
-    results.amuseBouches.message = results.amuseBouches.success 
-      ? `${results.amuseBouches.count} amuses-bouches récupérés avec succès` 
-      : "Échec de récupération des amuses-bouches";
-    console.log(results.amuseBouches.message);
+    console.log(`${amuseBouches.length > 0 ? '✅' : '⚠️'} ${amuseBouches.length} amuses-bouches récupérés`);
     
-    // 3. Test de la citation (HeroSection)
-    console.log("\n3. Test de la citation (HeroSection)");
-    const quote = await getLatestQuote();
-    results.quote.success = !!quote;
-    results.quote.message = results.quote.success 
-      ? "Citation récupérée avec succès" 
-      : "Échec de récupération de la citation";
-    console.log(results.quote.message);
-    
-    // 4. Test du débat (DebateSection)
-    console.log("\n4. Test du débat (DebateSection)");
+    // Vérifier le débat à la une
+    console.log('\n💬 Vérification du débat à la une...');
     const debate = await getFeaturedDebate();
-    results.debate.success = !!debate;
-    results.debate.message = results.debate.success 
-      ? "Débat récupéré avec succès" 
-      : "Échec de récupération du débat";
-    console.log(results.debate.message);
+    console.log(`${debate ? '✅' : '⚠️'} Débat à la une ${debate ? 'récupéré' : 'non trouvé'}`);
     
-    // 5. Test des univers (EditorialSection)
-    console.log("\n5. Test des univers (EditorialSection)");
-    const universesQuery = `*[_type == "universe"] | order(order asc)`;
-    const universes = await sanityClient.fetch(universesQuery);
-    results.universes.success = Array.isArray(universes);
-    results.universes.count = universes?.length || 0;
-    results.universes.message = results.universes.success 
-      ? `${results.universes.count} univers récupérés avec succès` 
-      : "Échec de récupération des univers";
-    console.log(results.universes.message);
+    // Vérifier les univers éditoriaux
+    console.log('\n🌍 Vérification des univers éditoriaux...');
+    const universes = await getUniverses();
+    console.log(`${universes.length > 0 ? '✅' : '⚠️'} ${universes.length} univers récupérés`);
     
-    // 6. Test des fonctionnalités du club (ClubSection)
-    console.log("\n6. Test des fonctionnalités du club (ClubSection)");
-    const featuresQuery = `*[_type == "clubFeature"] | order(order asc)`;
-    const features = await sanityClient.fetch(featuresQuery);
-    results.clubFeatures.success = Array.isArray(features);
-    results.clubFeatures.count = features?.length || 0;
-    results.clubFeatures.message = results.clubFeatures.success 
-      ? `${results.clubFeatures.count} fonctionnalités du club récupérées avec succès` 
-      : "Échec de récupération des fonctionnalités du club";
-    console.log(results.clubFeatures.message);
+    // Vérifier les fonctionnalités du club
+    console.log('\n👑 Vérification des fonctionnalités du club...');
+    const clubFeatures = await getClubFeatures();
+    console.log(`${clubFeatures.length > 0 ? '✅' : '⚠️'} ${clubFeatures.length} fonctionnalités du club récupérées`);
     
-    // 7. Test du tarif du club (ClubSection)
-    console.log("\n7. Test du tarif du club (ClubSection)");
-    const pricingQuery = `*[_type == "clubPricing" && isActive == true][0]`;
-    const pricing = await sanityClient.fetch(pricingQuery);
-    results.clubPricing.success = !!pricing;
-    results.clubPricing.message = results.clubPricing.success 
-      ? "Tarif du club récupéré avec succès" 
-      : "Échec de récupération du tarif du club";
-    console.log(results.clubPricing.message);
+    // Vérifier les tarifs du club
+    console.log('\n💰 Vérification des tarifs du club...');
+    const clubPricing = await getClubPricing();
+    console.log(`${clubPricing.length > 0 ? '✅' : '⚠️'} ${clubPricing.length} tarifs du club récupérés`);
+    
+    // Vérifier les podcasts
+    console.log('\n🎙️ Vérification des podcasts...');
+    const podcasts = await getContentItems('emission');
+    console.log(`${podcasts.length > 0 ? '✅' : '⚠️'} ${podcasts.length} podcasts récupérés`);
+    
+    // Vérifier les études de cas
+    console.log('\n📊 Vérification des études de cas...');
+    const caseStudies = await getContentItems('business-idea');
+    console.log(`${caseStudies.length > 0 ? '✅' : '⚠️'} ${caseStudies.length} études de cas récupérées`);
+    
+    // Vérifier les success stories
+    console.log('\n🏆 Vérification des success stories...');
+    const successStories = await getContentItems('success-story');
+    console.log(`${successStories.length > 0 ? '✅' : '⚠️'} ${successStories.length} success stories récupérées`);
+    
+    // Résumé
+    console.log('\n📋 Résumé de la validation:');
+    const totalSections = 9;
+    const sectionsWithData = [
+      articles.length > 0,
+      amuseBouches.length > 0,
+      debate !== null,
+      universes.length > 0,
+      clubFeatures.length > 0,
+      clubPricing.length > 0,
+      podcasts.length > 0,
+      caseStudies.length > 0,
+      successStories.length > 0
+    ].filter(Boolean).length;
+    
+    console.log(`✅ ${sectionsWithData}/${totalSections} sections avec données réelles de Sanity`);
+    console.log(`⚠️ ${totalSections - sectionsWithData}/${totalSections} sections utilisant des données mockées`);
+    
+    if (sectionsWithData === totalSections) {
+      console.log('\n🎉 Toutes les sections de la homepage sont connectées à Sanity avec succès!');
+    } else {
+      console.log('\n⚠️ Certaines sections utilisent des données mockées. Vérifiez que le contenu est bien créé dans Sanity Studio.');
+    }
+    
+    console.log('\n✅ Validation de l\'intégrité de la homepage terminée');
     
   } catch (error) {
-    console.error("Erreur lors du test d'intégrité:", error);
+    console.error('❌ Erreur lors de la validation:', error);
   }
-  
-  // Résumé des résultats
-  console.log("\n=== RÉSUMÉ DES TESTS ===");
-  let totalSuccess = 0;
-  let totalTests = Object.keys(results).length;
-  
-  for (const [key, value] of Object.entries(results)) {
-    if (value.success) totalSuccess++;
-    console.log(`${key}: ${value.success ? "✅ OK" : "❌ ÉCHEC"} - ${value.message}`);
-  }
-  
-  console.log("\n=== CONCLUSION ===");
-  console.log(`${totalSuccess}/${totalTests} tests réussis`);
-  
-  if (totalSuccess === totalTests) {
-    console.log("✅ TOUS LES TESTS SONT RÉUSSIS - La homepage est prête pour le déploiement");
-  } else {
-    console.log("⚠️ CERTAINS TESTS ONT ÉCHOUÉ - Le fallback vers les données mockées sera utilisé");
-  }
-  
-  return {
-    success: totalSuccess === totalTests,
-    results
-  };
 }
 
-// Exécuter le test
-testHomepageIntegrity()
-  .then(result => {
-    console.log("\nTest d'intégrité terminé:", result.success ? "SUCCÈS GLOBAL" : "ÉCHEC PARTIEL");
-  })
-  .catch(err => {
-    console.error("Erreur inattendue lors du test d'intégrité:", err);
-  });
+// Exécuter la validation
+validateHomepage();

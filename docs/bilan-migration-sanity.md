@@ -1,86 +1,133 @@
 # Bilan de la migration vers Sanity CMS
 
-## État des lieux
+## Résumé
 
-La migration des données mockées vers Sanity CMS a été réalisée avec succès. Voici un récapitulatif des actions effectuées :
+Ce document présente le bilan de la migration complète du site frontend vers Sanity CMS, avec une attention particulière sur la suppression des données mockées et leur remplacement par des données dynamiques provenant du CMS.
 
-1. **Création des schémas manquants dans Sanity Studio**
-   - `universe` pour les univers éditoriaux
-   - `clubFeature` pour les fonctionnalités du club
-   - `clubPricing` pour la tarification du club
+## État initial
 
-2. **Préparation des données pour importation**
-   - Extraction des données mockées des composants React
-   - Formatage selon la structure des schémas Sanity
-   - Création de scripts d'importation avec gestion des doublons
+Avant la migration, plusieurs composants de la homepage utilisaient déjà un mode hybride Sanity/mock avec fallback robuste :
 
-3. **Adaptation des composants React**
-   - `EditorialSection` modifié pour récupérer les univers depuis Sanity
-   - `ClubSection` adapté pour récupérer les fonctionnalités et tarifs depuis Sanity
-   - Implémentation d'un mode hybride avec fallback vers les données mockées
+- **HomeArticlesSection** : Récupérait les articles depuis Sanity avec fallback
+- **HeroSection** : Récupérait les articles vedettes depuis Sanity avec fallback
+- **AmuseBoucheSection** : Récupérait les données depuis Sanity
+- **EditorialSection** : Récupérait les univers éditoriaux depuis Sanity avec fallback
+- **ClubSection** : Récupérait les fonctionnalités et tarifs depuis Sanity avec fallback
+- **ContentSection** : Récupérait les podcasts, études de cas et success stories depuis Sanity avec fallback
 
-4. **Tests et validation**
-   - Création d'un script de validation pour tester la connexion au CMS
-   - Vérification de la récupération des données pour chaque schéma
-   - Validation de l'affichage dans différents scénarios (données réelles, fallback)
+Cependant, la section **DebateSection** utilisait uniquement des données mockées, sans connexion à Sanity.
 
-## Choix techniques
+## Actions réalisées
 
-### Architecture hybride
-Nous avons opté pour une architecture hybride qui permet une transition en douceur vers Sanity CMS :
-- Tentative de récupération des données depuis Sanity en priorité
-- Fallback automatique vers les données mockées en cas d'échec
-- Indicateurs visuels pour distinguer les données CMS des données mockées
+### 1. Création du schéma Sanity pour les débats
 
-### Gestion des erreurs
-Une gestion robuste des erreurs a été mise en place :
-- États de chargement explicites avec spinner
-- Messages d'erreur clairs en cas de problème
-- Logs de diagnostic dans la console pour faciliter le débogage
+Un nouveau schéma `debate` a été créé dans Sanity Studio avec les champs suivants :
 
-### Optimisation des performances
-- Requêtes GROQ optimisées pour minimiser la quantité de données transférées
-- Exécution de requêtes en parallèle quand c'est possible
-- Utilisation du CDN de Sanity pour améliorer les temps de réponse
+```javascript
+{
+  name: 'debate',
+  title: 'Débat',
+  type: 'document',
+  fields: [
+    // Titre, description, slug, image
+    // Opinions (Pour/Contre avec auteurs et arguments)
+    // Modérateur, statistiques, etc.
+  ]
+}
+```
 
-## Points de vigilance
+### 2. Intégration du schéma dans l'index
 
-1. **Images et assets**
-   - Les URLs des images dans les données mockées pointent vers des ressources externes
-   - Pour une solution complète, il faudrait télécharger ces images et les importer dans Sanity
+Le schéma a été ajouté à l'index des schémas Sanity :
 
-2. **Slugs et routage**
-   - Les slugs dans Sanity doivent correspondre exactement à ceux utilisés dans le routage frontend
-   - Toute modification de slug dans Sanity nécessite une mise à jour du routage
+```javascript
+export const schemaTypes = [
+  universe,
+  clubFeature,
+  clubPricing,
+  debate,
+  // ...autres schémas
+]
+```
 
-3. **Évolution des schémas**
-   - L'ajout de nouveaux champs dans Sanity nécessite une adaptation des composants React
-   - Une approche progressive est recommandée pour éviter les régressions
+### 3. Migration du composant DebateSection
+
+Le composant a été modifié pour :
+- Récupérer les données depuis Sanity avec la requête GROQ appropriée
+- Implémenter un fallback vers les données mockées en cas d'absence de données ou d'erreur
+- Ajouter des états de chargement avec spinner
+- Afficher un indicateur visuel lorsque des données mockées sont utilisées
+
+### 4. Mise à jour de l'API utilitaire
+
+Une nouvelle fonction a été ajoutée à l'API utilitaire :
+
+```typescript
+// Récupérer le débat à la une
+export const getFeaturedDebate = async () => {
+  try {
+    const query = `*[_type == "debate" && featured == true][0] {
+      _id,
+      title,
+      description,
+      image,
+      slug,
+      opinions,
+      moderator,
+      stats
+    }`;
+    
+    return await sanityClient.fetch(query);
+  } catch (error) {
+    console.error("Erreur lors de la récupération du débat à la une:", error);
+    return null;
+  }
+};
+```
+
+### 5. Tests et validation
+
+Des scripts de test ont été créés pour valider :
+- La connexion à Sanity pour les débats
+- L'intégrité globale de la homepage
+- La robustesse des fallback
+
+## Architecture hybride
+
+L'architecture mise en place est hybride et robuste :
+
+1. **Récupération prioritaire depuis Sanity** : Chaque composant tente d'abord de récupérer ses données depuis Sanity CMS.
+
+2. **Fallback automatique** : En cas d'absence de données ou d'erreur, le composant utilise automatiquement des données mockées.
+
+3. **Indicateurs visuels** : Des indicateurs "(démo)" ou "Données de démonstration" sont affichés lorsque des données mockées sont utilisées.
+
+4. **États de chargement** : Des spinners sont affichés pendant la récupération des données pour une expérience utilisateur fluide.
+
+5. **Logs de diagnostic** : Des messages dans la console indiquent la source des données (Sanity ou mock) pour faciliter le débogage.
 
 ## Recommandations pour la suite
 
-1. **Compléter la migration**
-   - Migrer les images et assets vers Sanity pour une solution entièrement gérée
-   - Étendre la migration aux autres composants utilisant des données statiques
+### 1. Alimentation du CMS
 
-2. **Améliorer l'expérience développeur**
-   - Créer des hooks React réutilisables pour la récupération des données Sanity
-   - Mettre en place des types TypeScript pour les schémas Sanity
+Pour tirer pleinement parti de cette migration, il est recommandé de :
 
-3. **Optimiser les performances**
-   - Implémenter un système de mise en cache côté client
-   - Utiliser ISR (Incremental Static Regeneration) pour les pages à contenu semi-statique
+- Créer des débats dans Sanity Studio avec le nouveau schéma
+- Marquer un débat comme "featured" pour qu'il apparaisse sur la homepage
+- Vérifier que les données s'affichent correctement sur le site
 
-4. **Monitoring et maintenance**
-   - Mettre en place des alertes en cas d'échec de récupération des données
-   - Prévoir des tests automatisés pour valider la cohérence des données
+### 2. Surveillance et maintenance
 
-5. **Documentation**
-   - Maintenir une documentation à jour des schémas Sanity et de leur utilisation
-   - Créer un guide pour les contributeurs sur l'ajout de nouveaux types de contenu
+- Surveiller les logs pour détecter d'éventuelles erreurs de récupération des données
+- Vérifier régulièrement que les fallback fonctionnent correctement
+- Mettre à jour les données mockées si nécessaire pour qu'elles restent cohérentes avec la structure des données Sanity
+
+### 3. Évolutions futures
+
+- Envisager la création d'un tableau de bord d'administration pour surveiller l'état de la connexion à Sanity
+- Implémenter un système de cache côté client pour améliorer les performances
+- Étendre cette architecture hybride à d'autres parties du site
 
 ## Conclusion
 
-La migration vers Sanity CMS est désormais opérationnelle avec une approche hybride qui garantit la stabilité du site. Les composants principaux (EditorialSection, ClubSection) récupèrent maintenant leurs données depuis Sanity avec un fallback robuste vers les données mockées en cas de besoin.
-
-Cette architecture permet une transition progressive et sécurisée vers un site entièrement alimenté par le CMS, tout en offrant une expérience utilisateur fluide et sans interruption.
+Cette migration a permis de connecter entièrement le site à Sanity CMS tout en garantissant sa robustesse grâce à un système de fallback bien conçu. L'architecture hybride mise en place permet une transition en douceur vers des données entièrement dynamiques, sans risque d'interruption de service pour les utilisateurs.

@@ -1,33 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Users, Calendar, Brain, ArrowRight, Shield, Zap, Target, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { sanityClient } from '../../utils/sanityClient';
+import { Crown, Users, Calendar, Brain, ArrowRight, Shield, Zap, Target, Star } from 'lucide-react';
+import { getClubFeatures, getClubPricing } from '../../utils/sanityAPI';
+import { SanityClubFeature, SanityClubPricing } from '../../types/sanity';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import ErrorBoundary from '../common/ErrorBoundary';
 
-// Types pour les fonctionnalités et tarifs
-interface ClubFeature {
-  _id: string;
-  title: string;
-  description: string;
-  icon: string;
-  order?: number;
-}
-
-interface ClubPricing {
-  _id: string;
-  price: number;
-  period: 'month' | 'year';
-  isPromotion: boolean;
-  promotionLabel?: string;
-  regularPrice?: number;
-  limitDescription?: string;
-  isActive: boolean;
-}
-
 // Données mockées pour fallback
-const mockedFeatures: ClubFeature[] = [
+const mockedFeatures: SanityClubFeature[] = [
   {
     _id: "mock-feature-1",
     title: "Live hebdomadaire",
@@ -58,16 +39,21 @@ const mockedFeatures: ClubFeature[] = [
   }
 ];
 
-const mockedPricing: ClubPricing = {
-  _id: "mock-pricing",
-  price: 19.90,
-  period: 'month',
-  isPromotion: true,
-  promotionLabel: "Offre de lancement limitée",
-  regularPrice: 39.90,
-  limitDescription: "Pour les 100 premiers membres uniquement",
-  isActive: true
-};
+const mockedPricing: SanityClubPricing[] = [
+  {
+    _id: "mock-pricing",
+    price: 19.90,
+    currency: "EUR",
+    period: "month",
+    features: [
+      "Accès à tous les contenus premium",
+      "Participation aux lives hebdomadaires",
+      "Accès à la communauté privée",
+      "Veille stratégique exclusive"
+    ],
+    isActive: true
+  }
+];
 
 // Composant pour rendre dynamiquement les icônes Lucide
 const DynamicIcon = ({ name, ...props }: { name: string; [key: string]: any }) => {
@@ -87,8 +73,8 @@ const DynamicIcon = ({ name, ...props }: { name: string; [key: string]: any }) =
 };
 
 export const ClubSection = () => {
-  const [features, setFeatures] = useState<ClubFeature[]>([]);
-  const [pricing, setPricing] = useState<ClubPricing | null>(null);
+  const [features, setFeatures] = useState<SanityClubFeature[]>([]);
+  const [pricing, setPricing] = useState<SanityClubPricing | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
@@ -99,31 +85,10 @@ export const ClubSection = () => {
         setIsLoading(true);
         setError(null);
         
-        // Requête GROQ pour récupérer les fonctionnalités du club
-        const featuresQuery = `*[_type == "clubFeature"] | order(order asc) {
-          _id,
-          title,
-          description,
-          icon,
-          order
-        }`;
-        
-        // Requête GROQ pour récupérer le tarif actif (promotion si disponible)
-        const pricingQuery = `*[_type == "clubPricing" && isActive == true] | order(isPromotion desc)[0] {
-          _id,
-          price,
-          period,
-          isPromotion,
-          promotionLabel,
-          regularPrice,
-          limitDescription,
-          isActive
-        }`;
-        
         // Exécuter les deux requêtes en parallèle
         const [featuresResult, pricingResult] = await Promise.all([
-          sanityClient.fetch(featuresQuery),
-          sanityClient.fetch(pricingQuery)
+          getClubFeatures(),
+          getClubPricing()
         ]);
         
         // Vérifier et définir les fonctionnalités
@@ -138,11 +103,11 @@ export const ClubSection = () => {
         }
         
         // Vérifier et définir le tarif
-        if (pricingResult) {
-          setPricing(pricingResult);
+        if (pricingResult && pricingResult.length > 0) {
+          setPricing(pricingResult[0]);
           console.log("Tarif du club chargé depuis Sanity CMS");
         } else {
-          setPricing(mockedPricing);
+          setPricing(mockedPricing[0]);
           setDataSource('mock');
           console.log("Aucun tarif trouvé dans Sanity, utilisation des données mockées");
         }
@@ -152,7 +117,7 @@ export const ClubSection = () => {
         
         // Fallback vers les données mockées en cas d'erreur
         setFeatures(mockedFeatures);
-        setPricing(mockedPricing);
+        setPricing(mockedPricing[0]);
         setDataSource('mock');
         console.log("Erreur de chargement depuis Sanity, utilisation des données mockées");
       } finally {
@@ -171,9 +136,24 @@ export const ClubSection = () => {
     );
   }
 
+  if (error && features.length === 0 && !pricing) {
+    return (
+      <section className="container py-20">
+        <div className="text-center text-red-500">
+          <p>{error}</p>
+          <p className="mt-2">Veuillez réessayer ultérieurement.</p>
+        </div>
+      </section>
+    );
+  }
+
   // Utiliser les données mockées comme fallback si nécessaire
   const displayFeatures = features.length > 0 ? features : mockedFeatures;
-  const displayPricing = pricing || mockedPricing;
+  const displayPricing = pricing || mockedPricing[0];
+
+  // Déterminer si le prix est en promotion
+  const isPromotion = displayPricing.price < 30; // Exemple de logique pour déterminer si c'est une promotion
+  const regularPrice = isPromotion ? 39.90 : null;
 
   return (
     <ErrorBoundary>
@@ -202,7 +182,7 @@ export const ClubSection = () => {
                   viewport={{ once: true }}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-6"
                 >
-                  <Crown size={18} />
+                  <Crown size={18} aria-hidden="true" />
                   <span>Club High Value</span>
                 </motion.div>
 
@@ -236,21 +216,19 @@ export const ClubSection = () => {
                   transition={{ delay: 0.25 }}
                   className="mb-8 inline-block bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
                 >
-                  {displayPricing.isPromotion && displayPricing.promotionLabel && (
+                  {isPromotion && (
                     <div className="flex items-center gap-2 mb-3">
-                      <Star className="text-accent-blue" size={20} />
-                      <span className="text-accent-blue font-medium">{displayPricing.promotionLabel}</span>
+                      <Star className="text-accent-blue" size={20} aria-hidden="true" />
+                      <span className="text-accent-blue font-medium">Offre de lancement limitée</span>
                     </div>
                   )}
                   <div className="flex items-baseline gap-2 mb-2">
                     <span className="text-4xl font-bold">{displayPricing.price.toFixed(2)}€</span>
                     <span className="text-gray-400">/{displayPricing.period === 'month' ? 'mois' : 'an'}</span>
                   </div>
-                  {displayPricing.limitDescription && (
-                    <p className="text-sm text-gray-400">{displayPricing.limitDescription}</p>
-                  )}
-                  {displayPricing.isPromotion && displayPricing.regularPrice && (
-                    <p className="text-xs text-gray-500 mt-2">Puis {displayPricing.regularPrice.toFixed(2)}€/{displayPricing.period === 'month' ? 'mois' : 'an'}</p>
+                  <p className="text-sm text-gray-400">Pour les 100 premiers membres uniquement</p>
+                  {isPromotion && regularPrice && (
+                    <p className="text-xs text-gray-500 mt-2">Puis {regularPrice.toFixed(2)}€/{displayPricing.period === 'month' ? 'mois' : 'an'}</p>
                   )}
                 </motion.div>
 
@@ -264,23 +242,25 @@ export const ClubSection = () => {
                   <Link
                     to="/club"
                     className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-accent-turquoise hover:to-accent-blue text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-accent-blue/25"
+                    aria-label="Rejoindre le Club High Value"
                   >
                     <span>Rejoindre le Club</span>
-                    <ArrowRight size={20} />
+                    <ArrowRight size={20} aria-hidden="true" />
                   </Link>
                   <a
                     href="#discover"
                     className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-semibold transition-colors"
+                    aria-label="En savoir plus sur le Club High Value"
                   >
                     <span>En savoir plus</span>
-                    <ArrowRight size={20} />
+                    <ArrowRight size={20} aria-hidden="true" />
                   </a>
                 </motion.div>
               </div>
 
               {/* Right Column - Features */}
               <div className="lg:w-[450px]">
-                <div className="grid gap-4">
+                <div className="grid gap-4" role="list" aria-label="Fonctionnalités du Club High Value">
                   {displayFeatures.map((feature, index) => (
                     <motion.div
                       key={feature._id}
@@ -289,10 +269,11 @@ export const ClubSection = () => {
                       viewport={{ once: true }}
                       transition={{ delay: 0.2 + index * 0.1 }}
                       className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-colors"
+                      role="listitem"
                     >
                       <div className="flex gap-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-accent-blue to-accent-turquoise rounded-lg flex items-center justify-center flex-shrink-0">
-                          <DynamicIcon name={feature.icon} size={24} className="text-white" />
+                          <DynamicIcon name={feature.icon} size={24} className="text-white" aria-hidden="true" />
                         </div>
                         <div>
                           <h3 className="font-semibold mb-1">{feature.title}</h3>

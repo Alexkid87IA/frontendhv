@@ -6,17 +6,18 @@ import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
 import { getAllArticles } from '../../utils/sanityAPI';
 import { LoadingSpinner } from '../common/LoadingSpinner';
-import { urlFor } from '../../utils/sanityImage';
+import { SanityArticle } from '../../types/sanity';
 
 // Données mockées pour fallback
-const mockFeaturedArticle = {
+const mockFeaturedArticle: SanityArticle = {
   _id: '1',
   title: "Comment développer un mindset d'exception",
-  slug: { current: 'mindset-exception' },
+  slug: { _type: "slug", current: 'mindset-exception' },
   mainImage: {
+    _type: "image",
     asset: {
       _ref: 'image-1',
-      url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
+      _type: "reference"
     }
   },
   excerpt: "Découvre les secrets des entrepreneurs qui réussissent et transforme ta vision du possible.",
@@ -25,20 +26,21 @@ const mockFeaturedArticle = {
     {
       _id: 'cat1',
       title: 'Mindset',
-      slug: { current: 'mindset' }
+      slug: { _type: "slug", current: 'mindset' }
     }
   ]
 };
 
-const mockRecentArticles = [
+const mockRecentArticles: SanityArticle[] = [
   {
     _id: '2',
     title: "L'art de la résilience entrepreneuriale",
-    slug: { current: 'resilience-entrepreneuriale' },
+    slug: { _type: "slug", current: 'resilience-entrepreneuriale' },
     mainImage: {
+      _type: "image",
       asset: {
         _ref: 'image-2',
-        url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80'
+        _type: "reference"
       }
     },
     excerpt: "Découvrez comment transformer les obstacles en opportunités",
@@ -47,11 +49,12 @@ const mockRecentArticles = [
   {
     _id: '3',
     title: "Comment développer son leadership",
-    slug: { current: 'developper-leadership' },
+    slug: { _type: "slug", current: 'developper-leadership' },
     mainImage: {
+      _type: "image",
       asset: {
         _ref: 'image-3',
-        url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
+        _type: "reference"
       }
     },
     excerpt: "Les qualités essentielles d'un leader moderne",
@@ -60,11 +63,12 @@ const mockRecentArticles = [
   {
     _id: '4',
     title: "Les clés d'une communication impactante",
-    slug: { current: 'communication-impactante' },
+    slug: { _type: "slug", current: 'communication-impactante' },
     mainImage: {
+      _type: "image",
       asset: {
         _ref: 'image-4',
-        url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80'
+        _type: "reference"
       }
     },
     excerpt: "Techniques pour captiver votre audience",
@@ -73,15 +77,17 @@ const mockRecentArticles = [
 ];
 
 export const HeroSection = () => {
-  const [featuredArticle, setFeaturedArticle] = useState(mockFeaturedArticle);
-  const [recentArticles, setRecentArticles] = useState(mockRecentArticles);
+  const [featuredArticle, setFeaturedArticle] = useState<SanityArticle>(mockFeaturedArticle);
+  const [recentArticles, setRecentArticles] = useState<SanityArticle[]>(mockRecentArticles);
   const [isLoading, setIsLoading] = useState(true);
-  const [dataSource, setDataSource] = useState('mock');
+  const [error, setError] = useState<string | null>(null);
+  const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         const sanityArticles = await getAllArticles();
         
         if (sanityArticles && sanityArticles.length > 0) {
@@ -91,17 +97,19 @@ export const HeroSection = () => {
           // Utiliser les 3 articles suivants pour la grille
           setRecentArticles(sanityArticles.slice(1, 4));
           
-          setDataSource('sanity');
+          setDataSource('cms');
           console.log('Articles HeroSection récupérés depuis Sanity CMS');
         } else {
           // Fallback vers les données mockées
           setFeaturedArticle(mockFeaturedArticle);
           setRecentArticles(mockRecentArticles);
           setDataSource('mock');
-          console.log('Utilisation des articles mockés dans HeroSection (fallback)');
+          console.log('Aucun article trouvé dans Sanity, utilisation des articles mockés dans HeroSection');
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des articles pour HeroSection:', error);
+        setError("Impossible de charger les articles vedettes");
+        
         // Fallback vers les données mockées en cas d'erreur
         setFeaturedArticle(mockFeaturedArticle);
         setRecentArticles(mockRecentArticles);
@@ -140,6 +148,17 @@ export const HeroSection = () => {
     );
   }
 
+  if (error && !featuredArticle && recentArticles.length === 0) {
+    return (
+      <section className="relative min-h-[40vh] flex items-center justify-center pt-6 pb-8">
+        <div className="text-center text-red-500">
+          <p>{error}</p>
+          <p className="mt-2">Veuillez réessayer ultérieurement.</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <ErrorBoundary>
       <section className="relative min-h-[40vh] flex items-center pt-6 pb-8 overflow-hidden">
@@ -153,6 +172,12 @@ export const HeroSection = () => {
         </div>
 
         <div className="container relative">
+          {dataSource === 'mock' && (
+            <div className="absolute top-0 right-0 text-xs text-amber-500 bg-black/50 px-2 py-1 rounded z-10">
+              Données de démonstration
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
             {/* Left Column - Text Content */}
             <div>
@@ -163,7 +188,7 @@ export const HeroSection = () => {
                 className="space-y-3"
               >
                 <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium">
-                  {dataSource === 'sanity' ? 'Média indépendant' : 'Média indépendant (démo)'}
+                  Média indépendant
                 </span>
 
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-montserrat font-bold leading-tight">
@@ -189,9 +214,10 @@ export const HeroSection = () => {
                     <Link
                       to="/articles"
                       className="relative flex items-center justify-center gap-2 bg-black px-6 py-3 rounded-xl text-white group-hover:text-white/90 transition-colors"
+                      aria-label="Explorer tous les articles"
                     >
                       <span>Explorer les articles</span>
-                      <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                     </Link>
                   </motion.div>
 
@@ -202,8 +228,9 @@ export const HeroSection = () => {
                     <Link
                       to="/create-with-roger"
                       className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl transition-colors"
+                      aria-label="Créer du contenu avec Roger"
                     >
-                      <Sparkles className="w-5 h-5" />
+                      <Sparkles className="w-5 h-5" aria-hidden="true" />
                       <span>Créer avec Roger</span>
                     </Link>
                   </motion.div>
@@ -224,6 +251,8 @@ export const HeroSection = () => {
                   alt={featuredArticle.title}
                   className="absolute inset-0 w-full h-full object-cover"
                   fallbackText={featuredArticle.title}
+                  width={600}
+                  height={450}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
@@ -242,16 +271,17 @@ export const HeroSection = () => {
                   <Link
                     to={`/article/${featuredArticle.slug?.current}`}
                     className="inline-flex items-center gap-2 text-accent-blue hover:text-accent-turquoise transition-colors"
+                    aria-label={`Lire l'article: ${featuredArticle.title}`}
                   >
                     <span>Lire l'article</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={16} aria-hidden="true" />
                   </Link>
                 </div>
               </div>
 
               {/* Decorative Elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-accent-blue to-accent-turquoise rounded-full blur-2xl opacity-20" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-accent-turquoise to-accent-blue rounded-full blur-2xl opacity-20" />
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-accent-blue to-accent-turquoise rounded-full blur-2xl opacity-20" aria-hidden="true" />
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-accent-turquoise to-accent-blue rounded-full blur-2xl opacity-20" aria-hidden="true" />
             </motion.div>
           </div>
 
@@ -261,12 +291,15 @@ export const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
             className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6"
+            role="region"
+            aria-label="Articles récents"
           >
             {recentArticles.map((article, index) => (
               <Link
                 key={article._id}
                 to={`/article/${article.slug?.current}`}
                 className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden hover:border-accent-blue/30 transition-all duration-300"
+                aria-label={article.title}
               >
                 <div className="relative aspect-video">
                   <SafeImage
@@ -274,8 +307,10 @@ export const HeroSection = () => {
                     alt={article.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     fallbackText={article.title}
+                    width={400}
+                    height={225}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" aria-hidden="true" />
                 </div>
                 <div className="p-4">
                   <h3 className="text-base font-semibold mb-2 text-white group-hover:text-accent-blue transition-colors">
@@ -286,7 +321,7 @@ export const HeroSection = () => {
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-500">{formatRelativeDate(article.publishedAt)}</span>
-                    <ArrowRight size={16} className="text-accent-blue transform group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight size={16} className="text-accent-blue transform group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                   </div>
                 </div>
               </Link>
