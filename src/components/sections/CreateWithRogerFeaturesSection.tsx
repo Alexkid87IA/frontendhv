@@ -7,19 +7,18 @@ export const CreateWithRogerFeaturesSection = () => {
   return (
     <section className="container py-20">
       <motion.div
-        initial="initial"
-        animate="animate"
-        variants={{
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.6 }
-        }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         className="text-center mb-12"
       >
+        <span className="inline-block px-4 py-2 bg-accent-violet/20 text-accent-violet rounded-full text-sm font-medium mb-6">
+          Nos services
+        </span>
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Créer avec Roger
         </h2>
-        <p className="text-tertiary text-lg max-w-2xl mx-auto">
+        <p className="text-lg text-tertiary max-w-2xl mx-auto">
           Une approche unique qui combine expertise technique et accompagnement éditorial
           pour créer du contenu authentique et impactant.
         </p>
