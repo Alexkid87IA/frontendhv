@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ResponsiveNavbar } from './components/layout/ResponsiveNavbar';
 import { Footer } from './components/layout/Footer';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -42,12 +42,10 @@ function App() {
                 <Route path="/article/:slug" element={<ArticlePage />} />
                 <Route path="/business-ideas" element={<BusinessIdeasPage />} />
                 <Route path="/business-idea/:slug" element={<BusinessIdeaPage />} />
-                {/* Route dynamique pour les catégories */}
-                <Route path="/rubrique/:categorySlug" element={<CategoryPage />} /> 
+                <Route path="/rubrique/:categorySlug" element={<CategoryPage />} />
                 <Route path="/podcasts" element={<PodcastPage />} />
                 <Route path="/emissions" element={<EmissionsPage />} />
                 <Route path="/create-with-roger" element={<CreateWithRogerPage />} />
-                <Route path="/co-shooting" element={<Navigate to="/create-with-roger\" replace />} />
                 <Route path="/coaching" element={<CoachingPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/recommendations" element={<RecommendationsPage />} />

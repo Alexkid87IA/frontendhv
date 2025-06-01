@@ -1,43 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { sanityClient } from '../../utils/sanityClient';
-
-// Types pour TypeScript
-interface SanityImage {
-  asset: {
-    _ref: string;
-    url?: string;
-  };
-}
-
-interface SanitySlug {
-  current: string;
-}
-
-interface SanityAuthor {
-  name: string;
-  image?: SanityImage;
-}
-
-interface SanityCategory {
-  _id: string;
-  title: string;
-  slug?: SanitySlug;
-}
-
-interface Article {
-  _id: string;
-  title: string;
-  slug: SanitySlug;
-  excerpt?: string;
-  mainImage?: SanityImage;
-  publishedAt: string;
-  author?: SanityAuthor;
-  categories?: SanityCategory[];
-  videoUrl?: string;
-  duration?: string;
-  views?: number;
-}
+import { motion } from 'framer-motion';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import SafeImage from '../common/SafeImage';
+import ErrorBoundary from '../common/ErrorBoundary';
 
 interface ContentSectionProps {
   title: string;
@@ -46,208 +12,193 @@ interface ContentSectionProps {
 }
 
 const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sectionType }) => {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  // Données de démonstration
+  const items = [
+    {
+      id: '1',
+      title: "Comment développer un mindset d'exception",
+      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80",
+      description: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible."
+    },
+    {
+      id: '2',
+      title: "L'art de la résilience entrepreneuriale",
+      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
+      description: "Comment transformer les obstacles en opportunités et rebondir face aux défis."
+    },
+    {
+      id: '3',
+      title: "Les clés d'une communication impactante",
+      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
+      description: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence."
+    },
+    {
+      id: '4',
+      title: "Innovation et développement durable",
+      image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
+      description: "Concilier croissance et responsabilité environnementale dans l'entrepreneuriat moderne."
+    },
+    {
+      id: '5',
+      title: "Leadership et management d'équipe",
+      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80",
+      description: "Les meilleures pratiques pour inspirer et diriger des équipes performantes."
+    }
+  ];
+
+  const checkScrollButtons = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setCanScrollLeft(scrollLeft > 5);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+    }
+  };
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        setLoading(true);
-        
-        // Requête GROQ pour récupérer les articles du type de section spécifié
-        const query = `*[_type == "article" && references(*[_type == "sectionType" && slug.current == $sectionType]._id)] | order(publishedAt desc) {
-          _id,
-          title,
-          slug,
-          excerpt,
-          mainImage,
-          publishedAt,
-          "author": author-> {
-            name,
-            image
-          },
-          "categories": categories[]-> {
-            _id,
-            title,
-            slug
-          },
-          videoUrl,
-          duration,
-          views
-        }[0...6]`;
-        
-        const result = await sanityClient.fetch(query, { sectionType });
-        setArticles(result);
-      } catch (err) {
-        console.error('Erreur lors de la récupération des articles:', err);
-        setError('Impossible de charger les articles. Veuillez réessayer plus tard.');
-      } finally {
-        setLoading(false);
-      }
-    };
+    const scrollContainer = scrollRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", checkScrollButtons);
+      const timeoutId = setTimeout(checkScrollButtons, 500);
+      return () => {
+        scrollContainer.removeEventListener("scroll", checkScrollButtons);
+        clearTimeout(timeoutId);
+      };
+    }
+  }, []);
 
-    fetchArticles();
-  }, [sectionType]);
-
-  const scrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const { clientWidth } = scrollRef.current;
+      const scrollAmount = clientWidth * 0.8;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
     }
   };
 
-  const scrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 300, behavior: 'smooth' });
-    }
-  };
-
-  // Formatage de la date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
-  };
-
-  // Formatage du nombre de vues
-  const formatViews = (views: number) => {
-    if (views >= 1000) {
-      return `${(views / 1000).toFixed(0)}K vues`;
-    }
-    return `${views} vues`;
-  };
-
-  // Fonction pour obtenir le texte du CTA selon le type de section
-  const getCtaText = (type: string) => {
+  const getSectionLabel = (type: string) => {
     switch (type) {
       case 'emission':
-        return 'Regarder la vidéo';
+        return 'Le podcast High Value';
       case 'business-idea':
-        return 'Découvrir l\'idée';
+        return 'Des études de cas';
       case 'success-story':
-        return 'Lire l\'histoire';
+        return 'Des parcours incroyables';
       default:
-        return 'Lire l\'article';
+        return '';
     }
   };
 
-  if (loading) {
-    return <div className="py-8 text-center">Chargement des articles...</div>;
-  }
-
-  if (error) {
-    return <div className="py-8 text-center text-red-500">{error}</div>;
-  }
-
-  if (articles.length === 0) {
-    return <div className="py-8 text-center">Aucun article trouvé pour cette section.</div>;
-  }
-
   return (
-    <section className="py-12 bg-navy-900 text-white">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h2 className="text-3xl font-bold">{title}</h2>
-            <p className="text-gray-300 mt-2">{description}</p>
-          </div>
-          <div className="flex space-x-2">
-            <button 
-              onClick={scrollLeft}
-              className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
-              aria-label="Précédent"
-            >
-              &#10094;
-            </button>
-            <button 
-              onClick={scrollRight}
-              className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
-              aria-label="Suivant"
-            >
-              &#10095;
-            </button>
-          </div>
-        </div>
+    <ErrorBoundary>
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-900/50 to-black" />
+        
+        <div className="container relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-4">
+              {getSectionLabel(sectionType)}
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              {title}
+            </h2>
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+              {description}
+            </p>
+          </motion.div>
 
-        <div 
-          ref={carouselRef}
-          className="flex space-x-6 overflow-x-auto pb-6 scrollbar-hide"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {articles.map((article) => (
-            <div key={article._id} className="flex-none w-80 md:w-96">
-              <Link to={`/article/${article.slug.current}`} className="block">
-                <div className="bg-navy-800 rounded-lg overflow-hidden transition-transform hover:scale-[1.02] hover:shadow-lg">
-                  <div className="relative h-48 md:h-56">
-                    {article.mainImage ? (
-                      <img 
-                        src={`https://cdn.sanity.io/images/z9wsynas/production/${article.mainImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg')}`}
-                        alt={article.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-                        <span className="text-gray-400">Image non disponible</span>
-                      </div>
-                    )}
-                    
-                    {/* Bouton Play uniquement pour la section Émission */}
-                    {sectionType === 'emission' && article.videoUrl && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="p-4 rounded-full bg-blue-500 bg-opacity-80 hover:bg-opacity-100 transition-all transform hover:scale-110">
-                          <div className="w-8 h-8 flex items-center justify-center text-white">
-                            &#9658;
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="p-4">
-                    <h3 className="text-xl font-bold mb-2 hover:text-blue-400 transition-colors">
-                      {article.title}
-                    </h3>
-                    
-                    {article.excerpt && (
-                      <p className="text-gray-300 text-sm mb-4 line-clamp-2">{article.excerpt}</p>
-                    )}
-                    
-                    <div className="flex justify-between items-center text-sm text-gray-400">
-                      <div className="flex items-center">
-                        {article.author?.name && (
-                          <span>{article.author.name}</span>
-                        )}
+          <div className="relative">
+            {/* Navigation Buttons */}
+            <div className="absolute -top-20 right-0 flex gap-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => scroll("left")}
+                disabled={!canScrollLeft}
+                className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                aria-label="Précédent"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => scroll("right")}
+                disabled={!canScrollRight}
+                className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                aria-label="Suivant"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </motion.button>
+            </div>
+
+            {/* Content Grid */}
+            <div
+              ref={scrollRef}
+              className="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"
+            >
+              {items.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex-none w-[300px]"
+                >
+                  <Link 
+                    to={`/${sectionType}/${item.id}`} 
+                    className="block group"
+                  >
+                    <div className="relative bg-gradient-to-br from-neutral-900 to-black border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 hover:scale-[1.02]">
+                      <div className="relative aspect-[4/3] w-full overflow-hidden">
+                        <SafeImage
+                          image={item.image}
+                          alt={item.title}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          fallbackText={item.title}
+                        />
+                        
+                        {/* Overlay gradients */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
                       </div>
                       
-                      <div className="flex items-center space-x-2">
-                        {sectionType === 'emission' && article.duration && (
-                          <span>{article.duration}</span>
-                        )}
+                      <div className="p-6">
+                        <h3 className="text-lg font-semibold tracking-tight leading-tight mb-3 text-white group-hover:text-accent-blue transition-colors line-clamp-2">
+                          {item.title}
+                        </h3>
                         
-                        {sectionType === 'emission' && article.views && (
-                          <span>{formatViews(article.views)}</span>
-                        )}
-                        
-                        {article.publishedAt && (
-                          <span>{formatDate(article.publishedAt)}</span>
-                        )}
+                        <p className="text-gray-400 text-sm line-clamp-2 mb-4">
+                          {item.description}
+                        </p>
+
+                        <div className="flex items-center justify-end">
+                          <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                            <span>Découvrir</span>
+                            <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="mt-4">
-                      <span className="text-blue-400 hover:text-blue-300 transition-colors flex items-center">
-                        {getCtaText(sectionType)}
-                        <span className="ml-1">&#10095;</span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+                  </Link>
+                </motion.div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </ErrorBoundary>
   );
 };
 

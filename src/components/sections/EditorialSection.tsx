@@ -128,7 +128,7 @@ export const EditorialSection = () => {
 
   if (isLoading) {
     return (
-      <section className="container py-20 flex justify-center items-center">
+      <section className="container py-12 md:py-20 flex justify-center items-center">
         <LoadingSpinner />
       </section>
     );
@@ -136,7 +136,7 @@ export const EditorialSection = () => {
 
   if (error && universes.length === 0) {
     return (
-      <section className="container py-20">
+      <section className="container py-12 md:py-20">
         <div className="text-center text-red-500">
           <p>{error}</p>
           <p className="mt-2">Veuillez réessayer ultérieurement.</p>
@@ -147,20 +147,20 @@ export const EditorialSection = () => {
 
   return (
     <ErrorBoundary>
-      <section className="container py-20">
+      <section className="container py-12 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-8 md:mb-12"
         >
-          <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-6">
+          <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-4 md:mb-6">
             Univers éditoriaux
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
             Explorez nos univers
           </h2>
-          <p className="text-tertiary text-lg max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-tertiary max-w-2xl mx-auto px-4 md:px-0">
             Plongez dans nos thématiques phares et découvrez des contenus qui vous inspirent et vous transforment
           </p>
           {dataSource === 'mock' && (
@@ -170,7 +170,7 @@ export const EditorialSection = () => {
           )}
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 px-4 md:px-0">
           {universes.map((universe, index) => (
             <motion.div
               key={universe._id}
@@ -181,7 +181,7 @@ export const EditorialSection = () => {
             >
               <Link 
                 to={`/rubrique/${universe.slug.current}`}
-                className="group relative block aspect-[16/9] rounded-2xl overflow-hidden"
+                className="group relative block aspect-[3/2] md:aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden"
               >
                 {/* Background Image */}
                 <div className="absolute inset-0">
@@ -195,22 +195,22 @@ export const EditorialSection = () => {
                 </div>
 
                 {/* Content */}
-                <div className="relative h-full p-8 flex flex-col">
-                  {/* Logo */}
+                <div className="relative h-full p-4 md:p-8 flex flex-col">
+                  {/* Logo - Taille augmentée */}
                   <div className="mb-auto">
                     <img 
                       src={dataSource === 'cms' ? urlFor(universe.logo) : universe.logo} 
                       alt={`Logo ${universe.title}`}
-                      className="w-12 h-12 transition-transform duration-300 group-hover:scale-110"
+                      className="w-16 h-16 md:w-20 md:h-20 transition-transform duration-300 group-hover:scale-110"
                     />
                   </div>
 
                   {/* Text Content */}
                   <div>
-                    <h3 className="text-2xl font-bold mb-2 text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-500">
+                    <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-500">
                       {universe.subtitle}
                     </h3>
-                    <p className="text-white/80 text-sm mb-4 line-clamp-2 group-hover:text-white transition-colors">
+                    <p className="text-white/80 text-sm mb-3 md:mb-4 line-clamp-2 group-hover:text-white transition-colors">
                       {universe.description}
                     </p>
                     
@@ -218,6 +218,9 @@ export const EditorialSection = () => {
                     <div className="h-0.5 w-0 bg-white transition-all duration-500 group-hover:w-full" />
                   </div>
                 </div>
+
+                {/* Touch Overlay for Mobile */}
+                <div className="absolute inset-0 bg-black/0 active:bg-black/10 md:hidden transition-colors" />
               </Link>
             </motion.div>
           ))}

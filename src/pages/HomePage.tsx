@@ -10,6 +10,70 @@ import ContentSection from '../components/sections/ContentSection';
 import { ClubSection } from '../components/sections/ClubSection';
 import SimpleFooter from '../components/layout/SimpleFooter';
 
+// Données mockées pour la section articles
+const mockArticles = [
+  {
+    _id: '1',
+    title: "Comment développer un mindset d'exception",
+    slug: { current: 'mindset-exception' },
+    mainImage: {
+      asset: {
+        _ref: 'image-1',
+        url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80'
+      }
+    },
+    excerpt: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible.",
+    publishedAt: "2024-03-20",
+    categories: [
+      {
+        _id: 'cat1',
+        title: 'Mindset',
+        slug: { current: 'mindset' }
+      }
+    ]
+  },
+  {
+    _id: '2',
+    title: "L'art de la résilience entrepreneuriale",
+    slug: { current: 'resilience-entrepreneuriale' },
+    mainImage: {
+      asset: {
+        _ref: 'image-2',
+        url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
+      }
+    },
+    excerpt: "Comment transformer les obstacles en opportunités et rebondir face aux défis.",
+    publishedAt: "2024-03-19",
+    categories: [
+      {
+        _id: 'cat2',
+        title: 'Business',
+        slug: { current: 'business' }
+      }
+    ]
+  },
+  {
+    _id: '3',
+    title: "Les clés d'une communication impactante",
+    slug: { current: 'communication-impactante' },
+    mainImage: {
+      asset: {
+        _ref: 'image-3',
+        url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80'
+      }
+    },
+    excerpt: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence.",
+    publishedAt: "2024-03-18",
+    categories: [
+      {
+        _id: 'cat3',
+        title: 'Communication',
+        slug: { current: 'communication' }
+      }
+    ]
+  }
+];
+
 export const HomePage = () => {
   return (
     <>
@@ -27,21 +91,21 @@ export const HomePage = () => {
         {/* Sections de contenu */}
         <HeroSection />
         <AmuseBoucheSection />
-        <HomeArticlesSection />
+        <HomeArticlesSection articles={mockArticles} />
         <EditorialSection />
         <ClubSection />
         <ContentSection 
-          title="L'émission"
+          title="Le podcast High Value"
           description="Des conversations authentiques avec ceux qui façonnent le monde de demain"
           sectionType="emission"
         />
         <ContentSection 
-          title="Business Idea"
+          title="Des études de cas"
           description="Découvrez les stratégies et idées qui transforment le monde des affaires"
           sectionType="business-idea"
         />
         <ContentSection 
-          title="Success Story"
+          title="Des parcours incroyables"
           description="Parcours inspirants d'entrepreneurs qui ont réussi à concrétiser leur vision"
           sectionType="success-story"
         />
