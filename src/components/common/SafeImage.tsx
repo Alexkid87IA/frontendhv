@@ -37,9 +37,9 @@ export default function SafeImage({ source, alt, className, width, height }: Saf
     }
     
     // Fallback
-    return <img src={`https://via.placeholder.com/${width || 400}x${height || 300}?text=Image`} alt={alt} className={className} />;
+    return <img src={`https://placehold.co/${width || 400}x${height || 300}?text=Image`} alt={alt} className={className} />;
   } catch (error) {
     console.error('Erreur SafeImage:', error);
-    return <img src={`https://via.placeholder.com/${width || 400}x${height || 300}?text=Erreur`} alt={alt} className={className} />;
+    return <img src={`https://placehold.co/${width || 400}x${height || 300}?text=Erreur`} alt={alt} className={className} />;
   }
 }
