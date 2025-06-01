@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
+import { sanityClient } from '../../utils/sanityClient';
+import { LoadingSpinner } from '../common/LoadingSpinner';
 
 interface ContentSectionProps {
   title: string;
@@ -11,44 +13,277 @@ interface ContentSectionProps {
   sectionType: 'emission' | 'business-idea' | 'success-story';
 }
 
+interface ContentItem {
+  _id: string;
+  title: string;
+  mainImage?: any;
+  excerpt?: string;
+  slug?: {
+    current: string;
+  };
+}
+
+// Données mockées pour fallback
+const mockItems = {
+  'emission': [
+    {
+      _id: '1',
+      title: "Comment développer un mindset d'exception",
+      mainImage: {
+        asset: {
+          _ref: 'image-1',
+          url: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible.",
+      slug: { current: 'mindset-exception' }
+    },
+    {
+      _id: '2',
+      title: "L'art de la résilience entrepreneuriale",
+      mainImage: {
+        asset: {
+          _ref: 'image-2',
+          url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Comment transformer les obstacles en opportunités et rebondir face aux défis.",
+      slug: { current: 'resilience-entrepreneuriale' }
+    },
+    {
+      _id: '3',
+      title: "Les clés d'une communication impactante",
+      mainImage: {
+        asset: {
+          _ref: 'image-3',
+          url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence.",
+      slug: { current: 'communication-impactante' }
+    },
+    {
+      _id: '4',
+      title: "Innovation et développement durable",
+      mainImage: {
+        asset: {
+          _ref: 'image-4',
+          url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Concilier croissance et responsabilité environnementale dans l'entrepreneuriat moderne.",
+      slug: { current: 'innovation-developpement-durable' }
+    },
+    {
+      _id: '5',
+      title: "Leadership et management d'équipe",
+      mainImage: {
+        asset: {
+          _ref: 'image-5',
+          url: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Les meilleures pratiques pour inspirer et diriger des équipes performantes.",
+      slug: { current: 'leadership-management' }
+    }
+  ],
+  'business-idea': [
+    {
+      _id: '6',
+      title: "Étude de cas : La transformation digitale de Carrefour",
+      mainImage: {
+        asset: {
+          _ref: 'image-6',
+          url: "https://images.unsplash.com/photo-1556742031-c6961e8560b0?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Comment le géant de la distribution a réinventé son modèle commercial face à Amazon.",
+      slug: { current: 'transformation-digitale-carrefour' }
+    },
+    {
+      _id: '7',
+      title: "Comment Decathlon a conquis le marché mondial",
+      mainImage: {
+        asset: {
+          _ref: 'image-7',
+          url: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Stratégie d'expansion et innovation produit : les clés du succès international.",
+      slug: { current: 'decathlon-marche-mondial' }
+    },
+    {
+      _id: '8',
+      title: "Le modèle disruptif de Free dans les télécoms",
+      mainImage: {
+        asset: {
+          _ref: 'image-8',
+          url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Comment Xavier Niel a bouleversé le marché des télécommunications en France.",
+      slug: { current: 'modele-disruptif-free' }
+    },
+    {
+      _id: '9',
+      title: "La stratégie de contenu de Michelin",
+      mainImage: {
+        asset: {
+          _ref: 'image-9',
+          url: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Du guide gastronomique aux pneus : l'histoire d'une stratégie de contenu centenaire.",
+      slug: { current: 'strategie-contenu-michelin' }
+    },
+    {
+      _id: '10',
+      title: "Comment BlaBlaCar a créé un nouveau marché",
+      mainImage: {
+        asset: {
+          _ref: 'image-10',
+          url: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "L'histoire de la licorne française qui a révolutionné le covoiturage en Europe.",
+      slug: { current: 'blablacar-nouveau-marche' }
+    }
+  ],
+  'success-story': [
+    {
+      _id: '11',
+      title: "De l'échec à la réussite : l'histoire de Michel et Augustin",
+      mainImage: {
+        asset: {
+          _ref: 'image-11',
+          url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Comment deux amis ont créé une marque alimentaire iconique après plusieurs échecs.",
+      slug: { current: 'michel-augustin-success' }
+    },
+    {
+      _id: '12',
+      title: "Le parcours inspirant de Maud Fontenoy",
+      mainImage: {
+        asset: {
+          _ref: 'image-12',
+          url: "https://images.unsplash.com/photo-1484627147104-f5197bcd6651?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "De la traversée des océans à la défense de l'environnement : un leadership exemplaire.",
+      slug: { current: 'parcours-maud-fontenoy' }
+    },
+    {
+      _id: '13',
+      title: "Comment Octave Klaba a bâti OVH",
+      mainImage: {
+        asset: {
+          _ref: 'image-13',
+          url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "L'histoire du champion français du cloud computing qui défie les géants américains.",
+      slug: { current: 'octave-klaba-ovh' }
+    },
+    {
+      _id: '14',
+      title: "Catherine Barba : pionnière du e-commerce français",
+      mainImage: {
+        asset: {
+          _ref: 'image-14',
+          url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Le parcours d'une entrepreneuse visionnaire qui a su anticiper la révolution digitale.",
+      slug: { current: 'catherine-barba-ecommerce' }
+    },
+    {
+      _id: '15',
+      title: "Marc Simoncini : de Meetic à Angell Bike",
+      mainImage: {
+        asset: {
+          _ref: 'image-15',
+          url: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&q=80"
+        }
+      },
+      excerpt: "Le parcours d'un serial entrepreneur français qui réinvente la mobilité urbaine.",
+      slug: { current: 'marc-simoncini-parcours' }
+    }
+  ]
+};
+
 const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sectionType }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [items, setItems] = useState<ContentItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dataSource, setDataSource] = useState('mock');
 
-  // Données de démonstration
-  const items = [
-    {
-      id: '1',
-      title: "Comment développer un mindset d'exception",
-      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80",
-      description: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible."
-    },
-    {
-      id: '2',
-      title: "L'art de la résilience entrepreneuriale",
-      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
-      description: "Comment transformer les obstacles en opportunités et rebondir face aux défis."
-    },
-    {
-      id: '3',
-      title: "Les clés d'une communication impactante",
-      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
-      description: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence."
-    },
-    {
-      id: '4',
-      title: "Innovation et développement durable",
-      image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
-      description: "Concilier croissance et responsabilité environnementale dans l'entrepreneuriat moderne."
-    },
-    {
-      id: '5',
-      title: "Leadership et management d'équipe",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80",
-      description: "Les meilleures pratiques pour inspirer et diriger des équipes performantes."
-    }
-  ];
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Requête Sanity adaptée au type de contenu
+        let query = '';
+        
+        switch(sectionType) {
+          case 'emission':
+            query = `*[_type == "podcast"] | order(publishedAt desc)[0...5] {
+              _id,
+              title,
+              mainImage,
+              excerpt,
+              slug
+            }`;
+            break;
+          case 'business-idea':
+            query = `*[_type == "caseStudy"] | order(publishedAt desc)[0...5] {
+              _id,
+              title,
+              mainImage,
+              excerpt,
+              slug
+            }`;
+            break;
+          case 'success-story':
+            query = `*[_type == "successStory"] | order(publishedAt desc)[0...5] {
+              _id,
+              title,
+              mainImage,
+              excerpt,
+              slug
+            }`;
+            break;
+        }
+        
+        const result = await sanityClient.fetch(query);
+        
+        if (result && result.length > 0) {
+          setItems(result);
+          setDataSource('sanity');
+          console.log(`Contenu ${sectionType} récupéré depuis Sanity CMS`);
+        } else {
+          // Fallback vers les données mockées
+          setItems(mockItems[sectionType]);
+          setDataSource('mock');
+          console.log(`Utilisation des données mockées pour ${sectionType} (fallback)`);
+        }
+      } catch (error) {
+        console.error(`Erreur lors de la récupération du contenu ${sectionType}:`, error);
+        // Fallback vers les données mockées en cas d'erreur
+        setItems(mockItems[sectionType]);
+        setDataSource('mock');
+        console.log(`Utilisation des données mockées pour ${sectionType} suite à une erreur`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchContent();
+  }, [sectionType]);
 
   const checkScrollButtons = () => {
     if (scrollRef.current) {
@@ -68,7 +303,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
         clearTimeout(timeoutId);
       };
     }
-  }, []);
+  }, [items]);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -94,6 +329,17 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
     }
   };
 
+  if (isLoading) {
+    return (
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-900/50 to-black" />
+        <div className="container relative flex justify-center items-center">
+          <LoadingSpinner />
+        </div>
+      </section>
+    );
+  }
+
   return (
     <ErrorBoundary>
       <section className="py-20 relative overflow-hidden">
@@ -111,6 +357,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               {title}
+              {dataSource === 'mock' && <span className="text-sm text-gray-400 ml-2">(démo)</span>}
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               {description}
@@ -149,7 +396,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
             >
               {items.map((item, index) => (
                 <motion.div
-                  key={item.id}
+                  key={item._id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -157,13 +404,13 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                   className="flex-none w-[300px]"
                 >
                   <Link 
-                    to={`/${sectionType}/${item.id}`} 
+                    to={`/${sectionType}/${item.slug?.current}`} 
                     className="block group"
                   >
                     <div className="relative bg-gradient-to-br from-neutral-900 to-black border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 hover:scale-[1.02]">
                       <div className="relative aspect-[4/3] w-full overflow-hidden">
                         <SafeImage
-                          image={item.image}
+                          image={item.mainImage}
                           alt={item.title}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                           fallbackText={item.title}
@@ -180,7 +427,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                         </h3>
                         
                         <p className="text-gray-400 text-sm line-clamp-2 mb-4">
-                          {item.description}
+                          {item.excerpt}
                         </p>
 
                         <div className="flex items-center justify-end">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SEO } from '../components/common/SEO';
 import { staticSEO } from '../utils/seo.config';
 import { HeroSection } from '../components/sections/HeroSection';
@@ -9,8 +9,10 @@ import { DebateSection } from '../components/sections/DebateSection';
 import ContentSection from '../components/sections/ContentSection';
 import { ClubSection } from '../components/sections/ClubSection';
 import SimpleFooter from '../components/layout/SimpleFooter';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { getAllArticles } from '../utils/sanityAPI';
 
-// Données mockées pour la section articles
+// Données mockées pour la section articles (utilisées en fallback)
 const mockArticles = [
   {
     _id: '1',
@@ -75,6 +77,38 @@ const mockArticles = [
 ];
 
 export const HomePage = () => {
+  const [articles, setArticles] = useState(mockArticles);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dataSource, setDataSource] = useState('mock');
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        setIsLoading(true);
+        const sanityArticles = await getAllArticles();
+        
+        if (sanityArticles && sanityArticles.length > 0) {
+          setArticles(sanityArticles.slice(0, 6)); // Limiter à 6 articles pour la homepage
+          setDataSource('sanity');
+          console.log('Articles récupérés depuis Sanity CMS');
+        } else {
+          setArticles(mockArticles);
+          setDataSource('mock');
+          console.log('Utilisation des articles mockés (fallback)');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des articles:', error);
+        setArticles(mockArticles);
+        setDataSource('mock');
+        console.log('Utilisation des articles mockés suite à une erreur');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
+
   return (
     <>
       <SEO {...staticSEO.home} />
@@ -91,7 +125,18 @@ export const HomePage = () => {
         {/* Sections de contenu */}
         <HeroSection />
         <AmuseBoucheSection />
-        <HomeArticlesSection articles={mockArticles} />
+        
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <HomeArticlesSection 
+            articles={articles} 
+            title={dataSource === 'sanity' ? "Articles récents" : "Articles récents (démo)"}
+          />
+        )}
+        
         <EditorialSection />
         <ClubSection />
         <ContentSection 
