@@ -63,18 +63,14 @@ export const ResponsiveNavbar = () => {
           <div className="flex items-center space-x-4">
             <Link
               to="/coaching"
-              className={`px-6 py-3 rounded-lg transition-colors ${
-                location.pathname === "/coaching"
-                  ? "bg-accent-blue text-white"
-                  : "bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue"
-              }`}
+              className="px-6 py-3 rounded-lg bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue transition-colors"
             >
               Coaching
             </Link>
             
             <Link
               to="/create-with-roger"
-              className="flex items-center gap-2 bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue px-6 py-3 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue transition-colors"
             >
               <Sparkles className="w-4 h-4" />
               <span>Votre histoire</span>
@@ -119,7 +115,7 @@ export const ResponsiveNavbar = () => {
               <div className="pt-4 space-y-4 border-t border-white/10">
                 <Link
                   to="/coaching"
-                  className="block w-full text-center px-6 py-3 rounded-lg bg-white/10 text-white hover:bg-accent-blue hover:text-white transition-colors"
+                  className="block w-full text-center px-6 py-3 rounded-lg bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Coaching
