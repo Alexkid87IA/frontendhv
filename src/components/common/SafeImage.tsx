@@ -1,66 +1,47 @@
-import React, { useState } from 'react';
-import { SanityImageSource } from '@sanity/image-url/lib/types/types';
-import { urlFor, isValidSanityImage } from '../../utils/sanityImage';
+cat > src/components/common/SafeImage.tsx << 'EOF'
+import { urlFor } from '../../utils/sanityClient';
 
 interface SafeImageProps {
-  image: any;
+  source: any;
   alt: string;
+  className?: string;
   width?: number;
   height?: number;
-  className?: string;
-  fallbackText?: string;
-  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 }
 
-/**
- * Composant sécurisé pour afficher des images Sanity avec gestion des erreurs
- * et fallback automatique en cas d'image invalide ou d'erreur de chargement
- */
-const SafeImage: React.FC<SafeImageProps> = ({
-  image,
-  alt,
-  width = 800,
-  height = 600,
-  className = '',
-  fallbackText,
-  objectFit = 'cover'
-}) => {
-  const [hasError, setHasError] = useState(false);
-  
-  // Texte à afficher en cas d'image manquante
-  const displayText = fallbackText || 'Image non disponible';
-  
-  // Vérifier si l'image est valide
-  const isValid = isValidSanityImage(image);
-  
-  // Si l'image n'est pas valide ou a généré une erreur, afficher un placeholder
-  if (!isValid || hasError) {
-    return (
-      <div 
-        className={`bg-gray-200 flex items-center justify-center text-gray-500 ${className}`}
-        style={{ width: width ? `${width}px` : '100%', height: `${height}px` }}
-      >
-        <span className="text-sm text-center px-4">{displayText}</span>
-      </div>
-    );
+export default function SafeImage({ source, alt, className, width, height }: SafeImageProps) {
+  // Si c'est déjà une URL, l'utiliser directement
+  if (typeof source === 'string') {
+    return <img src={source} alt={alt} className={className} />;
   }
-  
-  // Générer l'URL de l'image avec les dimensions spécifiées
-  // Utiliser la nouvelle fonction urlFor sécurisée qui gère les dimensions en interne
-  const imageUrl = urlFor(image, width, height);
-  
-  return (
-    <img
-      src={imageUrl}
-      alt={alt}
-      className={className}
-      style={{ objectFit }}
-      width={width}
-      height={height}
-      onError={() => setHasError(true)}
-      loading="lazy"
-    />
-  );
-};
 
-export default SafeImage;
+  try {
+    // Si c'est un objet Sanity avec asset._ref
+    if (source?.asset?._ref) {
+      // Vérifier si c'est une URL ou une vraie référence Sanity
+      if (source.asset._ref.startsWith('http')) {
+        return <img src={source.asset._ref} alt={alt} className={className} />;
+      }
+      
+      // Sinon, utiliser urlFor pour les vraies références Sanity
+      const imageUrl = urlFor(source)
+        .width(width || 800)
+        .height(height || 600)
+        .url();
+      
+      return <img src={imageUrl} alt={alt} className={className} />;
+    }
+    
+    // Si c'est un objet avec une propriété url
+    if (source?.url) {
+      return <img src={source.url} alt={alt} className={className} />;
+    }
+    
+    // Fallback
+    return <img src={`https://via.placeholder.com/${width || 400}x${height || 300}?text=Image`} alt={alt} className={className} />;
+  } catch (error) {
+    console.error('Erreur SafeImage:', error);
+    return <img src={`https://via.placeholder.com/${width || 400}x${height || 300}?text=Erreur`} alt={alt} className={className} />;
+  }
+}
+EOF
