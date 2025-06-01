@@ -21,6 +21,7 @@ interface HomeArticlesSectionProps {
       title: string;
       slug?: {
         current: string;
+      };
     }>;
   }>;
 }
