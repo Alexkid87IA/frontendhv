@@ -74,7 +74,7 @@ export const ResponsiveNavbar = () => {
             
             <Link
               to="/create-with-roger"
-              className="flex items-center gap-2 bg-gradient-to-r from-accent-blue to-accent-turquoise text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity"
+              className="flex items-center gap-2 bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue px-6 py-3 rounded-lg transition-colors"
             >
               <Sparkles className="w-4 h-4" />
               <span>Votre histoire</span>
@@ -127,7 +127,7 @@ export const ResponsiveNavbar = () => {
                 
                 <Link
                   to="/create-with-roger"
-                  className="block w-full text-center px-6 py-3 rounded-lg bg-gradient-to-r from-accent-blue to-accent-turquoise text-white hover:opacity-90 transition-opacity"
+                  className="block w-full text-center px-6 py-3 rounded-lg bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   <span className="flex items-center justify-center gap-2">
