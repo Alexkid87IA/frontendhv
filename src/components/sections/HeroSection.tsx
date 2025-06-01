@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, Quote } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
-import { getAllArticles } from '../../utils/sanityAPI';
+import { getAllArticles, getLatestQuote } from '../../utils/sanityAPI';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { SanityArticle } from '../../types/sanity';
 
@@ -76,19 +76,30 @@ const mockRecentArticles: SanityArticle[] = [
   }
 ];
 
+const mockQuote = {
+  text: "Le succès n'est pas une destination, c'est un voyage constant d'apprentissage et de dépassement de soi.",
+  author: "Roger Ormières",
+  role: "Fondateur"
+};
+
 export const HeroSection = () => {
   const [featuredArticle, setFeaturedArticle] = useState<SanityArticle>(mockFeaturedArticle);
   const [recentArticles, setRecentArticles] = useState<SanityArticle[]>(mockRecentArticles);
+  const [quote, setQuote] = useState(mockQuote);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
 
   useEffect(() => {
-    const fetchArticles = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const sanityArticles = await getAllArticles();
+        
+        const [sanityArticles, sanityQuote] = await Promise.all([
+          getAllArticles(),
+          getLatestQuote()
+        ]);
         
         if (sanityArticles && sanityArticles.length > 0) {
           // Utiliser le premier article comme article vedette
@@ -106,21 +117,25 @@ export const HeroSection = () => {
           setDataSource('mock');
           console.log('Aucun article trouvé dans Sanity, utilisation des articles mockés dans HeroSection');
         }
+
+        if (sanityQuote) {
+          setQuote(sanityQuote);
+        }
       } catch (error) {
-        console.error('Erreur lors de la récupération des articles pour HeroSection:', error);
+        console.error('Erreur lors de la récupération des données pour HeroSection:', error);
         setError("Impossible de charger les articles vedettes");
         
         // Fallback vers les données mockées en cas d'erreur
         setFeaturedArticle(mockFeaturedArticle);
         setRecentArticles(mockRecentArticles);
         setDataSource('mock');
-        console.log('Utilisation des articles mockés dans HeroSection suite à une erreur');
+        console.log('Utilisation des données mockées dans HeroSection suite à une erreur');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchArticles();
+    fetchData();
   }, []);
 
   // Formatage de la date relative
@@ -204,6 +219,21 @@ export const HeroSection = () => {
                   et développe ta psychologie de champion.
                 </p>
 
+                {/* Citation du jour */}
+                <motion.blockquote 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="relative mt-8 mb-12 pl-6 border-l-2 border-accent-blue"
+                >
+                  <Quote className="absolute -left-4 -top-4 text-accent-blue/20 w-8 h-8" />
+                  <p className="text-lg italic text-white/80">{quote.text}</p>
+                  <footer className="mt-2 text-sm text-accent-blue">
+                    {quote.author}
+                    {quote.role && <span className="text-white/60"> · {quote.role}</span>}
+                  </footer>
+                </motion.blockquote>
+
                 <div className="flex flex-col sm:flex-row gap-4 pt-3">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
@@ -238,7 +268,7 @@ export const HeroSection = () => {
               </motion.div>
             </div>
 
-            {/* Right Column - Featured Content */}
+            {/* Right Column - Featured Article */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -257,7 +287,7 @@ export const HeroSection = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
 
-                {/* Featured Article Preview */}
+                {/* Featured Article Content */}
                 <div className="absolute bottom-0 left-0 p-6 w-full">
                   <span className="inline-block px-3 py-1 bg-accent-blue text-white text-sm font-medium rounded-full mb-3">
                     À la une
@@ -285,7 +315,7 @@ export const HeroSection = () => {
             </motion.div>
           </div>
 
-          {/* Latest Articles Grid */}
+          {/* Recent Articles Grid */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

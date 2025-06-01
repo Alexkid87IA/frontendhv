@@ -32,6 +32,9 @@ export const HomeArticlesSection: React.FC<HomeArticlesSectionProps> = ({
 }) => {
   if (!articles || articles.length === 0) return null;
 
+  // Limiter à 3 articles récents
+  const recentArticles = articles.slice(0, 3);
+
   return (
     <ErrorBoundary>
       <section className="relative py-20 overflow-hidden">
@@ -63,7 +66,7 @@ export const HomeArticlesSection: React.FC<HomeArticlesSectionProps> = ({
           </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article, index) => (
+            {recentArticles.map((article, index) => (
               <motion.article
                 key={article._id}
                 initial={{ opacity: 0, y: 20 }}
