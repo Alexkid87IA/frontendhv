@@ -17,6 +17,24 @@ export const ResponsiveNavbar = () => {
     { label: 'Society', path: '/rubrique/society', slug: 'society' }
   ];
 
+  const handleLogoClick = () => {
+    if (!isAnimating) {
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 600);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (isOpen && !target.closest('#mobile-menu') && !target.closest('#menu-button')) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isOpen]);
+
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
@@ -30,106 +48,161 @@ export const ResponsiveNavbar = () => {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link to="/" className="flex-shrink-0">
-          <motion.img 
-            src="/src/assets/logos/LOGO_HV MEDIA.svg"
-            alt="High Value Media"
-            className="h-12 w-auto"
-            whileHover={{ scale: 1.05 }}
-          />
+        <Link 
+          to="/" 
+          className="flex-shrink-0 flex items-center" 
+          onClick={handleLogoClick}
+        >
+          <motion.div
+            animate={isAnimating ? { 
+              scale: [1, 1.05, 1], 
+              filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"] 
+            } : {}}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+            className="relative h-10 md:h-12"
+          >
+            <img 
+              src="/src/assets/logos/LOGO_HV MEDIA.svg"
+              alt="High Value Media"
+              className="h-full w-auto object-contain" 
+            />
+          </motion.div>
         </Link>
-
+        
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center justify-between ml-6 flex-1">
-          <div className="flex justify-center flex-1">
+        <div className="hidden lg:flex flex-1 items-center justify-between ml-6">
+          <div className="flex-1 flex justify-center">
             <div className="flex items-center space-x-8">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`text-lg font-medium transition-colors ${
-                    location.pathname === item.path || location.pathname.includes(item.slug)
-                      ? "text-accent-blue" 
-                      : "text-white hover:text-accent-blue"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {menuItems.map((item) => {
+                const isActive = location.pathname === item.path || 
+                                location.pathname.startsWith(`/rubrique/${item.slug}`);
+                
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`text-lg font-medium transition-colors ${
+                      isActive 
+                        ? "text-accent-blue" 
+                        : "text-white hover:text-accent-blue"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
           </div>
 
           {/* CTA Buttons */}
           <div className="flex items-center space-x-4">
-            <Link
-              to="/coaching"
-              className="px-6 py-3 rounded-lg bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue transition-colors"
+            {/* Coaching Button */}
+            <motion.div 
+              whileHover={{ scale: 1.03 }} 
+              whileTap={{ scale: 0.97 }}
+              className="relative"
             >
-              Coaching
-            </Link>
+              <Link
+                to="/coaching"
+                className={`relative inline-flex items-center justify-center overflow-hidden rounded-lg px-6 py-3 text-sm font-medium transition-all duration-300 ${
+                  location.pathname === "/coaching" 
+                  ? "bg-accent-blue text-white"
+                  : "bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue"
+                }`}
+              >
+                <span className="relative z-10">Coaching</span>
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-accent-blue/0 via-accent-blue/0 to-accent-blue/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              </Link>
+            </motion.div>
             
-            <Link
-              to="/create-with-roger"
-              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue transition-colors"
+            {/* Votre Histoire Button */}
+            <motion.div 
+              whileHover={{ scale: 1.03 }} 
+              whileTap={{ scale: 0.97 }}
+              className="relative group"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>Votre histoire</span>
-            </Link>
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
+              <Link
+                to="/create-with-roger"
+                className="relative flex items-center gap-2 bg-black px-6 py-3 rounded-lg text-white group-hover:text-white/90 transition-colors"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Votre histoire</span>
+              </Link>
+            </motion.div>
           </div>
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          className="lg:hidden p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="lg:hidden flex items-center">
+          <button
+            id="menu-button"
+            className="p-2 rounded-full text-white hover:bg-white/10 transition-colors"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
+            aria-label="Menu principal"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            id="mobile-menu"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden fixed inset-x-0 top-20 bg-black/95 backdrop-blur-xl border-t border-white/10"
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="lg:hidden fixed inset-x-0 top-20 bottom-0 bg-black/95 backdrop-blur-xl border-t border-white/10 z-40 overflow-y-auto pb-6"
           >
-            <div className="px-4 py-6 space-y-4">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`block px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
-                    location.pathname === item.path || location.pathname.includes(item.slug)
-                      ? "text-accent-blue"
-                      : "text-white hover:text-accent-blue"
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              
-              <div className="pt-4 space-y-4 border-t border-white/10">
-                <Link
-                  to="/coaching"
-                  className="block w-full text-center px-6 py-3 rounded-lg bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Coaching
-                </Link>
+            <div className="px-4 pt-6 pb-4 space-y-4">
+              {menuItems.map((item) => {
+                const isActive = location.pathname === item.path || 
+                                location.pathname.startsWith(`/rubrique/${item.slug}`);
                 
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`block px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
+                      isActive 
+                        ? 'text-accent-blue' 
+                        : 'text-white hover:text-accent-blue'
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="px-4 space-y-4 pt-4 border-t border-white/10">
+              <Link
+                to="/coaching"
+                className={`flex items-center justify-center gap-2 w-full px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                  location.pathname === '/coaching' 
+                  ? 'bg-accent-blue text-white'
+                  : 'bg-white/10 hover:bg-white/20 text-white'
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Coaching
+              </Link>
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
                 <Link
                   to="/create-with-roger"
-                  className="block w-full text-center px-6 py-3 rounded-lg bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue transition-colors"
+                  className="relative flex items-center justify-center gap-2 bg-black w-full px-6 py-3 rounded-lg font-medium text-white group-hover:text-white/90 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
-                  <span className="flex items-center justify-center gap-2">
-                    <Sparkles className="w-4 h-4" />
-                    <span>Votre histoire</span>
-                  </span>
+                  <Sparkles className="w-5 h-5" />
+                  <span>Votre histoire</span>
                 </Link>
               </div>
             </div>
