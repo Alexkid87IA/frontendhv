@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles, Quote } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
 import { getAllArticles, getLatestQuote } from '../../utils/sanityAPI';
@@ -221,6 +221,19 @@ export const HeroSection = () => {
                     >
                       <span>Explorer les articles</span>
                       <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </motion.div>
+
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Link
+                      to="/create-with-roger"
+                      className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl transition-colors"
+                    >
+                      <Sparkles className="w-5 h-5" />
+                      <span>Créer avec Roger</span>
                     </Link>
                   </motion.div>
                 </div>
