@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { BookOpen, Briefcase, Brain, Globe } from 'lucide-react';
 import { getUniverses } from '../../utils/sanityAPI';
 import { SanityUniverse } from '../../types/sanity';
-import { urlFor } from '../../utils/sanityImage';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import ErrorBoundary from '../common/ErrorBoundary';
 import SafeImage from '../common/SafeImage';
@@ -98,6 +98,23 @@ const universeSubtitles: Record<string, string> = {
   "mental": "Pour ta tête",
   "society": "Pour ta culture",
   "default": "Pour t'enrichir"
+};
+
+// Fonction pour obtenir l'icône appropriée pour un univers
+const getUniverseIcon = (slug: string) => {
+  switch (slug) {
+    case 'recits':
+    case 'story':
+      return <BookOpen size={24} className="text-white" />;
+    case 'business':
+      return <Briefcase size={24} className="text-white" />;
+    case 'mental':
+      return <Brain size={24} className="text-white" />;
+    case 'society':
+      return <Globe size={24} className="text-white" />;
+    default:
+      return <BookOpen size={24} className="text-white" />;
+  }
 };
 
 export const EditorialSection = () => {
@@ -225,18 +242,19 @@ export const EditorialSection = () => {
 
                 {/* Content */}
                 <div className="relative h-full p-4 md:p-8 flex flex-col">
-                  {/* Logo - Taille augmentée */}
+                  {/* Logo - Remplacé par une icône Lucide */}
                   <div className="mb-auto">
                     <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
-                      <h3 className="text-2xl md:text-3xl font-bold text-white">
-                        {universe.title}
-                      </h3>
+                      {getUniverseIcon(universe.slug.current)}
                     </div>
                   </div>
 
                   {/* Text Content */}
                   <div>
-                    <h4 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-500">
+                    <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-500">
+                      {universe.title}
+                    </h3>
+                    <h4 className="text-lg font-medium text-white/80 mb-1">
                       {getSubtitle(universe.slug.current)}
                     </h4>
                     <p className="text-white/80 text-sm mb-3 md:mb-4 line-clamp-2 group-hover:text-white transition-colors">

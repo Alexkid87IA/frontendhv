@@ -39,16 +39,17 @@ export const Footer = () => {
           {/* Logo & Description */}
           <div className="lg:col-span-1">
             <Link to="/" className="block mb-6">
-              <motion.img 
-                src="/src/assets/logos/LOGO_HV MEDIA.svg"
-                alt="High Value Media"
-                className="h-16 w-auto"
+              <motion.div 
+                className="flex items-center gap-2"
                 whileHover={{
                   scale: 1.05,
                   filter: "brightness(1.2)",
                   transition: { duration: 0.2 }
                 }}
-              />
+              >
+                <Sparkles className="h-8 w-8 text-white" />
+                <span className="text-xl font-bold text-white">High Value</span>
+              </motion.div>
             </Link>
             <p className="text-gray-400 mb-6">
               Développez votre mindset d'exception et transformez votre vision du possible.
