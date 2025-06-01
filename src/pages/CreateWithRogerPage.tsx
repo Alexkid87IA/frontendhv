@@ -4,12 +4,13 @@ import { Helmet } from 'react-helmet-async';
 import { 
   ArrowRight, Play, Camera, Video, Mic, Sparkles, Star, Users, 
   Clock, Calendar, CheckCircle, Award, Zap, BookOpen, ChevronDown,
-  Lightbulb, Target, MessageSquare, Rocket, Palette, Edit
+  Lightbulb, Target, MessageSquare, Rocket, Palette, Edit, Share2
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // Composants communs
-import { Button } from '../components/common/Button';
 import { NewsletterForm } from '../components/common/NewsletterForm';
+import { QuoteBlock } from '../components/common/QuoteBlock';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -69,23 +70,33 @@ export const CreateWithRogerPage = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Button 
-                  variant="primary" 
-                  size="lg"
-                  href="#booking"
-                  icon={<Calendar size={20} />}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative group"
                 >
-                  Réserver une session
-                </Button>
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
+                  <Link
+                    to="#booking"
+                    className="relative flex items-center justify-center gap-2 bg-black px-6 py-3 rounded-xl text-white group-hover:text-white/90 transition-colors"
+                  >
+                    <Calendar size={20} />
+                    <span>Réserver une session</span>
+                  </Link>
+                </motion.div>
                 
-                <Button 
-                  variant="secondary" 
-                  size="lg"
-                  href="#process"
-                  icon={<ArrowRight size={20} />}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  Découvrir le processus
-                </Button>
+                  <Link
+                    to="#process"
+                    className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl transition-colors"
+                  >
+                    <ArrowRight size={20} />
+                    <span>Découvrir le processus</span>
+                  </Link>
+                </motion.div>
               </div>
               
               <div className="flex items-center gap-6 text-sm text-gray-400">
@@ -185,7 +196,7 @@ export const CreateWithRogerPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                icon: <Video className="text-white\" size={24} />,
+                icon: <Video className="text-white" size={24} />,
                 title: "Vidéo Professionnelle",
                 description: "Captation multi-caméras 4K, éclairage studio et montage professionnel pour des vidéos de qualité broadcast.",
                 gradient: "from-blue-600 to-cyan-400"
@@ -197,7 +208,7 @@ export const CreateWithRogerPage = () => {
                 gradient: "from-purple-600 to-pink-500"
               },
               {
-                icon: <Camera className="text-white\" size={24} />,
+                icon: <Camera className="text-white" size={24} />,
                 title: "Photographie Éditoriale",
                 description: "Séances photo professionnelles pour vos portraits, produits et contenus éditoriaux.",
                 gradient: "from-amber-500 to-orange-600"
@@ -209,13 +220,13 @@ export const CreateWithRogerPage = () => {
                 gradient: "from-emerald-500 to-teal-400"
               },
               {
-                icon: <Users className="text-white\" size={24} />,
+                icon: <Users className="text-white" size={24} />,
                 title: "Formation & Coaching",
                 description: "Accompagnement personnalisé pour développer votre présence médiatique et votre aisance face caméra.",
                 gradient: "from-red-500 to-pink-500"
               },
               {
-                icon: <Zap className="text-white" size={24} />,
+                icon: <Share2 className="text-white" size={24} />,
                 title: "Distribution Multi-Plateforme",
                 description: "Stratégie de distribution optimisée pour maximiser la visibilité de vos contenus sur toutes les plateformes.",
                 gradient: "from-indigo-600 to-blue-500"
@@ -456,155 +467,59 @@ export const CreateWithRogerPage = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 bg-gradient-to-b from-neutral-900 to-black relative overflow-hidden">
-        {/* Background elements */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(59,130,246,0.15),transparent_70%)]" />
-        
-        <div className="container relative">
+      {/* Showreel Section */}
+      <section id="showreel" className="py-20 bg-gradient-to-b from-black to-neutral-900">
+        <div className="container">
           <motion.div 
             className="text-center mb-16"
             {...fadeInUp}
           >
             <span className="inline-block px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full text-sm font-medium mb-6 border border-white/10">
-              Nos offres
+              Notre travail
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Investissez dans votre histoire
+              Showreel 2024
             </h2>
             <p className="text-gray-300 text-lg max-w-3xl mx-auto">
-              Des formules adaptées à vos besoins pour créer du contenu qui vous ressemble et qui résonne avec votre audience.
+              Découvrez nos réalisations récentes et la qualité de notre production
             </p>
           </motion.div>
 
-          <div className="max-w-5xl mx-auto">
-            <motion.div
-              className="group relative"
-              {...fadeInUp}
-            >
-              {/* Animated Background Effects */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-3xl blur-lg opacity-50 group-hover:opacity-75 transition-all duration-500 animate-tilt"></div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 via-accent-turquoise/20 to-accent-turquoise/20 opacity-50" />
+            <div className="relative w-full h-full bg-neutral-900 flex items-center justify-center">
+              <img
+                src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80"
+                alt="Showreel thumbnail"
+                className="w-full h-full object-cover opacity-60"
+              />
               
-              {/* Card Content */}
-              <div className="relative bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-12 transition-all duration-500 hover:border-white/20">
-                {/* Premium Badge */}
-                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 px-6 py-2 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-full flex items-center gap-2 shadow-lg">
-                  <Star size={18} className="text-white" />
-                  <span className="text-white font-semibold tracking-wide">Offre Premium</span>
-                  <Star size={18} className="text-white" />
+              {/* Play Button */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-accent-blue rounded-full flex items-center justify-center shadow-lg hover:bg-accent-turquoise transition-colors group"
+              >
+                <div className="relative">
+                  <div className="absolute -inset-6 bg-accent-blue rounded-full blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
+                  <Play size={40} className="text-white relative z-10 ml-2" />
                 </div>
-
-                {/* Header */}
-                <div className="text-center mb-12">
-                  <h3 className="text-3xl font-bold mb-4">Pack Création de Contenu Premium</h3>
-                  <p className="text-xl text-gray-300 mb-6">Une expérience complète pour sublimer votre histoire</p>
-                  <div className="inline-flex items-baseline gap-2 bg-white/5 px-8 py-4 rounded-full">
-                    <span className="text-5xl font-bold bg-gradient-to-r from-accent-blue to-accent-turquoise bg-clip-text text-transparent">
-                      4 899€
-                    </span>
-                    <span className="text-lg text-gray-400">pack complet</span>
-                  </div>
-                </div>
-
-                {/* Main Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
-                  {/* Features Column */}
-                  <div>
-                    <div className="flex items-center gap-3 mb-6">
-                      <CheckCircle className="text-accent-blue" size={24} />
-                      <h4 className="text-xl font-bold">Ce qui est inclus</h4>
-                    </div>
-                    <ul className="space-y-6">
-                      <li className="flex items-start gap-4 group/item">
-                        <Video size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
-                        <div>
-                          <span className="block font-semibold mb-1">Tournage Premium</span>
-                          <span className="text-sm text-gray-400">Session de tournage professionnelle avec Roger en studio haute qualité</span>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-4 group/item">
-                        <Camera size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
-                        <div>
-                          <span className="block font-semibold mb-1">Pack Social Media</span>
-                          <span className="text-sm text-gray-400">10 contenus courts optimisés pour Instagram, TikTok, YouTube Shorts et LinkedIn</span>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-4 group/item">
-                        <Video size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
-                        <div>
-                          <span className="block font-semibold mb-1">Format Long Premium</span>
-                          <span className="text-sm text-gray-400">Contenu long format exclusif hébergé sur YouTube et Spotify</span>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-4 group/item">
-                        <Mic size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
-                        <div>
-                          <span className="block font-semibold mb-1">Distribution Podcast</span>
-                          <span className="text-sm text-gray-400">Format audio optimisé et distribué sur toutes les plateformes majeures</span>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Benefits Column */}
-                  <div>
-                    <div className="flex items-center gap-3 mb-6">
-                      <Award className="text-accent-blue" size={24} />
-                      <h4 className="text-xl font-bold">Avantages Premium</h4>
-                    </div>
-                    <ul className="space-y-6">
-                      <li className="flex items-start gap-4 group/item">
-                        <BookOpen size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
-                        <div>
-                          <span className="block font-semibold mb-1">Articles SEO Optimisés</span>
-                          <span className="text-sm text-gray-400">3 articles stratégiques optimisés pour maximiser votre visibilité</span>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-4 group/item">
-                        <Users size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
-                        <div>
-                          <span className="block font-semibold mb-1">Coaching Personnalisé</span>
-                          <span className="text-sm text-gray-400">2 sessions de coaching pour optimiser votre présence médiatique</span>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-4 group/item">
-                        <CheckCircle size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
-                        <div>
-                          <span className="block font-semibold mb-1">Droits Complets</span>
-                          <span className="text-sm text-gray-400">Propriété totale des contenus pour une utilisation illimitée</span>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-4 group/item">
-                        <Star size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
-                        <div>
-                          <span className="block font-semibold mb-1">Support Privilégié</span>
-                          <span className="text-sm text-gray-400">Accompagnement personnalisé tout au long du processus</span>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <div className="text-center">
-                  <Button 
-                    variant="primary" 
-                    size="lg"
-                    href="#booking"
-                    icon={<ArrowRight size={24} />}
-                    className="px-12 py-6 text-xl"
-                  >
-                    Réserver votre session
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+              </motion.button>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Results Section */}
-      <section className="py-20 bg-black relative overflow-hidden">
+      <section className="py-20 bg-neutral-900 relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(59,130,246,0.15),transparent_70%)]" />
+        
         <div className="container relative">
           <motion.div 
             className="text-center mb-16"
@@ -724,8 +639,220 @@ export const CreateWithRogerPage = () => {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 bg-black relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.15),transparent_70%)]" />
+        
+        <div className="container relative">
+          <motion.div 
+            className="text-center mb-16"
+            {...fadeInUp}
+          >
+            <span className="inline-block px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full text-sm font-medium mb-6 border border-white/10">
+              Notre offre
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Investissez dans votre histoire
+            </h2>
+            <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+              Une formule complète pour créer du contenu premium qui vous ressemble et qui résonne avec votre audience.
+            </p>
+          </motion.div>
+
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              className="group relative"
+              {...fadeInUp}
+            >
+              {/* Animated Background Effects */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-3xl blur-lg opacity-50 group-hover:opacity-75 transition-all duration-500 animate-tilt"></div>
+              
+              {/* Card Content */}
+              <div className="relative bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-12 transition-all duration-500 hover:border-white/20">
+                {/* Premium Badge */}
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 px-6 py-2 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-full flex items-center gap-2 shadow-lg">
+                  <Star size={18} className="text-white" />
+                  <span className="text-white font-semibold tracking-wide">Offre Premium</span>
+                  <Star size={18} className="text-white" />
+                </div>
+
+                {/* Header */}
+                <div className="text-center mb-12">
+                  <h3 className="text-3xl font-bold mb-4">Pack Création de Contenu Premium</h3>
+                  <p className="text-xl text-gray-300 mb-6">Une expérience complète pour sublimer votre histoire</p>
+                  <div className="inline-flex items-baseline gap-2 bg-white/5 px-8 py-4 rounded-full">
+                    <span className="text-5xl font-bold bg-gradient-to-r from-accent-blue to-accent-turquoise bg-clip-text text-transparent">
+                      4 899€
+                    </span>
+                    <span className="text-lg text-gray-400">pack complet</span>
+                  </div>
+                </div>
+
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+                  {/* Features Column */}
+                  <div>
+                    <div className="flex items-center gap-3 mb-6">
+                      <CheckCircle className="text-accent-blue" size={24} />
+                      <h4 className="text-xl font-bold">Ce qui est inclus</h4>
+                    </div>
+                    <ul className="space-y-6">
+                      <li className="flex items-start gap-4 group/item">
+                        <Video size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
+                        <div>
+                          <span className="block font-semibold mb-1">Tournage Premium</span>
+                          <span className="text-sm text-gray-400">Session de tournage professionnelle avec Roger en studio haute qualité</span>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-4 group/item">
+                        <Camera size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
+                        <div>
+                          <span className="block font-semibold mb-1">Pack Social Media</span>
+                          <span className="text-sm text-gray-400">10 contenus courts optimisés pour Instagram, TikTok, YouTube Shorts et LinkedIn</span>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-4 group/item">
+                        <Video size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
+                        <div>
+                          <span className="block font-semibold mb-1">Format Long Premium</span>
+                          <span className="text-sm text-gray-400">Contenu long format exclusif hébergé sur YouTube et Spotify</span>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-4 group/item">
+                        <Mic size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
+                        <div>
+                          <span className="block font-semibold mb-1">Distribution Podcast</span>
+                          <span className="text-sm text-gray-400">Format audio optimisé et distribué sur toutes les plateformes majeures</span>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Benefits Column */}
+                  <div>
+                    <div className="flex items-center gap-3 mb-6">
+                      <Award className="text-accent-blue" size={24} />
+                      <h4 className="text-xl font-bold">Avantages Premium</h4>
+                    </div>
+                    <ul className="space-y-6">
+                      <li className="flex items-start gap-4 group/item">
+                        <BookOpen size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
+                        <div>
+                          <span className="block font-semibold mb-1">Articles SEO Optimisés</span>
+                          <span className="text-sm text-gray-400">3 articles stratégiques optimisés pour maximiser votre visibilité</span>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-4 group/item">
+                        <Users size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
+                        <div>
+                          <span className="block font-semibold mb-1">Coaching Personnalisé</span>
+                          <span className="text-sm text-gray-400">2 sessions de coaching pour optimiser votre présence médiatique</span>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-4 group/item">
+                        <CheckCircle size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
+                        <div>
+                          <span className="block font-semibold mb-1">Droits Complets</span>
+                          <span className="text-sm text-gray-400">Propriété totale des contenus pour une utilisation illimitée</span>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-4 group/item">
+                        <Star size={24} className="text-accent-blue flex-shrink-0 mt-1 group-hover/item:scale-110 transition-transform" />
+                        <div>
+                          <span className="block font-semibold mb-1">Support Privilégié</span>
+                          <span className="text-sm text-gray-400">Accompagnement personnalisé tout au long du processus</span>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <div className="text-center">
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="relative group inline-block"
+                  >
+                    <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <Link
+                      to="#booking"
+                      className="relative inline-flex items-center justify-center gap-3 px-12 py-6 bg-black rounded-xl text-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      <span>Réserver votre session</span>
+                      <ArrowRight size={24} className="transform group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-gradient-to-b from-black to-neutral-900">
+        <div className="container">
+          <motion.div 
+            className="text-center mb-16"
+            {...fadeInUp}
+          >
+            <span className="inline-block px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full text-sm font-medium mb-6 border border-white/10">
+              Questions fréquentes
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Tout ce que vous devez savoir
+            </h2>
+          </motion.div>
+
+          <div className="max-w-3xl mx-auto">
+            {[
+              {
+                question: "Comment se déroule une journée de tournage ?",
+                answer: "La journée commence par une préparation (maquillage, coiffure si nécessaire) et un briefing. Nous procédons ensuite au tournage des différents formats prévus, avec des pauses régulières. La journée se termine par un débriefing et la planification des prochaines étapes."
+              },
+              {
+                question: "Qui détient les droits sur les contenus créés ?",
+                answer: "Vous détenez 100% des droits sur tous les contenus créés. Vous êtes libre de les utiliser comme bon vous semble, sur toutes les plateformes et pour une durée illimitée. Nous pouvons toutefois demander votre autorisation pour utiliser certains extraits à des fins promotionnelles."
+              },
+              {
+                question: "Combien de contenus sont produits lors d'une session ?",
+                answer: "Une session standard permet de produire environ 10-15 contenus courts (réels, shorts, posts LinkedIn) et 1-2 contenus longs (podcast, interview approfondie). Le nombre exact dépend de la formule choisie et de vos besoins spécifiques."
+              },
+              {
+                question: "Quel est le délai de livraison des contenus ?",
+                answer: "Les premiers contenus sont livrés dans les 72h suivant le tournage. L'ensemble des contenus est généralement livré dans un délai de 7 à 10 jours ouvrés, selon la quantité et la complexité des formats."
+              },
+              {
+                question: "Faut-il préparer quelque chose avant la session ?",
+                answer: "Oui, nous vous envoyons un questionnaire préparatoire et organisons un appel de briefing pour définir les thèmes, angles et messages clés. Nous vous guidons à chaque étape pour que vous soyez parfaitement préparé le jour J."
+              }
+            ].map((faq, index) => (
+              <motion.details
+                key={index}
+                className="group mb-4 last:mb-0 bg-white/5 rounded-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300"
+                {...fadeInUp}
+                transition={{ delay: index * 0.1 }}
+              >
+                <summary className="flex justify-between items-center p-6 cursor-pointer list-none">
+                  <h3 className="text-lg font-semibold">{faq.question}</h3>
+                  <div className="w-6 h-6 flex-shrink-0 relative">
+                    <div className="absolute top-1/2 left-0 w-6 h-0.5 bg-accent-blue transform -translate-y-1/2 group-open:rotate-45 transition-transform duration-300"></div>
+                    <div className="absolute top-1/2 left-0 w-6 h-0.5 bg-accent-blue transform -translate-y-1/2 rotate-90 group-open:rotate-135 transition-transform duration-300"></div>
+                  </div>
+                </summary>
+                <div className="px-6 pb-6 text-gray-300">
+                  <p>{faq.answer}</p>
+                </div>
+              </motion.details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Booking Section */}
-      <section id="booking" className="py-20 bg-gradient-to-b from-black to-neutral-900 relative overflow-hidden">
+      <section id="booking" className="py-20 bg-neutral-900 relative overflow-hidden">
         {/* Background elements */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.15),transparent_70%)]" />
         
@@ -786,87 +913,33 @@ export const CreateWithRogerPage = () => {
                     <div className="text-center">
                       <Calendar size={48} className="text-accent-blue mx-auto mb-4" />
                       <p className="text-gray-300 mb-4">Calendrier de réservation</p>
-                      <Button 
-                        variant="primary" 
-                        size="md"
-                        href="https://calendly.com"
-                        target="_blank"
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="relative group inline-block"
                       >
-                        Ouvrir le calendrier
-                      </Button>
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
+                        <a
+                          href="https://calendly.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative flex items-center justify-center gap-2 bg-black px-6 py-3 rounded-lg text-white group-hover:text-white/90 transition-colors"
+                        >
+                          <span>Ouvrir le calendrier</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </a>
+                      </motion.div>
                     </div>
                   </div>
                 </div>
 
                 {/* Testimonial */}
-                <blockquote className="text-xl font-playfair italic text-center">
-                  "L'appel découverte avec Roger m'a permis de clarifier ma vision et de définir une stratégie de contenu adaptée à mes objectifs."
-                  <footer className="text-sm text-gray-400 mt-2">
-                    — Marie Durant, CEO
-                  </footer>
-                </blockquote>
+                <QuoteBlock
+                  quote="L'appel découverte avec Roger m'a permis de clarifier ma vision et de définir une stratégie de contenu adaptée à mes objectifs."
+                  author="Marie Durant, CEO"
+                />
               </div>
             </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-20 bg-neutral-900">
-        <div className="container">
-          <motion.div 
-            className="text-center mb-16"
-            {...fadeInUp}
-          >
-            <span className="inline-block px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full text-sm font-medium mb-6 border border-white/10">
-              Questions fréquentes
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Tout ce que vous devez savoir
-            </h2>
-          </motion.div>
-
-          <div className="max-w-3xl mx-auto">
-            {[
-              {
-                question: "Comment se déroule une journée de tournage ?",
-                answer: "La journée commence par une préparation (maquillage, coiffure si nécessaire) et un briefing. Nous procédons ensuite au tournage des différents formats prévus, avec des pauses régulières. La journée se termine par un débriefing et la planification des prochaines étapes."
-              },
-              {
-                question: "Qui détient les droits sur les contenus créés ?",
-                answer: "Vous détenez 100% des droits sur tous les contenus créés. Vous êtes libre de les utiliser comme bon vous semble, sur toutes les plateformes et pour une durée illimitée. Nous pouvons toutefois demander votre autorisation pour utiliser certains extraits à des fins promotionnelles."
-              },
-              {
-                question: "Combien de contenus sont produits lors d'une session ?",
-                answer: "Une session standard permet de produire environ 10-15 contenus courts (réels, shorts, posts LinkedIn) et 1-2 contenus longs (podcast, interview approfondie). Le nombre exact dépend de la formule choisie et de vos besoins spécifiques."
-              },
-              {
-                question: "Quel est le délai de livraison des contenus ?",
-                answer: "Les premiers contenus sont livrés dans les 72h suivant le tournage. L'ensemble des contenus est généralement livré dans un délai de 7 à 10 jours ouvrés, selon la quantité et la complexité des formats."
-              },
-              {
-                question: "Faut-il préparer quelque chose avant la session ?",
-                answer: "Oui, nous vous envoyons un questionnaire préparatoire et organisons un appel de briefing pour définir les thèmes, angles et messages clés. Nous vous guidons à chaque étape pour que vous soyez parfaitement préparé le jour J."
-              }
-            ].map((faq, index) => (
-              <motion.details
-                key={index}
-                className="group mb-4 last:mb-0 bg-white/5 rounded-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300"
-                {...fadeInUp}
-                transition={{ delay: index * 0.1 }}
-              >
-                <summary className="flex justify-between items-center p-6 cursor-pointer list-none">
-                  <h3 className="text-lg font-semibold">{faq.question}</h3>
-                  <div className="w-6 h-6 flex-shrink-0 relative">
-                    <div className="absolute top-1/2 left-0 w-6 h-0.5 bg-accent-blue transform -translate-y-1/2 group-open:rotate-45 transition-transform duration-300"></div>
-                    <div className="absolute top-1/2 left-0 w-6 h-0.5 bg-accent-blue transform -translate-y-1/2 rotate-90 group-open:rotate-135 transition-transform duration-300"></div>
-                  </div>
-                </summary>
-                <div className="px-6 pb-6 text-gray-300">
-                  <p>{faq.answer}</p>
-                </div>
-              </motion.details>
-            ))}
           </div>
         </div>
       </section>
@@ -891,15 +964,20 @@ export const CreateWithRogerPage = () => {
                 <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
                   Réservez votre session maintenant et transformez votre expertise en contenu qui inspire, engage et convertit.
                 </p>
-                <Button 
-                  variant="primary" 
-                  size="lg"
-                  href="#booking"
-                  icon={<Calendar size={24} />}
-                  className="px-12 py-6 text-xl"
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative group inline-block"
                 >
-                  Réserver ma session
-                </Button>
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
+                  <Link
+                    to="#booking"
+                    className="relative flex items-center justify-center gap-2 bg-black px-12 py-6 rounded-xl text-xl font-semibold text-white group-hover:text-white/90 transition-colors"
+                  >
+                    <Calendar size={24} />
+                    <span>Réserver ma session</span>
+                  </Link>
+                </motion.div>
               </div>
             </motion.div>
           </div>
