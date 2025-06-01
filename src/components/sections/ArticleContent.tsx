@@ -5,6 +5,64 @@ import ErrorBoundary from '../common/ErrorBoundary';
 import SafeImage from '../common/SafeImage';
 import { Share2, Heart, Bookmark, MessageCircle } from 'lucide-react';
 
+// Contenu de test pour forcer l'affichage
+const testContent = [
+  {
+    "_key": "test1",
+    "_type": "block",
+    "style": "normal",
+    "children": [
+      {
+        "_key": "test1.1",
+        "_type": "span",
+        "marks": [],
+        "text": "Ceci est un paragraphe de test pour vérifier que le rendu Portable Text fonctionne correctement."
+      }
+    ],
+    "markDefs": []
+  },
+  {
+    "_key": "test2",
+    "_type": "block",
+    "style": "h2",
+    "children": [
+      {
+        "_key": "test2.1",
+        "_type": "span",
+        "marks": [],
+        "text": "Un titre de niveau 2 pour tester"
+      }
+    ],
+    "markDefs": []
+  },
+  {
+    "_key": "test3",
+    "_type": "block",
+    "style": "normal",
+    "children": [
+      {
+        "_key": "test3.1",
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "Texte en gras "
+      },
+      {
+        "_key": "test3.2",
+        "_type": "span",
+        "marks": ["em"],
+        "text": "et texte en italique "
+      },
+      {
+        "_key": "test3.3",
+        "_type": "span",
+        "marks": [],
+        "text": "pour tester le formatage."
+      }
+    ],
+    "markDefs": []
+  }
+];
+
 interface ArticleContentProps {
   content: any;
   className?: string;
@@ -16,14 +74,22 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ content, className }) =
     (Array.isArray(content) && content.length > 0) || 
     (typeof content === 'object' && Object.keys(content).length > 0);
 
+  // Afficher le contenu brut dans la console pour débogage
+  console.log("ArticleContent: Contenu reçu", content);
+  if (content) {
+    try {
+      console.log("ArticleContent: Contenu JSON", JSON.stringify(content, null, 2));
+    } catch (e) {
+      console.log("ArticleContent: Impossible de convertir le contenu en JSON", e);
+    }
+  }
+
+  // Utiliser le contenu de test si le contenu réel est invalide ou vide
+  const contentToRender = hasValidContent ? content : testContent;
+  
+  // Indiquer si on utilise le contenu de test
   if (!hasValidContent) {
-    console.warn("ArticleContent: Contenu invalide ou vide", content);
-    return (
-      <div className="bg-red-900/20 border border-red-500/30 p-6 rounded-lg text-center">
-        <p className="text-white mb-2">Le contenu de cet article n'est pas disponible pour le moment.</p>
-        <p className="text-gray-400 text-sm">Notre équipe éditoriale travaille à résoudre ce problème.</p>
-      </div>
-    );
+    console.warn("ArticleContent: Utilisation du contenu de test car le contenu réel est invalide ou vide");
   }
 
   // Composants personnalisés pour le rendu du contenu Portable Text
@@ -162,9 +228,6 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ content, className }) =
   );
 
   try {
-    // Afficher le contenu brut dans la console pour débogage
-    console.log("ArticleContent: Contenu reçu", JSON.stringify(content, null, 2));
-    
     return (
       <ErrorBoundary>
         <div className="relative">
@@ -203,18 +266,27 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ content, className }) =
             
             {/* Contenu de l'article avec première lettre mise en valeur */}
             <div className="relative">
+              {/* Afficher un message si on utilise le contenu de test */}
+              {!hasValidContent && (
+                <div className="bg-amber-900/20 border border-amber-500/30 p-4 rounded-lg mb-8">
+                  <p className="text-amber-400 text-sm">
+                    ⚠️ Contenu de test affiché car le contenu réel est invalide ou vide. Vérifiez le champ "body" dans Sanity Studio.
+                  </p>
+                </div>
+              )}
+              
               {/* Fallback pour les contenus non-array */}
-              {!Array.isArray(content) ? (
+              {!Array.isArray(contentToRender) ? (
                 <div>
                   <p className="text-lg leading-relaxed mb-8 text-white/90">
-                    {typeof content === 'string' ? content : 'Contenu non disponible dans le format attendu.'}
+                    {typeof contentToRender === 'string' ? contentToRender : 'Contenu non disponible dans le format attendu.'}
                   </p>
                   <p className="text-sm text-gray-400 mb-8">
                     Note: Ce contenu n'est pas au format Portable Text standard.
                   </p>
                 </div>
               ) : (
-                <PortableText value={content} components={customComponents} />
+                <PortableText value={contentToRender} components={customComponents} />
               )}
             </div>
             
@@ -279,6 +351,12 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ content, className }) =
       <div className="bg-red-900/20 border border-red-500/30 p-6 rounded-lg">
         <p className="text-white mb-2">Une erreur est survenue lors de l'affichage du contenu.</p>
         <p className="text-gray-400 text-sm">Détails techniques: {error instanceof Error ? error.message : String(error)}</p>
+        <div className="mt-4 p-4 bg-black/30 rounded border border-white/10">
+          <p className="text-white/70 text-sm mb-2">Contenu reçu:</p>
+          <pre className="text-xs text-white/50 overflow-auto max-h-40">
+            {JSON.stringify(content, null, 2)}
+          </pre>
+        </div>
       </div>
     );
   }
