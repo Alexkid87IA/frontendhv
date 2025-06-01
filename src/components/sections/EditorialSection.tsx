@@ -6,6 +6,7 @@ import { SanityUniverse } from '../../types/sanity';
 import { urlFor } from '../../utils/sanityImage';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import ErrorBoundary from '../common/ErrorBoundary';
+import SafeImage from '../common/SafeImage';
 
 // Données mockées pour fallback
 const mockedUniverses: SanityUniverse[] = [
