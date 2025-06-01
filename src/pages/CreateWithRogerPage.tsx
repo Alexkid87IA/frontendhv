@@ -196,7 +196,7 @@ export const CreateWithRogerPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                icon: <Video className="text-white" size={24} />,
+                icon: <Video className="text-white\" size={24} />,
                 title: "Vidéo Professionnelle",
                 description: "Captation multi-caméras 4K, éclairage studio et montage professionnel pour des vidéos de qualité broadcast.",
                 gradient: "from-blue-600 to-cyan-400"
@@ -208,7 +208,7 @@ export const CreateWithRogerPage = () => {
                 gradient: "from-purple-600 to-pink-500"
               },
               {
-                icon: <Camera className="text-white" size={24} />,
+                icon: <Camera className="text-white\" size={24} />,
                 title: "Photographie Éditoriale",
                 description: "Séances photo professionnelles pour vos portraits, produits et contenus éditoriaux.",
                 gradient: "from-amber-500 to-orange-600"
@@ -220,7 +220,7 @@ export const CreateWithRogerPage = () => {
                 gradient: "from-emerald-500 to-teal-400"
               },
               {
-                icon: <Users className="text-white" size={24} />,
+                icon: <Users className="text-white\" size={24} />,
                 title: "Formation & Coaching",
                 description: "Accompagnement personnalisé pour développer votre présence médiatique et votre aisance face caméra.",
                 gradient: "from-red-500 to-pink-500"
