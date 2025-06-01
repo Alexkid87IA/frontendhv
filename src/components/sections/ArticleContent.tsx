@@ -11,8 +11,19 @@ interface ArticleContentProps {
 }
 
 const ArticleContent: React.FC<ArticleContentProps> = ({ content, className }) => {
-  if (!content || (Array.isArray(content) && content.length === 0)) {
-    return null;
+  // Vérification plus robuste du contenu
+  const hasValidContent = content && 
+    (Array.isArray(content) && content.length > 0) || 
+    (typeof content === 'object' && Object.keys(content).length > 0);
+
+  if (!hasValidContent) {
+    console.warn("ArticleContent: Contenu invalide ou vide", content);
+    return (
+      <div className="bg-red-900/20 border border-red-500/30 p-6 rounded-lg text-center">
+        <p className="text-white mb-2">Le contenu de cet article n'est pas disponible pour le moment.</p>
+        <p className="text-gray-400 text-sm">Notre équipe éditoriale travaille à résoudre ce problème.</p>
+      </div>
+    );
   }
 
   // Composants personnalisés pour le rendu du contenu Portable Text
@@ -151,6 +162,9 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ content, className }) =
   );
 
   try {
+    // Afficher le contenu brut dans la console pour débogage
+    console.log("ArticleContent: Contenu reçu", JSON.stringify(content, null, 2));
+    
     return (
       <ErrorBoundary>
         <div className="relative">
@@ -189,7 +203,19 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ content, className }) =
             
             {/* Contenu de l'article avec première lettre mise en valeur */}
             <div className="relative">
-              <PortableText value={content} components={customComponents} />
+              {/* Fallback pour les contenus non-array */}
+              {!Array.isArray(content) ? (
+                <div>
+                  <p className="text-lg leading-relaxed mb-8 text-white/90">
+                    {typeof content === 'string' ? content : 'Contenu non disponible dans le format attendu.'}
+                  </p>
+                  <p className="text-sm text-gray-400 mb-8">
+                    Note: Ce contenu n'est pas au format Portable Text standard.
+                  </p>
+                </div>
+              ) : (
+                <PortableText value={content} components={customComponents} />
+              )}
             </div>
             
             {/* Section de partage en fin d'article */}
@@ -249,7 +275,12 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ content, className }) =
     );
   } catch (error) {
     console.error("ArticleContent: Erreur pendant le rendu de PortableText:", error);
-    return <p className="text-red-500">Erreur lors de l'affichage du contenu de l'article.</p>;
+    return (
+      <div className="bg-red-900/20 border border-red-500/30 p-6 rounded-lg">
+        <p className="text-white mb-2">Une erreur est survenue lors de l'affichage du contenu.</p>
+        <p className="text-gray-400 text-sm">Détails techniques: {error instanceof Error ? error.message : String(error)}</p>
+      </div>
+    );
   }
 };
 
