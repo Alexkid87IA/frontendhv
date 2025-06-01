@@ -198,15 +198,13 @@ export const HeroSection = () => {
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="relative group"
                   >
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
                     <Link
                       to="/create-with-roger"
-                      className="relative flex items-center justify-center gap-2 bg-black px-6 py-3 rounded-xl text-white group-hover:text-white/90 transition-colors"
+                      className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl transition-colors"
                     >
                       <Sparkles className="w-5 h-5" />
-                      <span>Votre histoire</span>
+                      <span>Créer avec Roger</span>
                     </Link>
                   </motion.div>
                 </div>

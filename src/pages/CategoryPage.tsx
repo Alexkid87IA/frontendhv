@@ -1,21 +1,87 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Search, Filter, ChevronDown } from "lucide-react";
+import { Search, Filter, ArrowRight, ChevronDown, ChevronUp, Calendar } from "lucide-react";
 import { SEO } from "../components/common/SEO";
 import { NewsletterForm } from "../components/common/NewsletterForm";
 import { LoadingSpinner } from "../components/common/LoadingSpinner";
 import { ErrorMessage } from "../components/common/ErrorMessage";
-import { getSEOForCategory } from "../utils/seo.config";
 import { CategoryFilter } from "../components/common/CategoryFilter";
-import { getArticlesByCategory, getCategoryBySlug } from "../utils/sanityAPI";
 import SafeImage from "../components/common/SafeImage";
 import ErrorBoundary from "../components/common/ErrorBoundary";
-import { urlFor } from "../utils/sanityImage";
+import { getCategoryBySlug, getArticlesByCategory } from "../utils/sanityAPI";
+import { formatDate } from "../utils/dateUtils";
 
-// Catégories pour le filtre
-const categories = [
-  { id: 'all', name: 'Tous les articles' },
+// Données mockées pour le développement
+const mockCategories = {
+  story: {
+    title: "Story",
+    description: "Des histoires authentiques qui redéfinissent le possible",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80",
+    color: "from-amber-500 to-orange-500"
+  },
+  business: {
+    title: "Business",
+    description: "Les stratégies qui font la différence",
+    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80",
+    color: "from-blue-500 to-cyan-500"
+  },
+  mental: {
+    title: "Mental",
+    description: "Développe une psychologie de champion",
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80",
+    color: "from-purple-500 to-violet-500"
+  },
+  society: {
+    title: "Society",
+    description: "Comprendre les mutations de notre époque",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80",
+    color: "from-emerald-500 to-teal-500"
+  }
+};
+
+const mockArticles = [
+  {
+    _id: '1',
+    title: "Comment développer un mindset d'exception",
+    slug: { current: 'mindset-exception' },
+    mainImage: {
+      asset: {
+        _ref: 'image-1',
+        url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80'
+      }
+    },
+    excerpt: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible.",
+    publishedAt: "2024-03-20",
+    author: {
+      name: "Roger Ormières",
+      image: "https://yt3.googleusercontent.com/JoLqbdLoPqNLoBUYorqoeyht0KT5uyehGL5ppcCIu5s5PAOeMXi86FoULWWjE2VpJnBKdYPmNj8=s900-c-k-c0x00ffffff-no-rj"
+    },
+    readingTime: "5 min",
+    views: 1234
+  },
+  {
+    _id: '2',
+    title: "L'art de la résilience entrepreneuriale",
+    slug: { current: 'resilience-entrepreneuriale' },
+    mainImage: {
+      asset: {
+        _ref: 'image-2',
+        url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
+      }
+    },
+    excerpt: "Comment transformer les obstacles en opportunités et rebondir face aux défis.",
+    publishedAt: "2024-03-19",
+    author: {
+      name: "Marie Laurent",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80"
+    },
+    readingTime: "8 min",
+    views: 2345
+  }
+];
+
+const filters = [
   { id: 'recent', name: 'Plus récents' },
   { id: 'popular', name: 'Plus populaires' },
   { id: 'featured', name: 'À la une' }
@@ -51,13 +117,13 @@ const fallbackCategoryDetails = {
 
 export const CategoryPage = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
-  const [articles, setArticles] = useState<any[]>([]);
-  const [categoryDetails, setCategoryDetails] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [articles, setArticles] = useState(mockArticles);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("date");
+  const [selectedFilter, setSelectedFilter] = useState("recent");
+  const [expandedArticles, setExpandedArticles] = useState<string[]>([]);
+  const [categoryDetails, setCategoryDetails] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [useFallback, setUseFallback] = useState(false);
 
   // Charger les données de catégorie et les articles depuis Sanity
@@ -119,47 +185,29 @@ export const CategoryPage = () => {
     fetchCategoryData();
   }, [categorySlug]);
 
-  // Filtrer les articles en fonction de la recherche et du filtre sélectionné
-  const filteredArticles = articles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         (article.excerpt && article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesSearch;
-  }).sort((a, b) => {
-    if (sortBy === "date") {
-      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-    }
-    return 0;
-  });
-
-  // Formater la date
-  const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    });
+  const toggleArticleExpansion = (articleId: string) => {
+    setExpandedArticles(prev =>
+      prev.includes(articleId)
+        ? prev.filter(id => id !== articleId)
+        : [...prev, articleId]
+    );
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[70vh] flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
-  }
+  const filteredArticles = articles.filter(article =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    article.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-20 min-h-[60vh]">
-        <ErrorMessage title="Catégorie non trouvée" message={error} />
-      </div>
-    );
-  }
+  // Utiliser categoryDetails s'il est disponible, sinon utiliser mockCategories
+  const category = categoryDetails || (categorySlug ? mockCategories[categorySlug as keyof typeof mockCategories] : null);
 
-  if (!categoryDetails) {
+  if (!category) {
     return (
-      <div className="container mx-auto px-4 py-20 min-h-[60vh]">
-        <ErrorMessage title="Erreur" message="Impossible de charger les détails de la catégorie." />
+      <div className="container mx-auto px-4 py-20">
+        <ErrorMessage
+          title="Catégorie non trouvée"
+          message="La catégorie que vous recherchez n'existe pas."
+        />
       </div>
     );
   }
@@ -167,45 +215,43 @@ export const CategoryPage = () => {
   return (
     <ErrorBoundary>
       <SEO
-        title={`${categoryDetails.title} | Roger Ormières`}
-        description={categoryDetails.description || `Articles sur ${categoryDetails.title}`}
-        image={categoryDetails.image ? urlFor(categoryDetails.image) : undefined}
+        title={`${category.title} | Roger Ormières`}
+        description={category.description}
+        image={category.image}
       />
-      
+
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-transparent" />
-          <SafeImage 
-            image={categoryDetails.image}
-            alt={categoryDetails.title}
+      <section className="relative min-h-[60vh] flex items-center pt-32 pb-20">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/95 to-transparent" />
+          <img
+            src={category.image}
+            alt={category.title}
             className="absolute inset-0 w-full h-full object-cover opacity-20"
-            fallbackText={categoryDetails.title}
           />
-          <div className={`absolute inset-0 bg-gradient-to-br ${categoryDetails.color} opacity-5`} />
+          <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-5`} />
           <div className="absolute inset-0 backdrop-blur-sm" />
         </div>
-        
-        <div className="container relative z-10">
+
+        <div className="container relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             className="max-w-3xl"
           >
-            <div className={`inline-block px-4 py-2 rounded-full bg-gradient-to-r ${categoryDetails.color} text-white text-sm font-medium mb-6`}>
-              {categoryDetails.title}
+            <div className={`inline-block px-4 py-2 rounded-full bg-gradient-to-r ${category.color} text-white text-sm font-medium mb-6`}>
+              {category.title}
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              {categoryDetails.title}
+              {category.title}
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl">
-              {categoryDetails.description || `Découvrez tous nos articles sur ${categoryDetails.title}`}
+              {category.description}
             </p>
           </motion.div>
         </div>
       </section>
-      
+
       {/* Filters Section */}
       <section className="container mb-12">
         <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/5 rounded-xl p-6">
@@ -220,27 +266,13 @@ export const CategoryPage = () => {
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
             </div>
-            
+
             <div className="flex-1">
               <CategoryFilter
-                categories={categories}
+                categories={filters}
                 selectedCategory={selectedFilter}
                 onSelect={setSelectedFilter}
               />
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Filter size={18} className="text-gray-400" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-neutral-800/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent-violet focus:ring-1 focus:ring-accent-violet transition-colors appearance-none pr-10"
-                style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'white\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center', backgroundSize: '20px' }}
-              >
-                <option value="date">Plus récents</option>
-                <option value="popular">Plus populaires</option>
-                <option value="title">Alphabétique</option>
-              </select>
             </div>
           </div>
         </div>
@@ -338,37 +370,28 @@ export const CategoryPage = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
                       
                       {article.categories && article.categories[0] && (
-                        <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm text-xs font-medium border border-white/10">
+                        <div className="absolute top-4 left-4 px-3 py-1 bg-accent-blue/80 backdrop-blur-sm rounded-full text-xs font-medium text-white">
                           {article.categories[0].title}
                         </div>
                       )}
                     </div>
                     
                     <div className="p-6 flex-1 flex flex-col">
-                      <h3 className="text-xl font-bold mb-3 group-hover:text-accent-blue transition-colors line-clamp-2">
+                      <h3 className="text-xl font-semibold mb-3 group-hover:text-accent-blue transition-colors">
                         {article.title}
                       </h3>
                       
-                      <p className="text-gray-400 mb-6 line-clamp-3 flex-1">
+                      <p className="text-gray-400 text-sm mb-4 flex-1">
                         {article.excerpt}
                       </p>
                       
                       <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
                         <div className="flex items-center gap-2">
-                          <SafeImage
-                            image={article.author?.image}
-                            alt={article.author?.name || "Auteur"}
-                            width={32}
-                            height={32}
-                            className="w-8 h-8 rounded-full object-cover border border-white/20"
-                            fallbackText={article.author?.name?.charAt(0) || "A"}
-                          />
-                          <span className="text-sm text-gray-400">{article.author?.name || "Auteur inconnu"}</span>
+                          <Calendar size={14} className="text-gray-500" />
+                          <span className="text-xs text-gray-500">{formatDate(article.publishedAt)}</span>
                         </div>
                         
-                        <span className="text-xs text-gray-500">
-                          {formatDate(article.publishedAt)}
-                        </span>
+                        <ArrowRight size={16} className="text-accent-blue transform group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </div>
@@ -378,13 +401,26 @@ export const CategoryPage = () => {
           </div>
         </section>
       )}
-      
+
       {/* Newsletter Section */}
       <section className="container mb-20">
-        <NewsletterForm />
+        <div className="bg-gradient-to-br from-accent-blue/20 to-accent-turquoise/10 backdrop-blur-sm border border-white/5 rounded-2xl p-8 md:p-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                Restez inspiré, chaque semaine
+              </h2>
+              <p className="text-gray-300 mb-6">
+                Abonnez-vous à notre newsletter pour recevoir une dose hebdomadaire d'inspiration, les meilleurs articles, des conseils exclusifs et les actualités de notre communauté.
+              </p>
+            </div>
+            
+            <div>
+              <NewsletterForm />
+            </div>
+          </div>
+        </div>
       </section>
     </ErrorBoundary>
   );
 };
-
-export default CategoryPage;
