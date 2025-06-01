@@ -1,4 +1,3 @@
-cat > src/components/common/SafeImage.tsx << 'EOF'
 import { urlFor } from '../../utils/sanityClient';
 
 interface SafeImageProps {
@@ -44,4 +43,3 @@ export default function SafeImage({ source, alt, className, width, height }: Saf
     return <img src={`https://via.placeholder.com/${width || 400}x${height || 300}?text=Erreur`} alt={alt} className={className} />;
   }
 }
-EOF
