@@ -1,12 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Play, Camera, Video, Mic, Sparkles, Star, Users, Clock, Calendar, CheckCircle, Award, Zap, BookOpen } from 'lucide-react';
+import { 
+  ArrowRight, Play, Camera, Video, Mic, Sparkles, Star, Users, 
+  Clock, Calendar, CheckCircle, Award, Zap, BookOpen, ChevronDown,
+  Lightbulb, Target, MessageSquare, Rocket, Palette, Edit
+} from 'lucide-react';
 
 // Composants communs
-import { NewsletterForm } from '../components/common/NewsletterForm';
 import { Button } from '../components/common/Button';
+import { NewsletterForm } from '../components/common/NewsletterForm';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -182,7 +185,7 @@ export const CreateWithRogerPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                icon: <Video className="text-white\" size={24} />,
+                icon: <Video className="text-white" size={24} />,
                 title: "Vidéo Professionnelle",
                 description: "Captation multi-caméras 4K, éclairage studio et montage professionnel pour des vidéos de qualité broadcast.",
                 gradient: "from-blue-600 to-cyan-400"
@@ -194,7 +197,7 @@ export const CreateWithRogerPage = () => {
                 gradient: "from-purple-600 to-pink-500"
               },
               {
-                icon: <Camera className="text-white\" size={24} />,
+                icon: <Camera className="text-white" size={24} />,
                 title: "Photographie Éditoriale",
                 description: "Séances photo professionnelles pour vos portraits, produits et contenus éditoriaux.",
                 gradient: "from-amber-500 to-orange-600"
@@ -206,7 +209,7 @@ export const CreateWithRogerPage = () => {
                 gradient: "from-emerald-500 to-teal-400"
               },
               {
-                icon: <Users className="text-white\" size={24} />,
+                icon: <Users className="text-white" size={24} />,
                 title: "Formation & Coaching",
                 description: "Accompagnement personnalisé pour développer votre présence médiatique et votre aisance face caméra.",
                 gradient: "from-red-500 to-pink-500"
@@ -392,7 +395,7 @@ export const CreateWithRogerPage = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
                 quote: "Travailler avec Roger a été une révélation. En une journée, nous avons créé plus de contenu de qualité que je n'en avais produit en 6 mois.",
