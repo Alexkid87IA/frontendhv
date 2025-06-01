@@ -60,10 +60,13 @@ export const ResponsiveNavbar = () => {
             } : {}}
             transition={{ duration: 0.5, ease: "easeInOut" }}
             whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-            className="flex items-center gap-2"
+            className="relative h-10 md:h-12"
           >
-            <Sparkles className="h-8 w-8 text-white" />
-            <span className="text-xl font-bold text-white">High Value</span>
+            <img 
+              src="/src/assets/logos/LOGO_HV MEDIA.svg"
+              alt="High Value Media"
+              className="h-full w-auto object-contain" 
+            />
           </motion.div>
         </Link>
         
