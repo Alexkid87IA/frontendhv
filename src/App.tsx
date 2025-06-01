@@ -44,9 +44,9 @@ function App() {
                 <Route path="/business-idea/:slug" element={<BusinessIdeaPage />} />
                 
                 {/* Redirections pour les anciennes routes vers les nouvelles */}
-                <Route path="/rubrique/recits" element={<Navigate to="/rubrique/story\" replace />} />
-                <Route path="/rubrique/psychologie" element={<Navigate to="/rubrique/mental\" replace />} />
-                <Route path="/rubrique/culture" element={<Navigate to="/rubrique/society\" replace />} />
+                <Route path="/rubrique/recits" element={<Navigate to="/rubrique/story" replace />} />
+                <Route path="/rubrique/psychologie" element={<Navigate to="/rubrique/mental" replace />} />
+                <Route path="/rubrique/culture" element={<Navigate to="/rubrique/society" replace />} />
                 
                 {/* Routes des catégories */}
                 <Route path="/rubrique/:categorySlug" element={<CategoryPage />} />
@@ -54,7 +54,7 @@ function App() {
                 <Route path="/podcasts" element={<PodcastPage />} />
                 <Route path="/emissions" element={<EmissionsPage />} />
                 <Route path="/create-with-roger" element={<CreateWithRogerPage />} />
-                <Route path="/co-shooting" element={<Navigate to="/create-with-roger\" replace />} />
+                <Route path="/co-shooting" element={<Navigate to="/create-with-roger" replace />} />
                 <Route path="/coaching" element={<CoachingPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/recommendations" element={<RecommendationsPage />} />
