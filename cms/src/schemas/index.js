@@ -2,6 +2,7 @@
 import universe from './universe'
 import clubFeature from './clubFeature'
 import clubPricing from './clubPricing'
+import debate from './debate'
 
 // Schémas existants (à compléter si nécessaire)
 // Note: Ces imports sont fictifs et devront être adaptés aux schémas existants
@@ -16,6 +17,7 @@ export const schemaTypes = [
   universe,
   clubFeature,
   clubPricing,
+  debate,
   
   // Schémas existants (à décommenter et adapter selon les besoins)
   // article,

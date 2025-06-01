@@ -1,14 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MessageSquare, ArrowRight, ThumbsUp, ThumbsDown } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
+import { sanityClient } from '../../utils/sanityClient';
+import { urlFor } from '../../utils/sanityImage';
+import { LoadingSpinner } from '../common/LoadingSpinner';
 
+// Types pour les débats
+interface DebateAuthor {
+  name: string;
+  role: string;
+  image: any;
+}
+
+interface DebateOpinion {
+  position: string;
+  author: DebateAuthor;
+  arguments: string[];
+  votes: number;
+}
+
+interface DebateStats {
+  totalVotes: number;
+  comments: number;
+  shares: string;
+}
+
+interface Debate {
+  _id: string;
+  title: string;
+  description: string;
+  image: any;
+  slug?: {
+    current: string;
+  };
+  opinions: DebateOpinion[];
+  moderator: DebateAuthor;
+  stats: DebateStats;
+  featured?: boolean;
+}
+
+// Données mockées pour fallback
 const mockDebate = {
+  _id: "mock-debate-1",
   title: "L'IA va-t-elle remplacer les entrepreneurs ?",
   description: "Un débat passionnant sur l'impact de l'intelligence artificielle dans l'entrepreneuriat",
   image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80",
+  slug: {
+    current: "ia-entrepreneurs"
+  },
   opinions: [
     {
       position: "Pour",
@@ -52,11 +94,73 @@ const mockDebate = {
 };
 
 export const DebateSection = () => {
+  const [debate, setDebate] = useState<Debate | null>(null);
   const [userVote, setUserVote] = useState<"pour" | "contre" | null>(null);
   const [votes, setVotes] = useState({
-    pour: mockDebate.opinions[0].votes,
-    contre: mockDebate.opinions[1].votes
+    pour: 0,
+    contre: 0
   });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
+
+  useEffect(() => {
+    const fetchDebate = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Requête GROQ pour récupérer le débat à la une
+        const query = `*[_type == "debate" && featured == true][0] {
+          _id,
+          title,
+          description,
+          image,
+          slug,
+          opinions,
+          moderator,
+          stats
+        }`;
+        
+        const result = await sanityClient.fetch(query);
+        
+        if (result) {
+          setDebate(result);
+          setVotes({
+            pour: result.opinions.find((o: any) => o.position === "Pour")?.votes || 0,
+            contre: result.opinions.find((o: any) => o.position === "Contre")?.votes || 0
+          });
+          setDataSource('cms');
+          console.log("Débat récupéré depuis Sanity CMS");
+        } else {
+          // Fallback vers les données mockées si aucun résultat
+          setDebate(mockDebate);
+          setVotes({
+            pour: mockDebate.opinions.find(o => o.position === "Pour")?.votes || 0,
+            contre: mockDebate.opinions.find(o => o.position === "Contre")?.votes || 0
+          });
+          setDataSource('mock');
+          console.log("Aucun débat trouvé dans Sanity, utilisation des données mockées");
+        }
+      } catch (err) {
+        console.error("Erreur lors du chargement du débat:", err);
+        setError("Impossible de charger le débat");
+        
+        // Fallback vers les données mockées en cas d'erreur
+        setDebate(mockDebate);
+        setVotes({
+          pour: mockDebate.opinions.find(o => o.position === "Pour")?.votes || 0,
+          contre: mockDebate.opinions.find(o => o.position === "Contre")?.votes || 0
+        });
+        setDataSource('mock');
+        console.log("Erreur de chargement depuis Sanity, utilisation des données mockées");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchDebate();
+  }, []);
 
   const handleVote = (position: "pour" | "contre") => {
     if (userVote === position) {
@@ -82,9 +186,34 @@ export const DebateSection = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <section className="py-20">
+        <div className="container flex justify-center items-center">
+          <LoadingSpinner />
+        </div>
+      </section>
+    );
+  }
+
+  if (error && !debate) {
+    return (
+      <section className="py-20">
+        <div className="container">
+          <div className="text-center text-red-500">
+            <p>{error}</p>
+            <p className="mt-2">Veuillez réessayer ultérieurement.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!debate) return null;
+
   const totalVotes = votes.pour + votes.contre;
-  const pourPercentage = Math.round((votes.pour / totalVotes) * 100);
-  const contrePercentage = Math.round((votes.contre / totalVotes) * 100);
+  const pourPercentage = totalVotes > 0 ? Math.round((votes.pour / totalVotes) * 100) : 50;
+  const contrePercentage = totalVotes > 0 ? Math.round((votes.contre / totalVotes) * 100) : 50;
 
   return (
     <ErrorBoundary>
@@ -104,6 +233,12 @@ export const DebateSection = () => {
 
             {/* Content */}
             <div className="relative p-8 md:p-12">
+              {dataSource === 'mock' && (
+                <div className="absolute top-2 right-2 text-xs text-amber-500 bg-black/50 px-2 py-1 rounded">
+                  Données de démonstration
+                </div>
+              )}
+              
               {/* Header */}
               <div className="text-center mb-12">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-6">
@@ -112,19 +247,19 @@ export const DebateSection = () => {
                 </div>
 
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
-                  {mockDebate.title}
+                  {debate.title}
                 </h2>
 
                 <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
-                  {mockDebate.description}
+                  {debate.description}
                 </p>
 
                 {/* Moderator */}
                 <div className="flex items-center justify-center gap-3 mb-8">
                   <div className="w-10 h-10 rounded-full overflow-hidden">
                     <SafeImage
-                      image={mockDebate.moderator.image}
-                      alt={mockDebate.moderator.name}
+                      image={dataSource === 'cms' ? debate.moderator.image : debate.moderator.image}
+                      alt={debate.moderator.name}
                       width={40}
                       height={40}
                       className="w-full h-full object-cover"
@@ -132,10 +267,10 @@ export const DebateSection = () => {
                   </div>
                   <div>
                     <div className="font-medium text-white">
-                      {mockDebate.moderator.name}
+                      {debate.moderator.name}
                     </div>
                     <div className="text-sm text-gray-400">
-                      Modérateur · {mockDebate.moderator.role}
+                      Modérateur · {debate.moderator.role}
                     </div>
                   </div>
                 </div>
@@ -143,7 +278,7 @@ export const DebateSection = () => {
 
               {/* Opinions Grid */}
               <div className="grid md:grid-cols-2 gap-8 mb-12">
-                {mockDebate.opinions.map((opinion, index) => (
+                {debate.opinions.map((opinion, index) => (
                   <motion.div
                     key={opinion.position}
                     initial={{ opacity: 0, x: index === 0 ? -20 : 20 }}
@@ -155,7 +290,7 @@ export const DebateSection = () => {
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 rounded-full overflow-hidden">
                         <SafeImage
-                          image={opinion.author.image}
+                          image={dataSource === 'cms' ? opinion.author.image : opinion.author.image}
                           alt={opinion.author.name}
                           width={48}
                           height={48}
@@ -221,11 +356,11 @@ export const DebateSection = () => {
               <div className="flex flex-wrap items-center justify-between gap-6 border-t border-white/10 pt-8">
                 <div className="flex gap-6 text-sm text-gray-400">
                   <span>{totalVotes} votes</span>
-                  <span>{mockDebate.stats.comments} commentaires</span>
-                  <span>{mockDebate.stats.shares} partages</span>
+                  <span>{debate.stats.comments} commentaires</span>
+                  <span>{debate.stats.shares} partages</span>
                 </div>
                 <Link
-                  to="/debat/ia-entrepreneurs"
+                  to={`/debat/${debate.slug?.current || 'ia-entrepreneurs'}`}
                   className="inline-flex items-center gap-2 text-accent-blue hover:text-accent-turquoise transition-colors"
                 >
                   <span>Voir le débat complet</span>
