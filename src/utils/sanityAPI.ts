@@ -151,19 +151,23 @@ export const getCategoryBySlug = async (slug: string) => {
 };
 
 // Récupérer les amuses-bouches
-export const getAmuseBouches = async (limit = 5): Promise<SanityArticle[]> => {
+export const getAmuseBouches = async (limit = 5): Promise<any[]> => {
   return getWithCache(`amuseBouches_${limit}`, async () => {
     try {
-      const query = `*[_type == "article" && defined(categories) && "amuse-bouche" in categories[]->slug.current] | order(publishedAt desc)[0...$limit] {
+      // Chercher directement le type amuseBouche
+      const query = `*[_type == "amuseBouche"] | order(publishedAt desc)[0...$limit] {
         _id,
         title,
         slug,
-        mainImage,
-        excerpt,
-        publishedAt
+        coverImage,
+        description,
+        publishedAt,
+        duration,
+        videoUrl
       }`;
       
-      return await sanityClient.fetch(query, { limit });
+      const results = await sanityClient.fetch(query, { limit });
+      return results || [];
     } catch (error) {
       console.error("Erreur lors de la récupération des amuses-bouches:", error);
       return [];
@@ -194,15 +198,44 @@ export const getLatestQuote = async (): Promise<SanityQuote | null> => {
 export const getFeaturedDebate = async (): Promise<SanityDebate | null> => {
   return getWithCache('featuredDebate', async () => {
     try {
-      const query = `*[_type == "debate" && featured == true][0] {
+      const query = `*[_type == "debate" && isActive == true] | order(publishedAt desc)[0] {
         _id,
-        title,
+        "title": question,
         description,
-        image,
+        "image": forPerson.image,
         slug,
-        opinions,
-        moderator,
-        stats
+        "opinions": [
+          {
+            "position": "Pour",
+            "author": {
+              "name": forPerson.name,
+              "role": forPerson.role,
+              "image": forPerson.image
+            },
+            "arguments": [forPerson.argument],
+            "votes": coalesce(stats.votesFor, 0)
+          },
+          {
+            "position": "Contre",
+            "author": {
+              "name": againstPerson.name,
+              "role": againstPerson.role,
+              "image": againstPerson.image
+            },
+            "arguments": [againstPerson.argument],
+            "votes": coalesce(stats.votesAgainst, 0)
+          }
+        ],
+        "moderator": {
+          "name": "Roger Ormières",
+          "role": "Modérateur",
+          "image": forPerson.image
+        },
+        "stats": {
+          "totalVotes": coalesce(stats.votesFor, 0) + coalesce(stats.votesAgainst, 0),
+          "comments": coalesce(stats.comments, 0),
+          "shares": "1.2K"
+        }
       }`;
       
       return await sanityClient.fetch(query);
@@ -279,31 +312,62 @@ export const getClubPricing = async (): Promise<SanityClubPricing[]> => {
 export const getContentItems = async (contentType: string, limit = 5): Promise<any[]> => {
   return getWithCache(`contentItems_${contentType}_${limit}`, async () => {
     try {
-      let type = '';
-      
-      switch(contentType) {
-        case 'emission':
-          type = 'podcast';
-          break;
-        case 'business-idea':
-          type = 'caseStudy';
-          break;
-        case 'success-story':
-          type = 'successStory';
-          break;
-        default:
-          throw new Error(`Type de contenu non supporté: ${contentType}`);
-      }
-      
-      const query = `*[_type == "${type}"] | order(publishedAt desc)[0...${limit}] {
+      // Requête qui résout les références pour obtenir le titre du type de section
+      const query = `*[_type == "article"] {
         _id,
         title,
         mainImage,
         excerpt,
-        slug
+        slug,
+        "sectionTypeTitle": sectionType->title,
+        "typeDeSection": typeDeSection->title,
+        "typeTitle": type->title
       }`;
       
-      return await sanityClient.fetch(query);
+      const allArticles = await sanityClient.fetch(query);
+      console.log(`Total articles récupérés: ${allArticles.length}`);
+      
+      // Afficher un exemple pour debug
+      if (allArticles.length > 0) {
+        console.log(`Exemple d'article avec types résolus:`, allArticles[0]);
+      }
+      
+      // Mapping des types recherchés vers les valeurs possibles dans Sanity
+      const typeMapping: Record<string, string[]> = {
+        'emission': ['Emission', 'emission', 'Émission', 'Podcast'],
+        'business-idea': ['Business Idea', 'business-idea', 'Business idea', 'BusinessIdea', 'Étude de cas'],
+        'success-story': ['Success Story', 'success-story', 'Success story', 'SuccessStory']
+      };
+      
+      const validTypes = typeMapping[contentType] || [];
+      console.log(`Recherche pour ${contentType}, valeurs acceptées:`, validTypes);
+      
+      // Filtrer les articles selon le type
+      const filtered = allArticles.filter((article: any) => {
+        const sectionType = article.sectionTypeTitle || 
+                          article.typeDeSection || 
+                          article.typeTitle;
+        
+        if (sectionType) {
+          console.log(`Article "${article.title}" a le type résolu:`, sectionType);
+        }
+        
+        return validTypes.some(validType => 
+          sectionType && sectionType.toLowerCase() === validType.toLowerCase()
+        );
+      }).slice(0, limit);
+      
+      console.log(`Articles trouvés pour ${contentType}: ${filtered.length}`);
+      
+      // Si toujours pas de résultats, affichons tous les types disponibles
+      if (filtered.length === 0) {
+        const allTypes = allArticles
+          .map((a: any) => a.sectionTypeTitle || a.typeDeSection || a.typeTitle)
+          .filter(Boolean);
+        console.log(`Aucun article trouvé. Types disponibles dans Sanity:`, [...new Set(allTypes)]);
+      }
+      
+      return filtered;
     } catch (error) {
       console.error(`Erreur lors de la récupération des contenus de type ${contentType}:`, error);
       return [];

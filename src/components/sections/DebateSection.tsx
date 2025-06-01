@@ -8,82 +8,6 @@ import { getFeaturedDebate } from '../../utils/sanityAPI';
 import { SanityDebate } from '../../types/sanity';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 
-// Données mockées pour fallback
-const mockDebate: SanityDebate = {
-  _id: "mock-debate-1",
-  title: "L'IA va-t-elle remplacer les entrepreneurs ?",
-  description: "Un débat passionnant sur l'impact de l'intelligence artificielle dans l'entrepreneuriat",
-  image: {
-    _type: "image",
-    asset: {
-      _ref: "image-mock-1",
-      _type: "reference"
-    }
-  },
-  slug: {
-    _type: "slug",
-    current: "ia-entrepreneurs"
-  },
-  opinions: [
-    {
-      position: "Pour",
-      author: {
-        name: "Sarah Chen",
-        role: "CEO IA Solutions",
-        image: {
-          _type: "image",
-          asset: {
-            _ref: "image-mock-2",
-            _type: "reference"
-          }
-        }
-      },
-      arguments: [
-        "L'IA peut analyser des données plus rapidement qu'un humain",
-        "Les algorithmes prennent des décisions plus objectives",
-        "Automatisation croissante des tâches entrepreneuriales"
-      ],
-      votes: 245
-    },
-    {
-      position: "Contre",
-      author: {
-        name: "Marc Dubois",
-        role: "Expert Innovation",
-        image: {
-          _type: "image",
-          asset: {
-            _ref: "image-mock-3",
-            _type: "reference"
-          }
-        }
-      },
-      arguments: [
-        "L'entrepreneuriat nécessite une intelligence émotionnelle",
-        "La créativité humaine reste inégalée",
-        "L'IA est un outil, pas un remplacement"
-      ],
-      votes: 312
-    }
-  ],
-  moderator: {
-    name: "Elena Rodriguez",
-    role: "Startup Advisor",
-    image: {
-      _type: "image",
-      asset: {
-        _ref: "image-mock-4",
-        _type: "reference"
-      }
-    }
-  },
-  stats: {
-    totalVotes: 557,
-    comments: 234,
-    shares: "1.2K"
-  }
-};
-
 export const DebateSection = () => {
   const [debate, setDebate] = useState<SanityDebate | null>(null);
   const [userVote, setUserVote] = useState<"pour" | "contre" | null>(null);
@@ -93,7 +17,6 @@ export const DebateSection = () => {
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
 
   useEffect(() => {
     const fetchDebate = async () => {
@@ -109,30 +32,13 @@ export const DebateSection = () => {
             pour: result.opinions.find((o) => o.position === "Pour")?.votes || 0,
             contre: result.opinions.find((o) => o.position === "Contre")?.votes || 0
           });
-          setDataSource('cms');
           console.log("Débat récupéré depuis Sanity CMS");
         } else {
-          // Fallback vers les données mockées si aucun résultat
-          setDebate(mockDebate);
-          setVotes({
-            pour: mockDebate.opinions.find(o => o.position === "Pour")?.votes || 0,
-            contre: mockDebate.opinions.find(o => o.position === "Contre")?.votes || 0
-          });
-          setDataSource('mock');
-          console.log("Aucun débat trouvé dans Sanity, utilisation des données mockées");
+          console.log("Aucun débat trouvé dans Sanity");
         }
       } catch (err) {
         console.error("Erreur lors du chargement du débat:", err);
         setError("Impossible de charger le débat");
-        
-        // Fallback vers les données mockées en cas d'erreur
-        setDebate(mockDebate);
-        setVotes({
-          pour: mockDebate.opinions.find(o => o.position === "Pour")?.votes || 0,
-          contre: mockDebate.opinions.find(o => o.position === "Contre")?.votes || 0
-        });
-        setDataSource('mock');
-        console.log("Erreur de chargement depuis Sanity, utilisation des données mockées");
       } finally {
         setIsLoading(false);
       }
@@ -175,6 +81,10 @@ export const DebateSection = () => {
     );
   }
 
+  if (!debate && !isLoading) {
+    return null; // Ne rien afficher s'il n'y a pas de débat
+  }
+
   if (error && !debate) {
     return (
       <section className="py-20">
@@ -212,12 +122,6 @@ export const DebateSection = () => {
 
             {/* Content */}
             <div className="relative p-8 md:p-12">
-              {dataSource === 'mock' && (
-                <div className="absolute top-2 right-2 text-xs text-amber-500 bg-black/50 px-2 py-1 rounded">
-                  Données de démonstration
-                </div>
-              )}
-              
               {/* Header */}
               <div className="text-center mb-12">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-6">
