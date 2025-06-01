@@ -25,7 +25,7 @@ const mockItems = {
       mainImage: {
         _type: "image",
         asset: {
-          _ref: 'image-1',
+          _ref: 'https://picsum.photos/400/300?random=1',
           _type: "reference"
         }
       },
@@ -144,7 +144,7 @@ const mockItems = {
       mainImage: {
         _type: "image",
         asset: {
-          _ref: 'image-10',
+          _ref: 'https://picsum.photos/400/300?random=10',
           _type: "reference"
         }
       },
@@ -159,7 +159,7 @@ const mockItems = {
       mainImage: {
         _type: "image",
         asset: {
-          _ref: 'image-11',
+          _ref: 'https://picsum.photos/400/300?random=11',
           _type: "reference"
         }
       },
@@ -172,7 +172,7 @@ const mockItems = {
       mainImage: {
         _type: "image",
         asset: {
-          _ref: 'image-12',
+          _ref: 'https://picsum.photos/400/300?random=12',
           _type: "reference"
         }
       },
@@ -185,7 +185,7 @@ const mockItems = {
       mainImage: {
         _type: "image",
         asset: {
-          _ref: 'image-13',
+          _ref: 'https://picsum.photos/400/300?random=13',
           _type: "reference"
         }
       },
@@ -198,7 +198,7 @@ const mockItems = {
       mainImage: {
         _type: "image",
         asset: {
-          _ref: 'image-14',
+          _ref: 'https://picsum.photos/400/300?random=14',
           _type: "reference"
         }
       },
@@ -211,7 +211,7 @@ const mockItems = {
       mainImage: {
         _type: "image",
         asset: {
-          _ref: 'image-15',
+          _ref: 'https://picsum.photos/400/300?random=15',
           _type: "reference"
         }
       },

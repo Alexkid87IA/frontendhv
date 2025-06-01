@@ -21,7 +21,7 @@ const mockArticles = [
     slug: { current: 'mindset-exception' },
     mainImage: {
       asset: {
-        _ref: 'image-1',
+        _ref: 'https://picsum.photos/400/300?random=1',
         url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80'
       }
     },

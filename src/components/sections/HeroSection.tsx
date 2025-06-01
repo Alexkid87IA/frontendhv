@@ -16,7 +16,7 @@ const mockFeaturedArticle: SanityArticle = {
   mainImage: {
     _type: "image",
     asset: {
-      _ref: 'image-1',
+      _ref: 'https://picsum.photos/800/600?random=1',
       _type: "reference"
     }
   },
