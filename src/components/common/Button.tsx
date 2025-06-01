@@ -16,6 +16,7 @@ interface ButtonProps {
   disabled?: boolean;
   fullWidth?: boolean;
   ariaLabel?: string;
+  target?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -30,7 +31,8 @@ export const Button: React.FC<ButtonProps> = ({
   iconPosition = 'right',
   disabled = false,
   fullWidth = false,
-  ariaLabel
+  ariaLabel,
+  target
 }) => {
   // Définir les classes de base selon la variante
   const variantClasses = {
@@ -104,7 +106,7 @@ export const Button: React.FC<ButtonProps> = ({
           href={disabled ? '#' : href}
           className={buttonClasses}
           onClick={disabled ? (e) => e.preventDefault() : onClick}
-          target="_blank"
+          target={target || "_blank"}
           rel="noopener noreferrer"
           aria-disabled={disabled}
           aria-label={ariaLabel || (typeof children === 'string' ? children : undefined)}
