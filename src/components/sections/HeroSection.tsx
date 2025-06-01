@@ -6,31 +6,53 @@ import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
 import { getAllArticles, getLatestQuote } from '../../utils/sanityAPI';
 import { LoadingSpinner } from '../common/LoadingSpinner';
-import { urlFor } from '../../utils/sanityImage';
+
+// Types
+interface Article {
+  _id: string;
+  title: string;
+  slug: {
+    current: string;
+  };
+  mainImage?: any;
+  excerpt?: string;
+  publishedAt: string;
+  categories?: Array<{
+    _id: string;
+    title: string;
+    slug: {
+      current: string;
+    };
+  }>;
+}
+
+interface Quote {
+  text: string;
+  author: string;
+  role?: string;
+}
 
 // Données mockées pour fallback
-const mockFeaturedArticle = {
-  _id: '1',
-  title: "Comment développer un mindset d'exception",
-  slug: { current: 'mindset-exception' },
-  mainImage: {
-    asset: {
-      _ref: 'image-1',
-      url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
-    }
-  },
-  excerpt: "Découvre les secrets des entrepreneurs qui réussissent et transforme ta vision du possible.",
-  publishedAt: "2024-03-20",
-  categories: [
-    {
-      _id: 'cat1',
-      title: 'Mindset',
-      slug: { current: 'mindset' }
-    }
-  ]
+const mockQuote: Quote = {
+  text: "Le succès n'est pas une destination, c'est un voyage constant d'apprentissage et de dépassement de soi.",
+  author: "Roger Ormières",
+  role: "Fondateur"
 };
 
-const mockRecentArticles = [
+const mockArticles: Article[] = [
+  {
+    _id: '1',
+    title: "Comment développer un mindset d'exception",
+    slug: { current: 'mindset-exception' },
+    mainImage: {
+      asset: {
+        _ref: 'image-1',
+        url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
+      }
+    },
+    excerpt: "Découvre les secrets des entrepreneurs qui réussissent et transforme ta vision du possible.",
+    publishedAt: "2024-03-20"
+  },
   {
     _id: '2',
     title: "L'art de la résilience entrepreneuriale",
@@ -41,86 +63,65 @@ const mockRecentArticles = [
         url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80'
       }
     },
-    excerpt: "Découvrez comment transformer les obstacles en opportunités",
-    publishedAt: "2024-03-19",
+    excerpt: "Comment transformer les obstacles en opportunités",
+    publishedAt: "2024-03-19"
   },
   {
     _id: '3',
-    title: "Comment développer son leadership",
-    slug: { current: 'developper-leadership' },
-    mainImage: {
-      asset: {
-        _ref: 'image-3',
-        url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
-      }
-    },
-    excerpt: "Les qualités essentielles d'un leader moderne",
-    publishedAt: "2024-03-18",
-  },
-  {
-    _id: '4',
     title: "Les clés d'une communication impactante",
     slug: { current: 'communication-impactante' },
     mainImage: {
       asset: {
-        _ref: 'image-4',
+        _ref: 'image-3',
         url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80'
       }
     },
     excerpt: "Techniques pour captiver votre audience",
-    publishedAt: "2024-03-17",
+    publishedAt: "2024-03-18"
   }
 ];
 
-const mockQuote = {
-  text: "Le succès n'est pas une destination, c'est un voyage constant d'apprentissage et de dépassement de soi.",
-  author: "Roger Ormières",
-  role: "Fondateur"
-};
-
 export const HeroSection = () => {
-  const [featuredArticle, setFeaturedArticle] = useState(mockFeaturedArticle);
-  const [recentArticles, setRecentArticles] = useState(mockRecentArticles);
-  const [quote, setQuote] = useState(mockQuote);
+  const [articles, setArticles] = useState<Article[]>(mockArticles);
+  const [quote, setQuote] = useState<Quote>(mockQuote);
   const [isLoading, setIsLoading] = useState(true);
-  const [dataSource, setDataSource] = useState('mock');
+  const [dataSource, setDataSource] = useState<'cms' | 'mock'>('mock');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+        
+        // Récupérer les articles et la citation en parallèle
         const [sanityArticles, sanityQuote] = await Promise.all([
           getAllArticles(),
           getLatestQuote()
         ]);
-        
+
+        // Traiter les articles
         if (sanityArticles && sanityArticles.length > 0) {
-          // Utiliser le premier article comme article vedette
-          setFeaturedArticle(sanityArticles[0]);
-          
-          // Utiliser les 3 articles suivants pour la grille
-          setRecentArticles(sanityArticles.slice(1, 4));
-          
-          setDataSource('sanity');
-          console.log('Articles HeroSection récupérés depuis Sanity CMS');
+          // Limiter à 3 articles récents
+          setArticles(sanityArticles.slice(0, 3));
+          setDataSource('cms');
+          console.log('Articles récupérés depuis Sanity CMS');
         } else {
-          // Fallback vers les données mockées
-          setFeaturedArticle(mockFeaturedArticle);
-          setRecentArticles(mockRecentArticles);
-          setDataSource('mock');
-          console.log('Utilisation des articles mockés dans HeroSection (fallback)');
+          setArticles(mockArticles);
+          console.log('Utilisation des articles mockés (fallback)');
         }
 
+        // Traiter la citation
         if (sanityQuote) {
           setQuote(sanityQuote);
+          console.log('Citation récupérée depuis Sanity CMS');
+        } else {
+          setQuote(mockQuote);
+          console.log('Utilisation de la citation mockée (fallback)');
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération des données pour HeroSection:', error);
-        // Fallback vers les données mockées en cas d'erreur
-        setFeaturedArticle(mockFeaturedArticle);
-        setRecentArticles(mockRecentArticles);
+        console.error('Erreur lors de la récupération des données:', error);
+        setArticles(mockArticles);
+        setQuote(mockQuote);
         setDataSource('mock');
-        console.log('Utilisation des données mockées dans HeroSection suite à une erreur');
       } finally {
         setIsLoading(false);
       }
@@ -130,14 +131,12 @@ export const HeroSection = () => {
   }, []);
 
   // Formatage de la date relative
-  const formatRelativeDate = (dateString?: string) => {
-    if (!dateString) return "Il y a quelques jours";
-    
-    const publishDate = new Date(dateString);
+  const formatRelativeDate = (dateString: string): string => {
+    const date = new Date(dateString);
     const now = new Date();
-    const diffTime = Math.abs(now.getTime() - publishDate.getTime());
+    const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return "Aujourd'hui";
     if (diffDays === 1) return "Hier";
     if (diffDays < 7) return `Il y a ${diffDays} jours`;
@@ -177,7 +176,7 @@ export const HeroSection = () => {
                 className="space-y-3"
               >
                 <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium">
-                  {dataSource === 'sanity' ? 'Média indépendant' : 'Média indépendant (démo)'}
+                  {dataSource === 'cms' ? 'Média indépendant' : 'Média indépendant (démo)'}
                 </span>
 
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-montserrat font-bold leading-tight">
@@ -249,10 +248,10 @@ export const HeroSection = () => {
             >
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
                 <SafeImage
-                  image={featuredArticle.mainImage}
-                  alt={featuredArticle.title}
+                  image={articles[0]?.mainImage}
+                  alt={articles[0]?.title}
                   className="absolute inset-0 w-full h-full object-cover"
-                  fallbackText={featuredArticle.title}
+                  fallbackText={articles[0]?.title}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
@@ -263,13 +262,13 @@ export const HeroSection = () => {
                     À la une
                   </span>
                   <h2 className="text-xl font-bold text-white mb-2">
-                    {featuredArticle.title}
+                    {articles[0]?.title}
                   </h2>
                   <p className="text-sm text-gray-300 mb-3 line-clamp-2">
-                    {featuredArticle.excerpt}
+                    {articles[0]?.excerpt}
                   </p>
                   <Link
-                    to={`/article/${featuredArticle.slug?.current}`}
+                    to={`/article/${articles[0]?.slug?.current}`}
                     className="inline-flex items-center gap-2 text-accent-blue hover:text-accent-turquoise transition-colors"
                   >
                     <span>Lire l'article</span>
@@ -284,14 +283,14 @@ export const HeroSection = () => {
             </motion.div>
           </div>
 
-          {/* Recent Articles Grid */}
+          {/* Recent Articles Grid - Limité à 3 articles */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
             className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6"
           >
-            {recentArticles.map((article, index) => (
+            {articles.slice(1, 3).map((article) => (
               <Link
                 key={article._id}
                 to={`/article/${article.slug?.current}`}
