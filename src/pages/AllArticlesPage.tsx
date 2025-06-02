@@ -13,7 +13,6 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 import { sanityClient } from '../utils/sanityClient';
 
-// Données mockées pour le développement
 const mockArticles = [
   {
     _id: '1',
@@ -45,7 +44,7 @@ const mockArticles = [
     slug: { current: 'resilience-entrepreneuriale' },
     mainImage: {
       asset: {
-        _ref: 'image-2',
+        _ref: 'https://picsum.photos/400/300?random=2',
         url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
       }
     },
@@ -69,7 +68,7 @@ const mockArticles = [
     slug: { current: 'communication-impactante' },
     mainImage: {
       asset: {
-        _ref: 'image-3',
+        _ref: 'https://picsum.photos/400/300?random=3',
         url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80'
       }
     },

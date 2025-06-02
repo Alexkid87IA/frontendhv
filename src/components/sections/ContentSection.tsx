@@ -16,7 +16,6 @@ interface ContentSectionProps {
 
 type ContentItem = SanityPodcast | SanityCaseStudy | SanitySuccessStory;
 
-// Données mockées pour fallback
 const mockItems = {
   'emission': [
     {
@@ -31,8 +30,7 @@ const mockItems = {
       },
       excerpt: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible.",
       slug: { _type: "slug", current: 'mindset-exception' }
-    },
-    // ... autres items mockés
+    }
   ],
   'business-idea': [
     {
@@ -41,14 +39,13 @@ const mockItems = {
       mainImage: {
         _type: "image",
         asset: {
-          _ref: 'image-6',
+          _ref: 'https://picsum.photos/400/300?random=6',
           _type: "reference"
         }
       },
       excerpt: "Comment le géant de la distribution a réinventé son modèle commercial face à Amazon.",
       slug: { _type: "slug", current: 'transformation-digitale-carrefour' }
-    },
-    // ... autres items mockés
+    }
   ],
   'success-story': [
     {
@@ -63,8 +60,7 @@ const mockItems = {
       },
       excerpt: "Comment deux amis ont créé une marque alimentaire iconique après plusieurs échecs.",
       slug: { _type: "slug", current: 'michel-augustin-success' }
-    },
-    // ... autres items mockés
+    }
   ]
 };
 
