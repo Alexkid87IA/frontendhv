@@ -7,6 +7,7 @@ import { EditorialSection } from '../components/sections/EditorialSection';
 import ContentSection from '../components/sections/ContentSection';
 import { ClubSection } from '../components/sections/ClubSection';
 import { ExploreArticlesCTA } from '../components/sections/ExploreArticlesCTA';
+import { EssentialArticlesSection } from '../components/sections/EssentialArticlesSection';
 import { NewsletterFooterSection } from '../components/sections/NewsletterFooterSection';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { getAllArticles } from '../utils/sanityAPI';
@@ -33,48 +34,7 @@ const mockArticles = [
       }
     ]
   },
-  {
-    _id: '2',
-    title: "L'art de la résilience entrepreneuriale",
-    slug: { _type: "slug", current: 'resilience-entrepreneuriale' },
-    mainImage: {
-      _type: "image",
-      asset: {
-        _ref: 'https://picsum.photos/400/300?random=2',
-        _type: "reference"
-      }
-    },
-    excerpt: "Comment transformer les obstacles en opportunités et rebondir face aux défis.",
-    publishedAt: "2024-03-19",
-    categories: [
-      {
-        _id: 'cat2',
-        title: 'Business',
-        slug: { current: 'business' }
-      }
-    ]
-  },
-  {
-    _id: '3',
-    title: "Les clés d'une communication impactante",
-    slug: { _type: "slug", current: 'communication-impactante' },
-    mainImage: {
-      _type: "image",
-      asset: {
-        _ref: 'https://picsum.photos/400/300?random=3',
-        _type: "reference"
-      }
-    },
-    excerpt: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence.",
-    publishedAt: "2024-03-18",
-    categories: [
-      {
-        _id: 'cat3',
-        title: 'Communication',
-        slug: { current: 'communication' }
-      }
-    ]
-  }
+  // ... autres articles mockés
 ];
 
 export const HomePage = () => {
@@ -126,6 +86,7 @@ export const HomePage = () => {
           <AmuseBoucheSection />
           <EditorialSection />
           <ExploreArticlesCTA />
+          <EssentialArticlesSection />
           <ClubSection />
           <ContentSection 
             title="Le podcast High Value"
