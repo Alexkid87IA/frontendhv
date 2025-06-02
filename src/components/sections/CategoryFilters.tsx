@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Search, Calendar, Sparkles, Star } from 'lucide-react';
+import { Search, Calendar, Sparkles, Star, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CategoryFiltersProps {
   searchTerm: string;
@@ -14,22 +14,31 @@ const filters = [
     id: 'all', 
     name: 'Tous les articles',
     icon: Sparkles,
-    description: 'Voir tous les articles',
+    gradient: 'from-accent-blue to-accent-turquoise'
+  },
+  { 
+    id: 'mental', 
+    name: 'Mental',
+    icon: Star,
+    gradient: 'from-purple-500 to-violet-500'
+  },
+  { 
+    id: 'story', 
+    name: 'Story',
+    icon: Star,
+    gradient: 'from-amber-500 to-orange-500'
+  },
+  { 
+    id: 'business', 
+    name: 'Business',
+    icon: Star,
     gradient: 'from-blue-500 to-cyan-500'
   },
   { 
-    id: 'recent', 
-    name: 'Plus récents',
-    icon: Calendar,
-    description: 'Articles les plus récents',
-    gradient: 'from-violet-500 to-purple-500'
-  },
-  { 
-    id: 'popular', 
-    name: 'Plus populaires',
+    id: 'society', 
+    name: 'Society',
     icon: Star,
-    description: 'Articles les plus lus',
-    gradient: 'from-amber-500 to-orange-500'
+    gradient: 'from-emerald-500 to-teal-500'
   }
 ];
 
@@ -40,7 +49,7 @@ export const CategoryFilters = ({
   onFilterChange
 }: CategoryFiltersProps) => {
   return (
-    <section className="container mb-12">
+    <section id="filters" className="container mb-12">
       <div className="relative">
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/30 to-black/50 rounded-2xl" />
@@ -80,36 +89,33 @@ export const CategoryFilters = ({
 
             {/* Filter Buttons */}
             <div className="flex-1">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 {filters.map((filter) => {
                   const isSelected = selectedFilter === filter.id;
                   return (
                     <motion.button
                       key={filter.id}
                       onClick={() => onFilterChange(filter.id)}
-                      className={`relative group ${
-                        isSelected 
-                          ? 'bg-gradient-to-r from-accent-blue to-accent-turquoise text-white'
-                          : 'bg-black/20 hover:bg-black/30 text-gray-300 hover:text-white'
-                      } backdrop-blur-sm border border-white/10 rounded-xl p-4 transition-all duration-300`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
+                      className={`relative group ${
+                        isSelected ? 'bg-gradient-to-r ' + filter.gradient : 'bg-white/5'
+                      } backdrop-blur-sm border border-white/10 rounded-xl p-4 transition-all duration-300`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          isSelected
-                            ? 'bg-white/20'
-                            : 'bg-accent-blue/20'
-                        } transition-colors`}>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          isSelected ? 'bg-white/20' : `bg-gradient-to-r ${filter.gradient}`
+                        }`}>
                           <filter.icon 
-                            size={20} 
-                            className={isSelected ? 'text-white' : 'text-accent-blue'} 
+                            size={18} 
+                            className={isSelected ? 'text-white' : 'text-white'} 
                           />
                         </div>
-                        <div className="text-left">
-                          <span className="block text-sm font-medium">{filter.name}</span>
-                          <span className="text-xs text-gray-400">{filter.description}</span>
-                        </div>
+                        <span className={`text-sm font-medium ${
+                          isSelected ? 'text-white' : 'text-gray-300'
+                        }`}>
+                          {filter.name}
+                        </span>
                       </div>
                     </motion.button>
                   );
@@ -128,19 +134,21 @@ export const CategoryFilters = ({
               <span className="text-sm text-gray-400">Filtres actifs:</span>
               <div className="flex flex-wrap gap-2">
                 {searchTerm && (
-                  <div className="flex items-center gap-2 bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full text-sm">
+                  <div className="flex items-center gap-2 bg-white/10 text-white px-3 py-1 rounded-full text-sm">
                     <Search size={14} />
                     <span>"{searchTerm}"</span>
                     <button
                       onClick={() => onSearchChange('')}
-                      className="ml-1 hover:text-white transition-colors"
+                      className="ml-1 hover:text-accent-blue transition-colors"
                     >
                       ×
                     </button>
                   </div>
                 )}
                 {selectedFilter !== 'all' && (
-                  <div className="flex items-center gap-2 bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full text-sm">
+                  <div className={`flex items-center gap-2 bg-gradient-to-r ${
+                    filters.find(f => f.id === selectedFilter)?.gradient
+                  } bg-opacity-20 px-3 py-1 rounded-full text-sm text-white`}>
                     {(() => {
                       const selectedFilterData = filters.find(f => f.id === selectedFilter);
                       if (selectedFilterData?.icon) {
@@ -152,7 +160,7 @@ export const CategoryFilters = ({
                     <span>{filters.find(f => f.id === selectedFilter)?.name}</span>
                     <button
                       onClick={() => onFilterChange('all')}
-                      className="ml-1 hover:text-white transition-colors"
+                      className="ml-1 hover:text-white/80 transition-colors"
                     >
                       ×
                     </button>
