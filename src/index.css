@@ -42,7 +42,7 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-neutral-900;
+  @apply bg-[#141414];
 }
 
 ::-webkit-scrollbar-thumb {
@@ -60,16 +60,16 @@ html {
 
 .app-background::before {
   content: '';
-  @apply absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)];
+  @apply absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.05),transparent_50%)];
 }
 
 .app-background::after {
   content: '';
-  @apply absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)];
+  @apply absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.05),transparent_50%)];
 }
 
 .app-background-overlay {
-  @apply absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(99,253,253,0.15),transparent_50%)];
+  @apply absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(99,253,253,0.05),transparent_50%)];
 }
 
 .app-background-blur {
@@ -86,5 +86,5 @@ html {
 }
 
 .bg-gradient-accent-radial {
-  background: radial-gradient(circle at center, rgba(0, 164, 249, 0.2), rgba(99, 253, 253, 0.1));
+  background: radial-gradient(circle at center, rgba(0, 164, 249, 0.1), rgba(99, 253, 253, 0.05));
 }
