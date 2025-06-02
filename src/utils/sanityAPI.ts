@@ -154,16 +154,18 @@ export const getCategoryBySlug = async (slug: string) => {
 export const getAmuseBouches = async (limit = 5): Promise<any[]> => {
   return getWithCache(`amuseBouches_${limit}`, async () => {
     try {
-      // Chercher directement le type amuseBouche
-      const query = `*[_type == "amuseBouche"] | order(publishedAt desc)[0...$limit] {
+      // Chercher les articles avec format "amuse-bouche"
+      const query = `*[_type == "article" && format == "amuse-bouche"] | order(publishedAt desc)[0...$limit] {
         _id,
         title,
         slug,
-        coverImage,
-        description,
+        mainImage,
+        "description": excerpt,
+        "coverImage": mainImage,  // AmuseBoucheSection utilise coverImage
+        excerpt,
         publishedAt,
-        duration,
-        videoUrl
+        "duration": coalesce(readingTime, "5 min"),
+        "videoUrl": videoUrl
       }`;
       
       const results = await sanityClient.fetch(query, { limit });
