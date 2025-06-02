@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Sparkles } from 'lucide-react';
+import { Menu, X, Sparkles, Crown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
@@ -14,7 +14,14 @@ export const ResponsiveNavbar = () => {
     { label: 'Story', path: '/rubrique/story', slug: 'story' },
     { label: 'Business', path: '/rubrique/business', slug: 'business' },
     { label: 'Mental', path: '/rubrique/mental', slug: 'mental' },
-    { label: 'Society', path: '/rubrique/society', slug: 'society' }
+    { label: 'Society', path: '/rubrique/society', slug: 'society' },
+    { 
+      label: 'Le Club', 
+      path: '/club', 
+      slug: 'club',
+      badge: 'Bientôt disponible'
+    },
+    { label: 'Coaching', path: '/coaching', slug: 'coaching' }
   ];
 
   const handleLogoClick = () => {
@@ -33,13 +40,13 @@ export const ResponsiveNavbar = () => {
       initial={{ y: 0 }}
       animate={{ y: visible ? 0 : -150 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/70 border-b border-white/10 shadow-lg"
+      className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xl border-b border-white/10 shadow-lg"
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
+        {/* Logo with Glow Effect */}
         <Link 
           to="/" 
-          className="flex-shrink-0 flex items-center" 
+          className="flex-shrink-0 flex items-center relative group" 
           onClick={handleLogoClick}
         >
           <motion.div
@@ -51,10 +58,11 @@ export const ResponsiveNavbar = () => {
             whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
             className="relative h-10 md:h-12"
           >
+            <div className="absolute inset-0 bg-gradient-to-r from-accent-blue to-accent-turquoise opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500" />
             <img 
               src="/src/assets/logos/LOGO_HV MEDIA.svg"
               alt="High Value Media"
-              className="h-full w-auto object-contain" 
+              className="h-full w-auto object-contain relative z-10" 
             />
           </motion.div>
         </Link>
@@ -68,17 +76,24 @@ export const ResponsiveNavbar = () => {
                                 location.pathname.startsWith(`/rubrique/${item.slug}`);
                 
                 return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`text-lg font-medium transition-colors ${
-                      isActive 
-                        ? "text-accent-blue" 
-                        : "text-white hover:text-accent-blue"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
+                  <div key={item.path} className="relative group">
+                    <Link
+                      to={item.path}
+                      className={`text-lg font-medium transition-colors ${
+                        isActive 
+                          ? "text-accent-blue" 
+                          : "text-white hover:text-accent-blue"
+                      }`}
+                    >
+                      {item.label}
+                      {item.badge && (
+                        <span className="text-xs bg-accent-blue/20 text-accent-blue px-2 py-0.5 rounded-full ml-1">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent-blue transition-all duration-300 group-hover:w-full" />
+                  </div>
                 );
               })}
             </div>
@@ -138,7 +153,7 @@ export const ResponsiveNavbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "100vh" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden fixed inset-x-0 top-20 bg-black"
+            className="lg:hidden fixed inset-x-0 top-20 bg-black/95 backdrop-blur-xl"
           >
             <div className="px-4 py-6 space-y-4">
               {menuItems.map((item) => {
@@ -149,14 +164,21 @@ export const ResponsiveNavbar = () => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`block px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
+                    className={`block px-4 py-3 text-lg font-medium rounded-lg transition-colors relative group ${
                       isActive 
-                        ? 'text-accent-blue' 
-                        : 'text-white hover:text-accent-blue'
+                        ? 'text-accent-blue bg-accent-blue/10' 
+                        : 'text-white hover:text-accent-blue hover:bg-white/5'
                     }`}
                     onClick={() => setIsOpen(false)}
                   >
-                    {item.label}
+                    <div className="flex items-center">
+                      {item.label}
+                      {item.badge && (
+                        <span className="text-xs bg-accent-blue/20 text-accent-blue px-2 py-0.5 rounded-full ml-2">
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
                   </Link>
                 );
               })}
