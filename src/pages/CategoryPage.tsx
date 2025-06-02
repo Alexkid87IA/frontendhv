@@ -1,102 +1,208 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, Heart, ArrowRight } from 'lucide-react';
 import SafeImage from '../components/common/SafeImage';
 import { formatDate } from '../utils/dateUtils';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorMessage from '../components/common/ErrorMessage';
+import EmptyState from '../components/common/EmptyState';
+import { getSEOForCategory } from '../utils/seo.config';
+
+interface Article {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  mainImage: string;
+  excerpt: string;
+  publishedAt: string;
+  readingTime: string;
+  views: number;
+  likes: number;
+  categories: Array<{ title: string }>;
+  author?: {
+    name: string;
+    image: string;
+  };
+}
 
 export function CategoryPage() {
+  const { categorySlug } = useParams<{ categorySlug: string }>();
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // TODO: Replace with actual Sanity query
+        // This is mock data for demonstration
+        const mockArticles: Article[] = [
+          {
+            _id: '1',
+            title: 'Understanding Mental Resilience',
+            slug: { current: 'understanding-mental-resilience' },
+            mainImage: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?auto=format&fit=crop&q=80',
+            excerpt: 'Discover the key principles behind building unshakeable mental strength.',
+            publishedAt: '2024-01-15',
+            readingTime: '8 min',
+            views: 1200,
+            likes: 45,
+            categories: [{ title: 'Mental' }],
+            author: {
+              name: 'Roger Ormières',
+              image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80'
+            }
+          },
+          {
+            _id: '2',
+            title: 'The Science of Peak Performance',
+            slug: { current: 'science-of-peak-performance' },
+            mainImage: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80',
+            excerpt: 'Learn how top performers maintain their edge through scientific approaches.',
+            publishedAt: '2024-01-10',
+            readingTime: '10 min',
+            views: 980,
+            likes: 32,
+            categories: [{ title: 'Mental' }],
+            author: {
+              name: 'Roger Ormières',
+              image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80'
+            }
+          }
+        ];
+
+        setArticles(mockArticles);
+        setIsLoading(false);
+      } catch (err) {
+        setError('Failed to load articles. Please try again later.');
+        setIsLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, [categorySlug]);
+
+  if (isLoading) {
+    return (
+      <div className="container flex items-center justify-center min-h-[400px]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container py-20">
+        <ErrorMessage message={error} />
+      </div>
+    );
+  }
+
+  if (articles.length === 0) {
+    return (
+      <div className="container py-20">
+        <EmptyState
+          title="No articles found"
+          description="There are no articles in this category yet. Check back later!"
+        />
+      </div>
+    );
+  }
+
   return (
     <>
-      {featuredArticles.length > 0 && (
-        <section className="container mb-20">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {featuredArticles.map((article, index) => (
-              <Link 
-                key={article._id}
-                to={`/article/${article.slug.current}`}
-                className="group"
+      <section className="container mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {articles.map((article, index) => (
+            <Link 
+              key={article._id}
+              to={`/article/${article.slug.current}`}
+              className="group"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="relative aspect-[21/9] rounded-2xl overflow-hidden"
               >
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="relative aspect-[21/9] rounded-2xl overflow-hidden"
-                >
-                  <SafeImage
-                    source={article.mainImage}
-                    alt={article.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
-                  
-                  <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3">
-                    {article.categories && article.categories.length > 0 && (
-                      <div className="flex gap-3 mb-4">
-                        {article.categories.map((category, idx) => (
-                          <span
-                            key={idx}
-                            className={`px-4 py-2 rounded-full text-sm font-medium text-white ${
-                              ["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][idx % 4]
-                            }`}
-                          >
-                            {category.title}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center gap-3 mb-4">
-                      <SafeImage
-                        source={article.author?.image}
-                        alt={article.author?.name || "Auteur"}
-                        width={40}
-                        height={40}
-                        className="w-10 h-10 rounded-full object-cover border-2 border-white"
-                      />
-                      <div>
-                        <span className="text-sm text-gray-300">{article.author?.name}</span>
-                        <div className="flex items-center gap-4 text-sm text-gray-400">
-                          <span>{article.readingTime}</span>
-                          <span>•</span>
-                          <span>{formatDate(article.publishedAt)}</span>
-                        </div>
-                      </div>
+                <SafeImage
+                  source={article.mainImage}
+                  alt={article.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
+                
+                <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3">
+                  {article.categories && article.categories.length > 0 && (
+                    <div className="flex gap-3 mb-4">
+                      {article.categories.map((category, idx) => (
+                        <span
+                          key={idx}
+                          className={`px-4 py-2 rounded-full text-sm font-medium text-white ${
+                            ["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][idx % 4]
+                          }`}
+                        >
+                          {category.title}
+                        </span>
+                      ))}
                     </div>
-                    
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 group-hover:text-accent-blue transition-colors">
-                      {article.title}
-                    </h2>
-                    
-                    <p className="text-gray-300 text-lg mb-6 line-clamp-2">
-                      {article.excerpt}
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-6 text-sm text-gray-400">
-                        <div className="flex items-center gap-2">
-                          <Eye size={16} />
-                          <span>{article.views} vues</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Heart size={16} />
-                          <span>{article.likes} likes</span>
-                        </div>
+                  )}
+                  
+                  <div className="flex items-center gap-3 mb-4">
+                    <SafeImage
+                      source={article.author?.image}
+                      alt={article.author?.name || "Auteur"}
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full object-cover border-2 border-white"
+                    />
+                    <div>
+                      <span className="text-sm text-gray-300">{article.author?.name}</span>
+                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                        <span>{article.readingTime}</span>
+                        <span>•</span>
+                        <span>{formatDate(article.publishedAt)}</span>
                       </div>
-                      
-                      <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
-                        <span>Lire l'article</span>
-                        <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
-                      </span>
                     </div>
                   </div>
-                </motion.div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+                  
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 group-hover:text-accent-blue transition-colors">
+                    {article.title}
+                  </h2>
+                  
+                  <p className="text-gray-300 text-lg mb-6 line-clamp-2">
+                    {article.excerpt}
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-6 text-sm text-gray-400">
+                      <div className="flex items-center gap-2">
+                        <Eye size={16} />
+                        <span>{article.views} vues</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Heart size={16} />
+                        <span>{article.likes} likes</span>
+                      </div>
+                    </div>
+                    
+                    <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                      <span>Lire l'article</span>
+                      <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+      </section>
     </>
   );
 }
