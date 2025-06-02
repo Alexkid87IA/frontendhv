@@ -42,7 +42,7 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-neutral-900;
+  @apply bg-[#0A0A0A];
 }
 
 ::-webkit-scrollbar-thumb {
