@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, TrendingUp, Clock, Star, Zap, Sparkles, BookOpen, Flame, Crown } from 'lucide-react';
+import { Search, Filter, Clock, Sparkles, Flame } from 'lucide-react';
 
 interface CategoryFiltersProps {
   searchTerm: string;
@@ -30,13 +30,6 @@ const filters = [
     icon: Flame,
     description: 'Articles en tendance',
     gradient: 'from-orange-500 to-red-500'
-  },
-  { 
-    id: 'featured', 
-    name: 'À la une',
-    icon: Crown,
-    description: 'Articles mis en avant',
-    gradient: 'from-amber-500 to-yellow-500'
   }
 ];
 
@@ -74,7 +67,7 @@ export const CategoryFilters = ({
 
         {/* Filter Buttons */}
         <div className="flex-1">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {filters.map((filter) => (
               <motion.button
                 key={filter.id}
