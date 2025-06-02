@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    @apply bg-[#0A0A0A] text-secondary font-dm-sans relative min-h-screen;
+    @apply bg-black text-secondary font-dm-sans relative min-h-screen;
   }
 
   #root {
@@ -42,7 +42,7 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-[#0A0A0A];
+  @apply bg-black;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -55,7 +55,7 @@ html {
 
 /* Background Effects */
 .app-background {
-  @apply fixed inset-0 bg-[#0A0A0A];
+  @apply fixed inset-0 bg-black;
 }
 
 .app-background::before {
