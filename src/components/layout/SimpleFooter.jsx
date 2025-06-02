@@ -1,9 +1,8 @@
 import React from 'react';
 
-// Composant SimpleFooter minimal pour débloquer le build Netlify
-// Ce composant est créé uniquement pour résoudre l'erreur de build
-// et ne sera pas utilisé dans l'application
-
+// Ce composant est maintenant vide car il a été remplacé par NewsletterFooterSection
+// Nous le conservons temporairement pour éviter les erreurs d'importation
+// mais il ne rend rien
 const SimpleFooter = () => {
   return null;
 };

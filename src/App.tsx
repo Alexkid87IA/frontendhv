@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ResponsiveNavbar } from './components/layout/ResponsiveNavbar';
-import { Footer } from './components/layout/Footer';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Analytics } from './components/common/Analytics';
 import { ChatWidget } from './components/chat/ChatWidget';
@@ -56,7 +55,6 @@ function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
-            <Footer />
             <Analytics />
             <ChatWidget />
           </div>
