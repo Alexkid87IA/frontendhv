@@ -24,40 +24,29 @@ function App() {
   return (
     <Router>
       <ErrorBoundary>
-        <div className="relative min-h-screen">
-          {/* Background Effects */}
-          <div className="app-background">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(14,165,233,0.15),transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(56,189,248,0.15),transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(6,182,212,0.15),transparent_50%)]" />
-            <div className="absolute inset-0 backdrop-blur-[100px]" />
-          </div>
-
-          {/* Content */}
-          <div className="relative">
-            <ResponsiveNavbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/articles" element={<AllArticlesPage />} />
-                <Route path="/article/:slug" element={<ArticlePage />} />
-                <Route path="/business-ideas" element={<BusinessIdeasPage />} />
-                <Route path="/business-idea/:slug" element={<BusinessIdeaPage />} />
-                <Route path="/success-story/:slug" element={<SuccessStoryPage />} />
-                <Route path="/emission/:slug" element={<EmissionPage />} />
-                <Route path="/rubrique/:categorySlug" element={<CategoryPage />} />
-                <Route path="/podcasts" element={<PodcastPage />} />
-                <Route path="/emissions" element={<EmissionsPage />} />
-                <Route path="/create-with-roger" element={<CreateWithRogerPage />} />
-                <Route path="/coaching" element={<CoachingPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/recommendations" element={<RecommendationsPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Analytics />
-            <ChatWidget />
-          </div>
+        <div className="relative min-h-screen bg-black">
+          <ResponsiveNavbar />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/articles" element={<AllArticlesPage />} />
+              <Route path="/article/:slug" element={<ArticlePage />} />
+              <Route path="/business-ideas" element={<BusinessIdeasPage />} />
+              <Route path="/business-idea/:slug" element={<BusinessIdeaPage />} />
+              <Route path="/success-story/:slug" element={<SuccessStoryPage />} />
+              <Route path="/emission/:slug" element={<EmissionPage />} />
+              <Route path="/rubrique/:categorySlug" element={<CategoryPage />} />
+              <Route path="/podcasts" element={<PodcastPage />} />
+              <Route path="/emissions" element={<EmissionsPage />} />
+              <Route path="/create-with-roger" element={<CreateWithRogerPage />} />
+              <Route path="/coaching" element={<CoachingPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/recommendations" element={<RecommendationsPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Analytics />
+          <ChatWidget />
         </div>
       </ErrorBoundary>
     </Router>

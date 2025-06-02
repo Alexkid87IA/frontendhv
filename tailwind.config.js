@@ -5,22 +5,22 @@ export default {
     extend: {
       colors: {
         // Base colors
-        primary: '#0A0A0A', // Noir mat
+        primary: '#000000', // Noir pur
         secondary: '#FFFFFF',    // Blanc pur
         tertiary: '#D1D5DB',    // Gris clair pour texte courant
 
         // Semantic colors
-        background: '#0A0A0A', // Noir mat
+        background: '#000000', // Noir pur
         foreground: '#F9FAFB', // Texte principal (blanc cassé)
-        muted: '#141414', // Fond des cartes (noir mat légèrement plus clair)
+        muted: '#0A0A0A', // Fond des cartes (noir légèrement plus clair)
         'muted-foreground': '#9CA3AF', // Texte secondaire (gris moyen)
-        border: '#1F1F1F', // Bordure par défaut
-        input: '#141414',
+        border: '#1A1A1A', // Bordure par défaut
+        input: '#0A0A0A',
         ring: '#2563EB', // Bleu pour les anneaux de focus
 
         // Accent colors from maquette
         'hv-blue-accent': '#00A4F9', // Bleu vif/turquoise pour accents et survol
-        'hv-card-bg': '#141414', // Fond des cartes (noir mat légèrement plus clair)
+        'hv-card-bg': '#0A0A0A', // Fond des cartes (noir légèrement plus clair)
         'hv-card-border': 'rgba(255, 255, 255, 0.05)', // Bordure fine et claire pour les cartes
         'hv-text-white': '#FFFFFF',
         'hv-text-primary-maquette': '#E5E7EB', // Texte principal sur fond sombre
