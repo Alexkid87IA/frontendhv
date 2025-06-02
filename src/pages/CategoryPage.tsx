@@ -16,6 +16,7 @@ interface Article {
   slug: { current: string };
   mainImage: string;
   excerpt: string;
+  publishedAt: string;
   categories: Array<{ title: string; slug: { current: string } }>;
 }
 
@@ -26,13 +27,29 @@ const filters = [
   { id: 'featured', name: 'À la une' }
 ];
 
+// Générer plus d'articles mockés pour la pagination
+const generateMockArticles = (count: number): Article[] => {
+  return Array.from({ length: count }, (_, i) => ({
+    _id: `${i + 1}`,
+    title: `Article ${i + 1} : ${['Le mindset des champions', 'Innovation et leadership', 'Stratégies de croissance', 'Transformation digitale'][i % 4]}`,
+    slug: { current: `article-${i + 1}` },
+    mainImage: `https://images.unsplash.com/photo-${['1533227268428-f9ed0900fb3b', '1517245386807-bb43f82c33c4', '1522202176988-66273c2fd55f', '1516321318423-f06f85e504b3'][i % 4]}?auto=format&fit=crop&q=80`,
+    excerpt: "Une analyse approfondie des stratégies qui font la différence entre la réussite et l'excellence dans le monde professionnel moderne.",
+    publishedAt: new Date(Date.now() - i * 86400000).toISOString(),
+    categories: [{ title: 'Mental', slug: { current: 'mental' } }]
+  }));
+};
+
 export function CategoryPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
   const [articles, setArticles] = useState<Article[]>([]);
+  const [displayedArticles, setDisplayedArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const articlesPerPage = 9;
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -41,26 +58,9 @@ export function CategoryPage() {
         setError(null);
         
         // TODO: Replace with actual Sanity query
-        const mockArticles: Article[] = [
-          {
-            _id: '1',
-            title: "Le mindset des champions : secrets et stratégies",
-            slug: { current: 'mindset-champions' },
-            mainImage: 'https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?auto=format&fit=crop&q=80',
-            excerpt: "Une plongée fascinante dans la psychologie des plus grands champions. Découvrez les habitudes mentales qui font la différence entre la réussite et l'excellence.",
-            categories: [{ title: 'Mental', slug: { current: 'mental' } }]
-          },
-          {
-            _id: '2',
-            title: "La résilience : votre superpower cachée",
-            slug: { current: 'resilience-superpower' },
-            mainImage: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80',
-            excerpt: "Comment transformer chaque obstacle en opportunité ? Un guide pratique pour développer votre résilience et rebondir plus fort après chaque épreuve.",
-            categories: [{ title: 'Mental', slug: { current: 'mental' } }]
-          }
-        ];
-
+        const mockArticles = generateMockArticles(20);
         setArticles(mockArticles);
+        setDisplayedArticles(mockArticles.slice(0, articlesPerPage));
       } catch (err) {
         setError('Une erreur est survenue lors du chargement des articles.');
         console.error('Error fetching articles:', err);
@@ -77,6 +77,14 @@ export function CategoryPage() {
                          article.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
+
+  const loadMoreArticles = () => {
+    const nextPage = page + 1;
+    const startIndex = 0;
+    const endIndex = nextPage * articlesPerPage;
+    setDisplayedArticles(filteredArticles.slice(startIndex, endIndex));
+    setPage(nextPage);
+  };
 
   if (isLoading) {
     return (
@@ -139,6 +147,51 @@ export function CategoryPage() {
             </motion.div>
           </section>
 
+          {/* Featured Articles Section */}
+          {filteredArticles.length > 0 && (
+            <section className="container mb-20">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {filteredArticles.slice(0, 2).map((article, index) => (
+                  <Link 
+                    key={article._id}
+                    to={`/article/${article.slug.current}`}
+                    className="group"
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="relative aspect-[16/9] rounded-2xl overflow-hidden"
+                    >
+                      <SafeImage
+                        source={article.mainImage}
+                        alt={article.title}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
+                      
+                      <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 group-hover:text-accent-blue transition-colors">
+                          {article.title}
+                        </h2>
+                        
+                        <p className="text-gray-300 mb-6 line-clamp-2">
+                          {article.excerpt}
+                        </p>
+                        
+                        <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                          <span>Lire l'article</span>
+                          <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
+                        </span>
+                      </div>
+                    </motion.div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Filters Section */}
           <section className="container mb-12">
             <div className="flex flex-col md:flex-row gap-6">
@@ -163,52 +216,72 @@ export function CategoryPage() {
             </div>
           </section>
 
-          {/* Featured Articles Section */}
-          {filteredArticles.length > 0 && (
-            <section className="container mb-20">
-              <div className="relative overflow-hidden bg-gradient-to-br from-neutral-900 to-black rounded-3xl border border-white/10 p-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {filteredArticles.slice(0, 2).map((article, index) => (
-                    <Link 
-                      key={article._id}
-                      to={`/article/${article.slug.current}`}
-                      className="group"
-                    >
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="relative aspect-[16/9] rounded-2xl overflow-hidden"
-                      >
+          {/* Articles Grid */}
+          <section className="container mb-20">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {displayedArticles.slice(2).map((article, index) => (
+                <motion.div
+                  key={article._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link 
+                    to={`/article/${article.slug.current}`}
+                    className="group block h-full"
+                  >
+                    <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden h-full flex flex-col transition-all duration-300 hover:border-white/20 hover:shadow-xl">
+                      <div className="relative aspect-[16/9]">
                         <SafeImage
                           source={article.mainImage}
                           alt={article.title}
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
+                      </div>
+                      
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-semibold mb-3 group-hover:text-accent-blue transition-colors">
+                          {article.title}
+                        </h3>
                         
-                        <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
-                          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 group-hover:text-accent-blue transition-colors">
-                            {article.title}
-                          </h2>
+                        <p className="text-gray-400 text-sm mb-4 flex-1">
+                          {article.excerpt}
+                        </p>
+                        
+                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                          <time className="text-sm text-gray-500" dateTime={article.publishedAt}>
+                            {new Date(article.publishedAt).toLocaleDateString('fr-FR', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </time>
                           
-                          <p className="text-gray-300 mb-6 line-clamp-2">
-                            {article.excerpt}
-                          </p>
-                          
-                          <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
-                            <span>Lire l'article</span>
-                            <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
-                          </span>
+                          <ArrowRight size={16} className="text-accent-blue transform group-hover:translate-x-1 transition-transform" />
                         </div>
-                      </motion.div>
-                    </Link>
-                  ))}
-                </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Load More Button */}
+            {displayedArticles.length < filteredArticles.length && (
+              <div className="text-center mt-12">
+                <motion.button
+                  onClick={loadMoreArticles}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-accent-blue hover:bg-accent-turquoise text-white rounded-lg transition-colors"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span>Voir plus d'articles</span>
+                  <ArrowRight size={18} />
+                </motion.button>
               </div>
-            </section>
-          )}
+            )}
+          </section>
 
           {/* Newsletter */}
           <NewsletterFooterSection />
