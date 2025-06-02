@@ -176,7 +176,7 @@ export const HeroSection = () => {
 
   if (isLoading) {
     return (
-      <section className="relative min-h-screen flex items-center justify-center pt-20">
+      <section className="relative min-h-screen flex items-center justify-center pt-32">
         <LoadingSpinner />
       </section>
     );
@@ -184,7 +184,7 @@ export const HeroSection = () => {
 
   if (error && !featuredArticle && recentArticles.length === 0) {
     return (
-      <section className="relative min-h-screen flex items-center justify-center pt-20">
+      <section className="relative min-h-screen flex items-center justify-center pt-32">
         <div className="text-center text-red-500">
           <p>{error}</p>
           <p className="mt-2">Veuillez réessayer ultérieurement.</p>
@@ -195,7 +195,7 @@ export const HeroSection = () => {
 
   return (
     <ErrorBoundary>
-      <section className="relative min-h-screen flex items-center pt-20">
+      <section className="relative min-h-screen flex items-center pt-32 pb-20">
         {/* Enhanced Background Effects */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
