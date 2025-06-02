@@ -110,7 +110,6 @@ const AmuseBoucheSection = ({
           setDataSource('cms');
           console.log("Amuses-bouches récupérés depuis Sanity CMS");
         } else {
-          // Fallback vers les données mockées si aucun résultat
           setVideos(mockAmuseBouches);
           setDataSource('mock');
           console.log("Aucun amuse-bouche trouvé dans Sanity, utilisation des données mockées");
@@ -119,7 +118,6 @@ const AmuseBoucheSection = ({
         console.error("Erreur lors du chargement des amuses-bouches:", error);
         setError("Impossible de charger les amuses-bouches");
         
-        // Fallback vers les données mockées en cas d'erreur
         setVideos(mockAmuseBouches);
         setDataSource('mock');
         console.log("Erreur de chargement depuis Sanity, utilisation des données mockées");
@@ -192,7 +190,14 @@ const AmuseBoucheSection = ({
   return (
     <ErrorBoundary>
       <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-900/50 to-black" />
+        {/* Enhanced Background Effects */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 backdrop-blur-sm" />
+        </div>
         
         <div className="container relative">
           <motion.div
@@ -201,14 +206,17 @@ const AmuseBoucheSection = ({
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-4">
-              Format court
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <div className="inline-block relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-full blur opacity-75"></div>
+              <span className="relative inline-block px-6 py-3 bg-black rounded-full text-accent-blue font-medium">
+                Format court
+              </span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mt-6 mb-4">
               {title}
               {dataSource === 'mock' && <span className="text-sm text-gray-400 ml-2">(démo)</span>}
             </h2>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               {description}
             </p>
           </motion.div>
@@ -267,22 +275,23 @@ const AmuseBoucheSection = ({
                           height={498}
                         />
                         
-                        {/* Overlay gradients */}
+                        {/* Enhanced Overlay Effects */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
                         <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
                       </div>
                       
-                      <div className="p-4">
-                        <h3 className="text-lg font-semibold tracking-tight leading-tight mb-2 text-white group-hover:text-accent-blue transition-colors line-clamp-2">
+                      <div className="p-6">
+                        <h3 className="text-lg font-semibold tracking-tight leading-tight mb-3 text-white group-hover:text-accent-blue transition-colors line-clamp-2">
                           {video.title}
                         </h3>
+                        
                         {video.excerpt && (
-                          <p className="text-gray-400 text-sm line-clamp-3 mb-3">
+                          <p className="text-gray-400 text-sm line-clamp-3 mb-4">
                             {video.excerpt}
                           </p>
                         )}
                         
-                        {/* Progress bar */}
+                        {/* Progress Bar */}
                         <div className="h-1 bg-white/10 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: "0%" }}
