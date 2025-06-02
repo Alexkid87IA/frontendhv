@@ -163,47 +163,49 @@ export function CategoryPage() {
             </div>
           </section>
 
-          {/* Featured Articles */}
+          {/* Featured Articles Section */}
           {filteredArticles.length > 0 && (
             <section className="container mb-20">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {filteredArticles.slice(0, 2).map((article, index) => (
-                  <Link 
-                    key={article._id}
-                    to={`/article/${article.slug.current}`}
-                    className="group"
-                  >
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="relative aspect-[16/9] rounded-2xl overflow-hidden"
+              <div className="relative overflow-hidden bg-gradient-to-br from-neutral-900 to-black rounded-3xl border border-white/10 p-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {filteredArticles.slice(0, 2).map((article, index) => (
+                    <Link 
+                      key={article._id}
+                      to={`/article/${article.slug.current}`}
+                      className="group"
                     >
-                      <SafeImage
-                        source={article.mainImage}
-                        alt={article.title}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
-                      
-                      <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
-                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 group-hover:text-accent-blue transition-colors">
-                          {article.title}
-                        </h2>
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="relative aspect-[16/9] rounded-2xl overflow-hidden"
+                      >
+                        <SafeImage
+                          source={article.mainImage}
+                          alt={article.title}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
                         
-                        <p className="text-gray-300 mb-6 line-clamp-2">
-                          {article.excerpt}
-                        </p>
-                        
-                        <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
-                          <span>Lire l'article</span>
-                          <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
-                        </span>
-                      </div>
-                    </motion.div>
-                  </Link>
-                ))}
+                        <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
+                          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 group-hover:text-accent-blue transition-colors">
+                            {article.title}
+                          </h2>
+                          
+                          <p className="text-gray-300 mb-6 line-clamp-2">
+                            {article.excerpt}
+                          </p>
+                          
+                          <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                            <span>Lire l'article</span>
+                            <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
+                          </span>
+                        </div>
+                      </motion.div>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </section>
           )}
