@@ -121,26 +121,28 @@ export const HomePage = () => {
           <div className="absolute inset-0 backdrop-blur-[100px]" />
         </div>
 
-        <HeroSection />
-        <AmuseBoucheSection />
-        <EditorialSection />
-        <ExploreArticlesCTA />
-        <ClubSection />
-        <ContentSection 
-          title="Le podcast High Value"
-          description="Des conversations authentiques avec ceux qui façonnent le monde de demain"
-          sectionType="emission"
-        />
-        <ContentSection 
-          title="Des études de cas"
-          description="Découvrez les stratégies et idées qui transforment le monde des affaires"
-          sectionType="business-idea"
-        />
-        <ContentSection 
-          title="Des parcours incroyables"
-          description="Parcours inspirants d'entrepreneurs qui ont réussi à concrétiser leur vision"
-          sectionType="success-story"
-        />
+        <main className="pt-20">
+          <HeroSection />
+          <AmuseBoucheSection />
+          <EditorialSection />
+          <ExploreArticlesCTA />
+          <ClubSection />
+          <ContentSection 
+            title="Le podcast High Value"
+            description="Des conversations authentiques avec ceux qui façonnent le monde de demain"
+            sectionType="emission"
+          />
+          <ContentSection 
+            title="Des études de cas"
+            description="Découvrez les stratégies et idées qui transforment le monde des affaires"
+            sectionType="business-idea"
+          />
+          <ContentSection 
+            title="Des parcours incroyables"
+            description="Parcours inspirants d'entrepreneurs qui ont réussi à concrétiser leur vision"
+            sectionType="success-story"
+          />
+        </main>
         
         <NewsletterFooterSection />
       </div>
