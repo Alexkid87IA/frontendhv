@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, Heart, ArrowRight } from 'lucide-react';
-import { SafeImage } from '../components/common/SafeImage';
+import SafeImage from '../components/common/SafeImage';
 import { formatDate } from '../utils/dateUtils';
 
 export function CategoryPage() {
