@@ -141,7 +141,7 @@ export const DebateSection = () => {
                 <div className="flex items-center justify-center gap-3 mb-8">
                   <div className="w-10 h-10 rounded-full overflow-hidden">
                     <SafeImage
-                      image={debate.moderator.image}
+                      source={debate.moderator.image}
                       alt={debate.moderator.name}
                       width={40}
                       height={40}
@@ -173,7 +173,7 @@ export const DebateSection = () => {
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-12 h-12 rounded-full overflow-hidden">
                         <SafeImage
-                          image={opinion.author.image}
+                          source={opinion.author.image}
                           alt={opinion.author.name}
                           width={48}
                           height={48}

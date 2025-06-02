@@ -78,7 +78,7 @@ export const HomeArticlesSection: React.FC<HomeArticlesSectionProps> = ({
                 <Link to={`/article/${article.slug?.current || '#'}`} className="block">
                   <div className="relative aspect-video overflow-hidden">
                     <SafeImage
-                      image={article.mainImage}
+                      source={article.mainImage}
                       alt={article.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       fallbackText={article.title}

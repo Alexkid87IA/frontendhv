@@ -11,20 +11,47 @@ interface ContentBlock {
 }
 
 interface ArticleContentProps {
-  content?: ContentBlock[];
+  content?: ContentBlock[] | any; // J'ai ajouté "any" pour accepter temporairement d'autres types
 }
 
 const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
-  if (!content) {
+  // Vérification améliorée : on s'assure que content existe ET que c'est un tableau
+  if (!content || !Array.isArray(content)) {
     return (
       <div className="prose prose-invert max-w-none">
-        <p>Contenu non disponible.</p>
+        <div className="p-6 bg-gray-800/50 rounded-lg border border-gray-700">
+          <p className="text-gray-400 mb-2">📄 Contenu de l'article en cours de chargement...</p>
+          <p className="text-sm text-gray-500">Si le problème persiste, veuillez rafraîchir la page.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Filtrer les blocs valides uniquement
+  const validContent = content.filter(block => 
+    block && 
+    block._type && 
+    block.children && 
+    Array.isArray(block.children)
+  );
+
+  if (validContent.length === 0) {
+    return (
+      <div className="prose prose-invert max-w-none">
+        <div className="p-6 bg-yellow-900/20 rounded-lg border border-yellow-700/50">
+          <p className="text-yellow-400">⚠️ Le contenu de cet article semble vide ou mal formaté.</p>
+        </div>
       </div>
     );
   }
 
   const renderBlock = (block: ContentBlock, index: number) => {
-    const text = block.children?.map(child => child.text).join('') || '';
+    // Vérification supplémentaire pour la sécurité
+    if (!block || !block.children || !Array.isArray(block.children)) {
+      return null;
+    }
+
+    const text = block.children.map(child => child?.text || '').join('');
     
     if (!text.trim()) return null;
 
@@ -69,23 +96,35 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
   };
 
   const renderInlineContent = (children: ContentBlock['children']) => {
+    // Vérification que children est bien un tableau
+    if (!Array.isArray(children)) {
+      return null;
+    }
+
     return children.map((child, index) => {
+      // Vérification que child existe et a du texte
+      if (!child || typeof child.text !== 'string') {
+        return null;
+      }
+
       let element = child.text;
       
-      if (child.marks?.includes('strong')) {
-        return <strong key={index} className="text-white font-semibold">{element}</strong>;
-      }
-      
-      if (child.marks?.includes('em')) {
-        return <em key={index} className="text-blue-300 italic">{element}</em>;
-      }
-      
-      if (child.marks?.includes('code')) {
-        return (
-          <code key={index} className="bg-gray-800 text-blue-400 px-2 py-1 rounded text-sm font-mono">
-            {element}
-          </code>
-        );
+      if (child.marks && Array.isArray(child.marks)) {
+        if (child.marks.includes('strong')) {
+          return <strong key={index} className="text-white font-semibold">{element}</strong>;
+        }
+        
+        if (child.marks.includes('em')) {
+          return <em key={index} className="text-blue-300 italic">{element}</em>;
+        }
+        
+        if (child.marks.includes('code')) {
+          return (
+            <code key={index} className="bg-gray-800 text-blue-400 px-2 py-1 rounded text-sm font-mono">
+              {element}
+            </code>
+          );
+        }
       }
 
       return <span key={index}>{element}</span>;
@@ -95,7 +134,7 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
   return (
     <div className="prose prose-invert prose-lg max-w-none">
       <div className="space-y-4">
-        {content.map((block, index) => renderBlock(block, index))}
+        {validContent.map((block, index) => renderBlock(block, index))}
       </div>
       
       {/* Section de conclusion automatique */}

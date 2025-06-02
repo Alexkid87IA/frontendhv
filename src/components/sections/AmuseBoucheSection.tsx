@@ -14,7 +14,7 @@ const mockAmuseBouches: SanityArticle[] = [
     _id: '1',
     title: "Comment développer un mindset d'exception",
     slug: { _type: "slug", current: 'mindset-exception' },
-    mainImage: {
+    coverImage: {
       _type: "image",
       asset: {
         _ref: 'https://picsum.photos/400/300?random=1',
@@ -28,7 +28,7 @@ const mockAmuseBouches: SanityArticle[] = [
     _id: '2',
     title: "L'art de la résilience entrepreneuriale",
     slug: { _type: "slug", current: 'resilience-entrepreneuriale' },
-    mainImage: {
+    coverImage: {
       _type: "image",
       asset: {
         _ref: 'image-2',
@@ -42,7 +42,7 @@ const mockAmuseBouches: SanityArticle[] = [
     _id: '3',
     title: "Les clés d'une communication impactante",
     slug: { _type: "slug", current: 'communication-impactante' },
-    mainImage: {
+    coverImage: {
       _type: "image",
       asset: {
         _ref: 'image-3',
@@ -56,7 +56,7 @@ const mockAmuseBouches: SanityArticle[] = [
     _id: '4',
     title: "Développer sa créativité au quotidien",
     slug: { _type: "slug", current: 'creativite-quotidien' },
-    mainImage: {
+    coverImage: {
       _type: "image",
       asset: {
         _ref: 'image-4',
@@ -70,7 +70,7 @@ const mockAmuseBouches: SanityArticle[] = [
     _id: '5',
     title: "Les habitudes des entrepreneurs à succès",
     slug: { _type: "slug", current: 'habitudes-entrepreneurs' },
-    mainImage: {
+    coverImage: {
       _type: "image",
       asset: {
         _ref: 'image-5',
@@ -259,7 +259,7 @@ const AmuseBoucheSection = ({
                     <div className="relative bg-gradient-to-br from-neutral-900 to-black border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 hover:scale-[1.02]">
                       <div className="relative aspect-[9/16] w-full overflow-hidden">
                         <SafeImage
-                          image={video.mainImage}
+                          source={video.coverImage}
                           alt={video.title}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                           fallbackText={video.title}

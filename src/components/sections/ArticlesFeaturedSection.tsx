@@ -44,7 +44,7 @@ export const ArticlesFeaturedSection: React.FC<ArticlesFeaturedSectionProps> = (
               <article key={article._id} className="bg-hv-card-bg rounded-xl shadow-lg overflow-hidden border border-hv-card-border group">
                 <div className="relative h-48 overflow-hidden">
                   <SafeImage
-                    image={article.mainImage}
+                    source={article.mainImage}
                     alt={article.title || "Article à la une"}
                     width={400}
                     height={300}

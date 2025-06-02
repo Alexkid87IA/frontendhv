@@ -217,7 +217,7 @@ export const CategoryPage = () => {
       <SEO
         title={`${category.title} | Roger Ormières`}
         description={category.description}
-        image={category.image}
+        source={category.image}
       />
 
       {/* Hero Section */}
@@ -298,7 +298,7 @@ export const CategoryPage = () => {
               className="relative aspect-[21/9] rounded-2xl overflow-hidden"
             >
               <SafeImage
-                image={filteredArticles[0].mainImage}
+                source={filteredArticles[0].mainImage}
                 alt={filteredArticles[0].title}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 fallbackText={filteredArticles[0].title}
@@ -309,7 +309,7 @@ export const CategoryPage = () => {
               <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3">
                 <div className="flex items-center gap-3 mb-4">
                   <SafeImage
-                    image={filteredArticles[0].author?.image}
+                    source={filteredArticles[0].author?.image}
                     alt={filteredArticles[0].author?.name || "Auteur"}
                     width={40}
                     height={40}
@@ -362,7 +362,7 @@ export const CategoryPage = () => {
                   <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden h-full flex flex-col transition-all duration-300 hover:border-white/20 hover:shadow-xl">
                     <div className="relative aspect-[16/9]">
                       <SafeImage
-                        image={article.mainImage}
+                        source={article.mainImage}
                         alt={article.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         fallbackText={article.title}

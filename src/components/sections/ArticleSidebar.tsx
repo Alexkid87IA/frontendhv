@@ -51,7 +51,7 @@ export const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ author, relatedA
               {author.image ? (
                 <div className="mr-4 w-16 h-16 rounded-full overflow-hidden border-2 border-accent-blue/30">
                   <SafeImage
-                    image={author.image}
+                    source={author.image}
                     alt={author.name || "Auteur"}
                     width={64}
                     height={64}
@@ -125,7 +125,7 @@ export const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ author, relatedA
                     {article.mainImage && (
                       <div className="w-full h-32 rounded-lg overflow-hidden mb-3 transform group-hover:scale-[1.02] transition-transform">
                         <SafeImage
-                          image={article.mainImage}
+                          source={article.mainImage}
                           alt={article.title || "Article similaire"}
                           width={300}
                           height={150}

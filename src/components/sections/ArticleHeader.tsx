@@ -39,7 +39,7 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
         {article.image && (
           <div className="absolute inset-0 z-[-1] overflow-hidden">
             <SafeImage
-              image={article.image}
+              source={article.image}
               alt={article.title || "Image de l'article"}
               width={1920}
               height={1080}
@@ -123,7 +123,7 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
                 {article.author?.image ? (
                   <div className="mr-4 w-14 h-14 rounded-full overflow-hidden border-2 border-accent-blue/50 shadow-glow">
                     <SafeImage
-                      image={article.author.image}
+                      source={article.author.image}
                       alt={article.author.name || "Auteur"}
                       width={56}
                       height={56}

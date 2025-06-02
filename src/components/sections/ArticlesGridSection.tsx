@@ -48,7 +48,7 @@ export const ArticlesGridSection = ({
             <ArticleCard
               key={article.slug}
               slug={article.slug}
-              image={imageUrl}
+              source={imageUrl}
               title={article.title}
               tag={article.tag || "Non défini"}
               summary={article.summary || ""}

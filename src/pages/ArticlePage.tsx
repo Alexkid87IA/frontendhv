@@ -304,7 +304,7 @@ export const ArticlePage = () => {
               {article.mainImage && (
                 <div className="mb-12 rounded-2xl overflow-hidden">
                   <SafeImage
-                    image={article.mainImage}
+                    source={article.mainImage}
                     alt={article.title}
                     className="w-full h-auto"
                   />

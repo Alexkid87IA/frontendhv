@@ -50,7 +50,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           {article.mainImage && !isCompact && (
             <div className={`${isFeatured ? 'md:w-2/5' : ''} overflow-hidden rounded-lg mb-4`}>
               <SafeImage
-                image={article.mainImage}
+                source={article.mainImage}
                 alt={article.title || "Article image"}
                 width={isFeatured ? 400 : 300}
                 height={isFeatured ? 300 : 200}

@@ -36,7 +36,7 @@ export const PodcastCard = ({
       <div className="flex flex-col md:flex-row">
         <div className="w-full md:w-48 h-48">
           <SafeImage
-            image={image}
+            source={image}
             alt={`${guest} - Podcast Roger Ormières`}
             width={192}
             height={192}

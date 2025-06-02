@@ -409,7 +409,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                     <div className="relative bg-gradient-to-br from-neutral-900 to-black border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 hover:scale-[1.02]">
                       <div className="relative aspect-[4/3] w-full overflow-hidden">
                         <SafeImage
-                          image={item.mainImage}
+                          source={item.mainImage}
                           alt={item.title}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                           fallbackText={item.title}
