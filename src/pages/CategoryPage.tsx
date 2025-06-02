@@ -1,5 +1,13 @@
-{/* Code précédent inchangé jusqu'à la section des articles à la une */}
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Eye, Heart, ArrowRight } from 'lucide-react';
+import { SafeImage } from '../components/common/SafeImage';
+import { formatDate } from '../utils/dateUtils';
 
+export function CategoryPage() {
+  return (
+    <>
       {featuredArticles.length > 0 && (
         <section className="container mb-20">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -89,5 +97,6 @@
           </div>
         </section>
       )}
-
-{/* Reste du code inchangé */}
+    </>
+  );
+}
