@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Filter, ArrowRight, ChevronDown, ChevronUp, Calendar, Eye, Heart } from "lucide-react";
 import { SEO } from "../components/common/SEO";
-import { NewsletterForm } from "../components/common/NewsletterForm";
+import { NewsletterFooterSection } from "../components/sections/NewsletterFooterSection";
 import { LoadingSpinner } from "../components/common/LoadingSpinner";
 import { ErrorMessage } from "../components/common/ErrorMessage";
 import SafeImage from "../components/common/SafeImage";
@@ -11,7 +11,6 @@ import ErrorBoundary from "../components/common/ErrorBoundary";
 import { getCategoryBySlug, getArticlesByCategory } from "../utils/sanityAPI";
 import { formatDate } from "../utils/dateUtils";
 
-// Données mockées pour le développement
 const mockCategories = {
   story: {
     title: "Story",
@@ -60,7 +59,6 @@ const mockArticles = [
     views: 1234,
     likes: 456
   },
-  // ... Ajoutez plus d'articles mockés ici
 ];
 
 const sortOptions = [
@@ -159,7 +157,6 @@ export const CategoryPage = () => {
         image={categoryDetails.image}
       />
 
-      {/* Hero Section */}
       <section className="relative min-h-[50vh] flex items-center pt-32 pb-20">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/95 to-transparent" />
@@ -191,7 +188,6 @@ export const CategoryPage = () => {
         </div>
       </section>
 
-      {/* Featured Articles */}
       {featuredArticles.length > 0 && (
         <section className="container mb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -259,7 +255,6 @@ export const CategoryPage = () => {
         </section>
       )}
 
-      {/* Filters Section */}
       <section className="container mb-12">
         <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/5 rounded-xl p-6">
           <div className="flex flex-col md:flex-row gap-6">
@@ -292,7 +287,6 @@ export const CategoryPage = () => {
         </div>
       </section>
 
-      {/* Regular Articles Grid */}
       <section className="container mb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedArticles.map((article, index) => (
@@ -350,10 +344,7 @@ export const CategoryPage = () => {
         )}
       </section>
 
-      {/* Newsletter */}
-      <section className="container mb-20">
-        <NewsletterForm />
-      </section>
+      <NewsletterFooterSection />
     </ErrorBoundary>
   );
 };
