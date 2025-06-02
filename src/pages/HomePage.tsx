@@ -15,11 +15,12 @@ const mockArticles = [
   {
     _id: '1',
     title: "Comment développer un mindset d'exception",
-    slug: { current: 'mindset-exception' },
+    slug: { _type: "slug", current: 'mindset-exception' },
     mainImage: {
+      _type: "image",
       asset: {
         _ref: 'https://picsum.photos/400/300?random=1',
-        url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80'
+        _type: "reference"
       }
     },
     excerpt: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible.",
@@ -35,11 +36,12 @@ const mockArticles = [
   {
     _id: '2',
     title: "L'art de la résilience entrepreneuriale",
-    slug: { current: 'resilience-entrepreneuriale' },
+    slug: { _type: "slug", current: 'resilience-entrepreneuriale' },
     mainImage: {
+      _type: "image",
       asset: {
-        _ref: 'image-2',
-        url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
+        _ref: 'https://picsum.photos/400/300?random=2',
+        _type: "reference"
       }
     },
     excerpt: "Comment transformer les obstacles en opportunités et rebondir face aux défis.",
@@ -55,11 +57,12 @@ const mockArticles = [
   {
     _id: '3',
     title: "Les clés d'une communication impactante",
-    slug: { current: 'communication-impactante' },
+    slug: { _type: "slug", current: 'communication-impactante' },
     mainImage: {
+      _type: "image",
       asset: {
-        _ref: 'image-3',
-        url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80'
+        _ref: 'https://picsum.photos/400/300?random=3',
+        _type: "reference"
       }
     },
     excerpt: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence.",
