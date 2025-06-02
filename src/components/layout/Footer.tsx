@@ -1,7 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Facebook, Twitter, Instagram, Youtube, ArrowRight, Mail, MapPin, Phone, Sparkles } from 'lucide-react';
+// Import de tous les logos
+import logoMedia from '../../assets/logos/LOGO_HV_MEDIA.svg';
+import logoBusiness from '../../assets/logos/LOGO_HV_BUSINESS.svg';
+import logoMental from '../../assets/logos/LOGO_HV_PSYCHO.svg';
+import logoSociety from '../../assets/logos/LOGO_HV_SOCIETY.svg';
+import logoStory from '../../assets/logos/LOGO_HV_STORY.svg';
 
 export const Footer = () => {
   const mainLinks = [
@@ -10,7 +16,19 @@ export const Footer = () => {
     { label: 'Mental', path: '/rubrique/mental' },
     { label: 'Society', path: '/rubrique/society' }
   ];
-
+  const location = useLocation();
+  
+  // Fonction pour obtenir le logo selon la page
+  const getCurrentLogo = () => {
+    const path = location.pathname;
+    
+    if (path.includes('/story')) return logoStory;
+    if (path.includes('/business')) return logoBusiness;
+    if (path.includes('/mental')) return logoMental;
+    if (path.includes('/society')) return logoSociety;
+    
+    return logoMedia;
+  };
   const legalLinks = [
     { label: 'Mentions légales', path: '/mentions-legales' },
     { label: 'Politique de confidentialité', path: '/confidentialite' },
@@ -40,7 +58,7 @@ export const Footer = () => {
           <div className="lg:col-span-1">
             <Link to="/" className="block mb-6">
               <motion.img 
-                src="/src/assets/logos/LOGO_HV MEDIA.svg"
+                src={getCurrentLogo()}
                 alt="High Value Media"
                 className="h-16 w-auto"
                 whileHover={{

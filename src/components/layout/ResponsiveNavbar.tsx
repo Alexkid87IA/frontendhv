@@ -3,13 +3,29 @@ import { Menu, X, Sparkles, Crown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
-
+// Import de tous les logos
+import logoMedia from '../../assets/logos/LOGO_HV_MEDIA.svg';
+import logoBusiness from '../../assets/logos/LOGO_HV_BUSINESS.svg';
+import logoMental from '../../assets/logos/LOGO_HV_PSYCHO.svg';
+import logoSociety from '../../assets/logos/LOGO_HV_SOCIETY.svg';
+import logoStory from '../../assets/logos/LOGO_HV_STORY.svg';
 export const ResponsiveNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const location = useLocation();
   const { visible } = useScrollDirection();
-
+// Fonction pour obtenir le logo selon la page
+const getCurrentLogo = () => {
+  const path = location.pathname;
+  
+  if (path.includes('/story')) return logoStory;
+  if (path.includes('/business')) return logoBusiness;
+  if (path.includes('/mental')) return logoMental;
+  if (path.includes('/society')) return logoSociety;
+  
+  // Logo par défaut
+  return logoMedia;
+};
   const menuItems = [
     { label: 'Story', path: '/rubrique/story', slug: 'story' },
     { label: 'Business', path: '/rubrique/business', slug: 'business' },
@@ -59,7 +75,7 @@ export const ResponsiveNavbar = () => {
           >
             <div className="absolute inset-0 bg-gradient-to-r from-accent-blue to-accent-turquoise opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500" />
             <img 
-              src="/src/assets/logos/LOGO_HV MEDIA.svg"
+              src={getCurrentLogo()}
               alt="High Value Media"
               className="h-full w-auto object-contain relative z-10" 
             />
