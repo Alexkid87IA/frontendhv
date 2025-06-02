@@ -9,34 +9,14 @@ import { CategoryHeroSection } from "../components/sections/CategoryHeroSection"
 import { CategoryFeaturedArticles } from "../components/sections/CategoryFeaturedArticles";
 import { CategoryFilters } from "../components/sections/CategoryFilters";
 import { CategoryArticlesGrid } from "../components/sections/CategoryArticlesGrid";
-
-interface Article {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  mainImage: string;
-  excerpt: string;
-  publishedAt: string;
-  categories: Array<{ title: string; slug: { current: string } }>;
-}
-
-// Générer plus d'articles mockés pour la pagination
-const generateMockArticles = (count: number): Article[] => {
-  return Array.from({ length: count }, (_, i) => ({
-    _id: `${i + 1}`,
-    title: `Article ${i + 1} : ${['Le mindset des champions', 'Innovation et leadership', 'Stratégies de croissance', 'Transformation digitale'][i % 4]}`,
-    slug: { current: `article-${i + 1}` },
-    mainImage: `https://images.unsplash.com/photo-${['1533227268428-f9ed0900fb3b', '1517245386807-bb43f82c33c4', '1522202176988-66273c2fd55f', '1516321318423-f06f85e504b3'][i % 4]}?auto=format&fit=crop&q=80`,
-    excerpt: "Une analyse approfondie des stratégies qui font la différence entre la réussite et l'excellence dans le monde professionnel moderne.",
-    publishedAt: new Date(Date.now() - i * 86400000).toISOString(),
-    categories: [{ title: 'Mental', slug: { current: 'mental' } }]
-  }));
-};
+import { getArticlesByCategory, getCategoryBySlug } from "../utils/sanityAPI";
+import { SanityArticle } from "../types/sanity";
 
 export function CategoryPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [displayedArticles, setDisplayedArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<SanityArticle[]>([]);
+  const [displayedArticles, setDisplayedArticles] = useState<SanityArticle[]>([]);
+  const [category, setCategory] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,15 +25,34 @@ export function CategoryPage() {
   const articlesPerPage = 9;
 
   useEffect(() => {
-    const fetchArticles = async () => {
+    const fetchCategoryAndArticles = async () => {
       try {
         setIsLoading(true);
         setError(null);
         
-        // TODO: Replace with actual Sanity query
-        const mockArticles = generateMockArticles(20);
-        setArticles(mockArticles);
-        setDisplayedArticles(mockArticles.slice(0, articlesPerPage));
+        if (!categorySlug) {
+          setError('Catégorie non spécifiée');
+          return;
+        }
+
+        // Récupérer les informations de la catégorie
+        const categoryData = await getCategoryBySlug(categorySlug);
+        if (categoryData) {
+          setCategory(categoryData);
+        }
+
+        // Récupérer les articles de cette catégorie depuis Sanity
+        const sanityArticles = await getArticlesByCategory(categorySlug);
+        
+        if (sanityArticles && sanityArticles.length > 0) {
+          setArticles(sanityArticles);
+          setDisplayedArticles(sanityArticles.slice(0, articlesPerPage));
+          console.log(`Articles de la catégorie ${categorySlug} récupérés depuis Sanity`);
+        } else {
+          setArticles([]);
+          setDisplayedArticles([]);
+          console.log(`Aucun article trouvé pour la catégorie ${categorySlug}`);
+        }
       } catch (err) {
         setError('Une erreur est survenue lors du chargement des articles.');
         console.error('Error fetching articles:', err);
@@ -62,7 +61,7 @@ export function CategoryPage() {
       }
     };
 
-    fetchArticles();
+    fetchCategoryAndArticles();
   }, [categorySlug]);
 
   const filteredArticles = articles.filter(article => {
@@ -95,11 +94,15 @@ export function CategoryPage() {
     );
   }
 
+  // Obtenir le titre de la catégorie
+  const categoryTitle = category?.title || categorySlug?.charAt(0).toUpperCase() + categorySlug?.slice(1);
+  const categoryDescription = category?.description || "Explorez nos articles sur le développement personnel, le business et l'innovation.";
+
   return (
     <ErrorBoundary>
       <SEO
-        title={`${categorySlug?.charAt(0).toUpperCase()}${categorySlug?.slice(1)} | Roger Ormières`}
-        description="Explorez nos articles sur le développement personnel, le business et l'innovation."
+        title={`${categoryTitle} | Roger Ormières`}
+        description={categoryDescription}
       />
       
       <div className="relative">
@@ -115,20 +118,32 @@ export function CategoryPage() {
         <div className="relative pb-20">
           <CategoryHeroSection categorySlug={categorySlug} />
           
-          <CategoryFeaturedArticles articles={filteredArticles.slice(0, 2)} />
-          
-          <CategoryFilters
-            searchTerm={searchTerm}
-            selectedFilter={selectedFilter}
-            onSearchChange={setSearchTerm}
-            onFilterChange={setSelectedFilter}
-          />
-          
-          <CategoryArticlesGrid
-            articles={displayedArticles.slice(2)}
-            onLoadMore={loadMoreArticles}
-            hasMore={displayedArticles.length < filteredArticles.length}
-          />
+          {filteredArticles.length > 0 ? (
+            <>
+              <CategoryFeaturedArticles articles={filteredArticles.slice(0, 2)} />
+              
+              <CategoryFilters
+                searchTerm={searchTerm}
+                selectedFilter={selectedFilter}
+                onSearchChange={setSearchTerm}
+                onFilterChange={setSelectedFilter}
+              />
+              
+              <CategoryArticlesGrid
+                articles={displayedArticles.slice(2)}
+                onLoadMore={loadMoreArticles}
+                hasMore={displayedArticles.length < filteredArticles.length}
+              />
+            </>
+          ) : (
+            <div className="container py-20">
+              <div className="text-center">
+                <p className="text-gray-400 text-lg">
+                  Aucun article trouvé dans cette catégorie pour le moment.
+                </p>
+              </div>
+            </div>
+          )}
 
           <NewsletterFooterSection />
         </div>
