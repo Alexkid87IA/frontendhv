@@ -128,49 +128,37 @@ export const HeroSection = () => {
   const [recentArticles, setRecentArticles] = useState<SanityArticle[]>(mockRecentArticles);
   const [quote, setQuote] = useState(mockQuote);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchArticles = async () => {
       try {
         setIsLoading(true);
-        setError(null);
-        
-        const [sanityArticles, sanityQuote] = await Promise.all([
-          getAllArticles(),
-          getLatestQuote()
-        ]);
+        const sanityArticles = await getAllArticles();
         
         if (sanityArticles && sanityArticles.length > 0) {
           setFeaturedArticle(sanityArticles[0]);
           setRecentArticles(sanityArticles.slice(1, 7));
           setDataSource('cms');
-          console.log('Articles HeroSection récupérés depuis Sanity CMS');
+          console.log('Articles récupérés depuis Sanity CMS');
         } else {
           setFeaturedArticle(mockFeaturedArticle);
           setRecentArticles(mockRecentArticles);
           setDataSource('mock');
-          console.log('Aucun article trouvé dans Sanity, utilisation des articles mockés dans HeroSection');
-        }
-
-        if (sanityQuote) {
-          setQuote(sanityQuote);
+          console.log('Utilisation des articles mockés (fallback)');
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération des données pour HeroSection:', error);
-        setError("Impossible de charger les articles vedettes");
-        
+        console.error('Erreur lors de la récupération des articles:', error);
         setFeaturedArticle(mockFeaturedArticle);
         setRecentArticles(mockRecentArticles);
         setDataSource('mock');
-        console.log('Utilisation des données mockées dans HeroSection suite à une erreur');
+        console.log('Utilisation des articles mockés suite à une erreur');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchArticles();
   }, []);
 
   if (isLoading) {
@@ -181,21 +169,10 @@ export const HeroSection = () => {
     );
   }
 
-  if (error && !featuredArticle && recentArticles.length === 0) {
-    return (
-      <section className="relative min-h-screen flex items-center justify-center pt-32">
-        <div className="text-center text-red-500">
-          <p>{error}</p>
-          <p className="mt-2">Veuillez réessayer ultérieurement.</p>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <ErrorBoundary>
       <section className="relative min-h-[80vh] flex items-center pt-8">
-        {/* Enhanced Background Effects */}
+        {/* Background Effects */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
@@ -228,8 +205,6 @@ export const HeroSection = () => {
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     fallbackText={featuredArticle.title}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
                 </div>
                 
                 <div className="relative p-8">
