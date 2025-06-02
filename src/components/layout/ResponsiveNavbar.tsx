@@ -20,7 +20,8 @@ export const ResponsiveNavbar = () => {
       path: '/club', 
       slug: 'club',
       badge: 'Bientôt disponible'
-    }
+    },
+    { label: 'Coaching', path: '/coaching', slug: 'coaching' }
   ];
 
   const handleLogoClick = () => {
