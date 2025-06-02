@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Clock, Sparkles, Flame, TrendingUp, Star, Calendar } from 'lucide-react';
+import { Search, Calendar, Sparkles, Star } from 'lucide-react';
 
 interface CategoryFiltersProps {
   searchTerm: string;
@@ -30,13 +30,6 @@ const filters = [
     icon: Star,
     description: 'Articles les plus lus',
     gradient: 'from-amber-500 to-orange-500'
-  },
-  { 
-    id: 'trending', 
-    name: 'Tendances',
-    icon: TrendingUp,
-    description: 'Articles en tendance',
-    gradient: 'from-emerald-500 to-teal-500'
   }
 ];
 
@@ -87,7 +80,7 @@ export const CategoryFilters = ({
 
             {/* Filter Buttons */}
             <div className="flex-1">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {filters.map((filter) => {
                   const isSelected = selectedFilter === filter.id;
                   return (
@@ -148,7 +141,9 @@ export const CategoryFilters = ({
                 )}
                 {selectedFilter !== 'all' && (
                   <div className="flex items-center gap-2 bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full text-sm">
-                    <Filter size={14} />
+                    {filters.find(f => f.id === selectedFilter)?.icon && (
+                      <filters.find(f => f.id === selectedFilter)!.icon size={14} />
+                    )}
                     <span>{filters.find(f => f.id === selectedFilter)?.name}</span>
                     <button
                       onClick={() => onFilterChange('all')}
