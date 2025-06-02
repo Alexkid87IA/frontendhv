@@ -2,21 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Calendar, Sparkles, Star } from 'lucide-react';
 
-interface CategoryFiltersProps {
-  searchTerm: string;
-  selectedFilter: string;
-  onSearchChange: (value: string) => void;
-  onFilterChange: (filter: string) => void;
-}
-
 const filters = [
-  { 
-    id: 'all', 
-    name: 'Tous les articles',
-    icon: Sparkles,
-    description: 'Voir tous les articles',
-    gradient: 'from-blue-500 to-cyan-500'
-  },
   { 
     id: 'recent', 
     name: 'Plus récents',
@@ -32,6 +18,13 @@ const filters = [
     gradient: 'from-amber-500 to-orange-500'
   }
 ];
+
+interface CategoryFiltersProps {
+  searchTerm: string;
+  selectedFilter: string;
+  onSearchChange: (value: string) => void;
+  onFilterChange: (filter: string) => void;
+}
 
 export const CategoryFilters = ({
   searchTerm,
@@ -80,7 +73,7 @@ export const CategoryFilters = ({
 
             {/* Filter Buttons */}
             <div className="flex-1">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {filters.map((filter) => {
                   const isSelected = selectedFilter === filter.id;
                   return (
@@ -151,7 +144,7 @@ export const CategoryFilters = ({
                     })()}
                     <span>{filters.find(f => f.id === selectedFilter)?.name}</span>
                     <button
-                      onClick={() => onFilterChange('all')}
+                      onClick={() => onFilterChange('recent')}
                       className="ml-1 hover:text-white transition-colors"
                     >
                       ×
