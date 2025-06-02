@@ -8,7 +8,6 @@ import { LoadingSpinner } from "../common/LoadingSpinner";
 import SafeImage from "../common/SafeImage";
 import ErrorBoundary from "../common/ErrorBoundary";
 
-// Données mockées pour fallback
 const mockAmuseBouches: SanityArticle[] = [
   {
     _id: '1',
@@ -82,13 +81,7 @@ const mockAmuseBouches: SanityArticle[] = [
   }
 ];
 
-const AmuseBoucheSection = ({
-  title = "Amuses-bouches",
-  description = "Des conseils percutants en format court",
-}: {
-  title?: string;
-  description?: string;
-}) => {
+export const AmuseBoucheSection = () => {
   const [videos, setVideos] = useState<SanityArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -162,7 +155,7 @@ const AmuseBoucheSection = ({
 
   if (isLoading) {
     return (
-      <section className="relative py-20 overflow-hidden">
+      <section className="relative py-0 overflow-hidden">
         <div className="container flex justify-center items-center py-20">
           <LoadingSpinner />
         </div>
@@ -172,7 +165,7 @@ const AmuseBoucheSection = ({
 
   if (error && !videos.length) {
     return (
-      <section className="py-20">
+      <section className="py-0">
         <div className="container">
           <div className="text-center text-red-500">
             <p>{error}</p>
@@ -189,8 +182,7 @@ const AmuseBoucheSection = ({
 
   return (
     <ErrorBoundary>
-      <section className="relative py-20 overflow-hidden">
-        {/* Enhanced Background Effects */}
+      <section className="relative py-0 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
@@ -213,16 +205,15 @@ const AmuseBoucheSection = ({
               </span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mt-6 mb-4">
-              {title}
+              Amuses-bouches
               {dataSource === 'mock' && <span className="text-sm text-gray-400 ml-2">(démo)</span>}
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              {description}
+              Des conseils percutants en format court
             </p>
           </motion.div>
 
           <div className="relative">
-            {/* Navigation Buttons */}
             <div className="absolute -top-20 right-0 flex gap-2">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -246,7 +237,6 @@ const AmuseBoucheSection = ({
               </motion.button>
             </div>
 
-            {/* Videos Grid */}
             <div
               ref={scrollRef}
               className="flex space-x-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"
@@ -275,7 +265,6 @@ const AmuseBoucheSection = ({
                           height={498}
                         />
                         
-                        {/* Enhanced Overlay Effects */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
                         <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
                       </div>
@@ -291,7 +280,6 @@ const AmuseBoucheSection = ({
                           </p>
                         )}
                         
-                        {/* Progress Bar */}
                         <div className="h-1 bg-white/10 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: "0%" }}
