@@ -109,7 +109,7 @@ export const EssentialArticlesSection = () => {
                   <div className="absolute inset-x-0 bottom-0 p-8">
                     <div className="flex items-center gap-2 mb-4">
                       <div className={`p-2 rounded-xl bg-gradient-to-br ${essentialArticles[0].gradient}`}>
-                        <essentialArticles[0].icon className="w-6 h-6 text-white" />
+                        {React.createElement(essentialArticles[0].icon, { className: "w-6 h-6 text-white" })}
                       </div>
                       <span className="text-sm font-medium text-white bg-white/20 px-3 py-1 rounded-full">
                         {essentialArticles[0].category}
@@ -158,7 +158,7 @@ export const EssentialArticlesSection = () => {
                       <div className="flex-1 p-6">
                         <div className="flex items-center gap-2 mb-3">
                           <div className={`p-1.5 rounded-lg bg-gradient-to-br ${article.gradient}`}>
-                            <article.icon className="w-4 h-4 text-white" />
+                            {React.createElement(article.icon, { className: "w-4 h-4 text-white" })}
                           </div>
                           <span className="text-xs font-medium text-white bg-white/20 px-2 py-0.5 rounded-full">
                             {article.category}
