@@ -31,7 +31,7 @@ const mockAmuseBouches: SanityArticle[] = [
     coverImage: {
       _type: "image",
       asset: {
-        _ref: 'image-2',
+        _ref: 'https://picsum.photos/400/300?random=2',
         _type: "reference"
       }
     },
@@ -45,7 +45,7 @@ const mockAmuseBouches: SanityArticle[] = [
     coverImage: {
       _type: "image",
       asset: {
-        _ref: 'image-3',
+        _ref: 'https://picsum.photos/400/300?random=3',
         _type: "reference"
       }
     },
@@ -59,7 +59,7 @@ const mockAmuseBouches: SanityArticle[] = [
     coverImage: {
       _type: "image",
       asset: {
-        _ref: 'image-4',
+        _ref: 'https://picsum.photos/400/300?random=4',
         _type: "reference"
       }
     },
@@ -73,7 +73,7 @@ const mockAmuseBouches: SanityArticle[] = [
     coverImage: {
       _type: "image",
       asset: {
-        _ref: 'image-5',
+        _ref: 'https://picsum.photos/400/300?random=5',
         _type: "reference"
       }
     },
