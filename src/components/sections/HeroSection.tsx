@@ -188,12 +188,13 @@ export const HeroSection = () => {
             </div>
           )}
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Featured Article */}
+          {/* Featured Article and Quote */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+            {/* Featured Article - Enhanced */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="group relative"
+              className="relative group"
             >
               <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
               <Link to={`/article/${featuredArticle.slug?.current}`} className="relative block bg-black rounded-2xl overflow-hidden">
@@ -253,7 +254,7 @@ export const HeroSection = () => {
               </Link>
             </motion.div>
 
-            {/* Quote Box - Enhanced Version */}
+            {/* Quote of the Day - Enhanced */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -261,38 +262,30 @@ export const HeroSection = () => {
             >
               <div className="absolute -inset-0.5 bg-gradient-to-br from-accent-violet via-accent-fuchsia to-accent-cyan rounded-2xl blur opacity-50"></div>
               <div className="relative h-full bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-12 flex flex-col justify-center overflow-hidden">
-                {/* Animated gradient orbs */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-accent-violet/10 to-accent-fuchsia/10 rounded-full blur-3xl animate-pulse transform translate-x-1/2 -translate-y-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-br from-accent-cyan/10 to-accent-blue/10 rounded-full blur-3xl animate-pulse transform -translate-x-1/2 translate-y-1/2"></div>
+                {/* Decorative elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-accent-violet/20 to-accent-fuchsia/20 rounded-full blur-3xl transform translate-x-16 -translate-y-16"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-br from-accent-cyan/20 to-accent-blue/20 rounded-full blur-3xl transform -translate-x-16 translate-y-16"></div>
                 
-                {/* Quote icon with animated gradient */}
-                <div className="relative mb-8 group">
-                  <div className="absolute -inset-4 bg-gradient-to-br from-accent-violet to-accent-fuchsia rounded-full blur opacity-50 group-hover:opacity-75 transition-all duration-500"></div>
-                  <div className="relative w-20 h-20 bg-black/80 rounded-full flex items-center justify-center transform group-hover:scale-105 transition-transform">
-                    <Quote size={36} className="text-white transform -translate-y-1 group-hover:text-accent-violet transition-colors" />
+                {/* Quote icon with gradient */}
+                <div className="relative mb-8">
+                  <div className="absolute -inset-2 bg-gradient-to-br from-accent-violet to-accent-fuchsia rounded-full blur opacity-50"></div>
+                  <div className="relative w-16 h-16 bg-black rounded-full flex items-center justify-center">
+                    <Quote size={32} className="text-accent-violet transform -translate-y-1" />
                   </div>
                 </div>
 
-                {/* Quote text with animated gradient */}
+                {/* Quote text with gradient */}
                 <blockquote className="relative mb-8 z-10">
-                  <div className="absolute -inset-8 bg-gradient-to-br from-accent-violet/5 to-accent-fuchsia/5 rounded-3xl blur-lg opacity-50"></div>
-                  <p className="relative text-3xl font-playfair italic leading-relaxed mb-8">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-gray-300 animate-gradient-x">
-                      "{quote.text}"
-                    </span>
+                  <p className="text-3xl font-playfair italic leading-relaxed mb-8 text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-gray-300">
+                    "{quote.text}"
                   </p>
                   <footer className="flex items-center gap-4">
-                    <div className="relative group">
-                      <div className="absolute -inset-1 bg-gradient-to-br from-accent-violet to-accent-fuchsia rounded-full blur opacity-50 group-hover:opacity-75 transition-all duration-300"></div>
-                      <div className="relative w-16 h-16 bg-black rounded-full flex items-center justify-center">
-                        <User size={24} className="text-accent-violet group-hover:scale-110 transition-transform" />
-                      </div>
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent-violet to-accent-fuchsia flex items-center justify-center">
+                      <User size={24} className="text-white" />
                     </div>
                     <div>
-                      <cite className="text-xl font-semibold not-italic block">
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-violet to-accent-fuchsia">
-                          {quote.author}
-                        </span>
+                      <cite className="text-xl font-semibold text-accent-violet not-italic block">
+                        {quote.author}
                       </cite>
                       {quote.role && (
                         <span className="text-gray-400 block mt-1">{quote.role}</span>
@@ -304,8 +297,8 @@ export const HeroSection = () => {
             </motion.div>
           </div>
 
-          {/* Recent Articles Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+          {/* Recent Articles Grid - Enhanced */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {recentArticles.map((article, index) => (
               <motion.div
                 key={article._id}
@@ -331,13 +324,11 @@ export const HeroSection = () => {
                       <h3 className="text-xl font-bold mb-3 group-hover:text-accent-blue transition-colors line-clamp-2">
                         {article.title}
                       </h3>
-                      
                       {article.excerpt && (
-                        <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                        <p className="text-gray-400 mb-4 line-clamp-2">
                           {article.excerpt}
                         </p>
                       )}
-                      
                       <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/10">
                         <time className="text-sm text-gray-500" dateTime={article.publishedAt}>
                           {new Date(article.publishedAt || '').toLocaleDateString('fr-FR', {
