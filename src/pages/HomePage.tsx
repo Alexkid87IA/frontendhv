@@ -7,11 +7,10 @@ import { EditorialSection } from '../components/sections/EditorialSection';
 import ContentSection from '../components/sections/ContentSection';
 import { ClubSection } from '../components/sections/ClubSection';
 import { ExploreArticlesCTA } from '../components/sections/ExploreArticlesCTA';
-import SimpleFooter from '../components/layout/SimpleFooter';
+import { NewsletterFooterSection } from '../components/sections/NewsletterFooterSection';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { getAllArticles } from '../utils/sanityAPI';
 
-// Données mockées pour la section articles (utilisées en fallback)
 const mockArticles = [
   {
     _id: '1',
@@ -87,7 +86,7 @@ export const HomePage = () => {
         const sanityArticles = await getAllArticles();
         
         if (sanityArticles && sanityArticles.length > 0) {
-          setArticles(sanityArticles.slice(0, 6)); // Limiter à 6 articles pour la homepage
+          setArticles(sanityArticles.slice(0, 6));
           setDataSource('sanity');
           console.log('Articles récupérés depuis Sanity CMS');
         } else {
@@ -111,9 +110,7 @@ export const HomePage = () => {
   return (
     <>
       <SEO {...staticSEO.home} />
-      {/* Contenu */}
       <div className="relative space-y-16 md:space-y-24 lg:space-y-32">
-        {/* Effets d'arrière-plan déplacés pour ne pas interférer avec le footer */}
         <div className="absolute inset-0 z-[-1]">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
@@ -121,7 +118,6 @@ export const HomePage = () => {
           <div className="absolute inset-0 backdrop-blur-[100px]" />
         </div>
 
-        {/* Sections de contenu */}
         <HeroSection />
         <AmuseBoucheSection />
         <EditorialSection />
@@ -143,11 +139,7 @@ export const HomePage = () => {
           sectionType="success-story"
         />
         
-        {/* Espace supplémentaire pour garantir que le footer est visible */}
-        <div className="h-16"></div>
-        
-        {/* Ajout explicite du SimpleFooter directement dans la HomePage */}
-        <SimpleFooter />
+        <NewsletterFooterSection />
       </div>
     </>
   );
