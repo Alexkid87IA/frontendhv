@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Quote } from 'lucide-react';
+import { ArrowRight, Quote } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
 import { getAllArticles, getLatestQuote } from '../../utils/sanityAPI';
@@ -73,6 +73,48 @@ const mockRecentArticles: SanityArticle[] = [
     },
     excerpt: "Techniques pour captiver votre audience",
     publishedAt: "2024-03-17",
+  },
+  {
+    _id: '5',
+    title: "Innovation et développement durable",
+    slug: { _type: "slug", current: 'innovation-durable' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'image-5',
+        _type: "reference"
+      }
+    },
+    excerpt: "Concilier croissance et responsabilité",
+    publishedAt: "2024-03-16",
+  },
+  {
+    _id: '6',
+    title: "Le pouvoir du storytelling",
+    slug: { _type: "slug", current: 'pouvoir-storytelling' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'image-6',
+        _type: "reference"
+      }
+    },
+    excerpt: "L'art de raconter des histoires qui marquent",
+    publishedAt: "2024-03-15",
+  },
+  {
+    _id: '7',
+    title: "Stratégies de growth hacking",
+    slug: { _type: "slug", current: 'growth-hacking' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'image-7',
+        _type: "reference"
+      }
+    },
+    excerpt: "Les techniques de croissance rapide",
+    publishedAt: "2024-03-14",
   }
 ];
 
@@ -105,8 +147,8 @@ export const HeroSection = () => {
           // Utiliser le premier article comme article vedette
           setFeaturedArticle(sanityArticles[0]);
           
-          // Utiliser les 3 articles suivants pour la grille
-          setRecentArticles(sanityArticles.slice(1, 4));
+          // Utiliser les 6 articles suivants pour la grille
+          setRecentArticles(sanityArticles.slice(1, 7));
           
           setDataSource('cms');
           console.log('Articles HeroSection récupérés depuis Sanity CMS');
@@ -137,23 +179,6 @@ export const HeroSection = () => {
 
     fetchData();
   }, []);
-
-  // Formatage de la date relative
-  const formatRelativeDate = (dateString?: string) => {
-    if (!dateString) return "Il y a quelques jours";
-    
-    const publishDate = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - publishDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) return "Aujourd'hui";
-    if (diffDays === 1) return "Hier";
-    if (diffDays < 7) return `Il y a ${diffDays} jours`;
-    if (diffDays < 30) return `Il y a ${Math.floor(diffDays / 7)} semaine${Math.floor(diffDays / 7) > 1 ? 's' : ''}`;
-    if (diffDays < 365) return `Il y a ${Math.floor(diffDays / 30)} mois`;
-    return `Il y a ${Math.floor(diffDays / 365)} an${Math.floor(diffDays / 365) > 1 ? 's' : ''}`;
-  };
 
   if (isLoading) {
     return (
@@ -193,170 +218,113 @@ export const HeroSection = () => {
             </div>
           )}
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-            {/* Left Column - Text Content */}
-            <div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="space-y-3"
-              >
-                <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium">
-                  Média indépendant
-                </span>
-
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-montserrat font-bold leading-tight">
-                  Développe ton{' '}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-turquoise">
-                    mindset
-                  </span>{' '}
-                  d'exception
-                </h1>
-
-                <p className="text-lg text-gray-300 max-w-2xl">
-                  Découvre les histoires qui transforment, les stratégies qui font la différence, 
-                  et développe ta psychologie de champion.
-                </p>
-
-                {/* Citation du jour */}
-                <motion.blockquote 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="relative mt-8 mb-12 pl-6 border-l-2 border-accent-blue"
-                >
-                  <Quote className="absolute -left-4 -top-4 text-accent-blue/20 w-8 h-8" />
-                  <p className="text-lg italic text-white/80">{quote.text}</p>
-                  <footer className="mt-2 text-sm text-accent-blue">
-                    {quote.author}
-                    {quote.role && <span className="text-white/60"> · {quote.role}</span>}
-                  </footer>
-                </motion.blockquote>
-
-                <div className="flex flex-col sm:flex-row gap-4 pt-3">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="relative group"
-                  >
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
-                    <Link
-                      to="/articles"
-                      className="relative flex items-center justify-center gap-2 bg-black px-6 py-3 rounded-xl text-white group-hover:text-white/90 transition-colors"
-                      aria-label="Explorer tous les articles"
-                    >
-                      <span>Explorer les articles</span>
-                      <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" />
-                    </Link>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Link
-                      to="/create-with-roger"
-                      className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl transition-colors"
-                      aria-label="Créer du contenu avec Roger"
-                    >
-                      <Sparkles className="w-5 h-5" aria-hidden="true" />
-                      <span>Créer avec Roger</span>
-                    </Link>
-                  </motion.div>
+          {/* Featured Article and Quote */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            {/* Featured Article */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="relative"
+            >
+              <Link to={`/article/${featuredArticle.slug?.current}`} className="group block">
+                <div className="relative aspect-[16/9] rounded-2xl overflow-hidden">
+                  <SafeImage
+                    source={featuredArticle.mainImage}
+                    alt={featuredArticle.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    fallbackText={featuredArticle.title}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
+                  
+                  <div className="absolute bottom-0 left-0 p-6 w-full">
+                    {featuredArticle.categories && featuredArticle.categories[0] && (
+                      <span className="inline-block px-3 py-1 bg-accent-blue text-white text-sm font-medium rounded-full mb-3">
+                        {featuredArticle.categories[0].title}
+                      </span>
+                    )}
+                    <h2 className="text-2xl md:text-3xl font-bold mb-3 group-hover:text-accent-blue transition-colors">
+                      {featuredArticle.title}
+                    </h2>
+                    <p className="text-gray-300 mb-4 line-clamp-2">
+                      {featuredArticle.excerpt}
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                      <span>Lire l'article</span>
+                      <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
                 </div>
-              </motion.div>
-            </div>
+              </Link>
+            </motion.div>
 
-            {/* Right Column - Featured Article */}
+            {/* Quote of the Day */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="relative"
+              className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 flex flex-col justify-center"
             >
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-                <SafeImage
-                  source={featuredArticle.mainImage}
-                  alt={featuredArticle.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  fallbackText={featuredArticle.title}
-                  width={600}
-                  height={450}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
-
-                {/* Featured Article Content */}
-                <div className="absolute bottom-0 left-0 p-6 w-full">
-                  <span className="inline-block px-3 py-1 bg-accent-blue text-white text-sm font-medium rounded-full mb-3">
-                    À la une
-                  </span>
-                  <h2 className="text-xl font-bold text-white mb-2">
-                    {featuredArticle.title}
-                  </h2>
-                  <p className="text-sm text-gray-300 mb-3 line-clamp-2">
-                    {featuredArticle.excerpt}
-                  </p>
-                  <Link
-                    to={`/article/${featuredArticle.slug?.current}`}
-                    className="inline-flex items-center gap-2 text-accent-blue hover:text-accent-turquoise transition-colors"
-                    aria-label={`Lire l'article: ${featuredArticle.title}`}
-                  >
-                    <span>Lire l'article</span>
-                    <ArrowRight size={16} aria-hidden="true" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Decorative Elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-accent-blue to-accent-turquoise rounded-full blur-2xl opacity-20" aria-hidden="true" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-accent-turquoise to-accent-blue rounded-full blur-2xl opacity-20" aria-hidden="true" />
+              <Quote size={48} className="text-accent-blue/20 mb-6" />
+              <blockquote className="mb-6">
+                <p className="text-2xl font-playfair italic mb-6">
+                  "{quote.text}"
+                </p>
+                <footer className="text-lg">
+                  <cite className="text-accent-blue not-italic">{quote.author}</cite>
+                  {quote.role && (
+                    <span className="text-gray-400 block text-sm mt-1">{quote.role}</span>
+                  )}
+                </footer>
+              </blockquote>
             </motion.div>
           </div>
 
           {/* Recent Articles Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6"
-            role="region"
-            aria-label="Articles récents"
-          >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {recentArticles.map((article, index) => (
-              <Link
+              <motion.div
                 key={article._id}
-                to={`/article/${article.slug?.current}`}
-                className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden hover:border-accent-blue/30 transition-all duration-300"
-                aria-label={article.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                <div className="relative aspect-video">
-                  <SafeImage
-                    source={article.mainImage}
-                    alt={article.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    fallbackText={article.title}
-                    width={400}
-                    height={225}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" aria-hidden="true" />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-base font-semibold mb-2 text-white group-hover:text-accent-blue transition-colors">
-                    {article.title}
-                  </h3>
-                  <p className="text-sm text-gray-400 mb-3 line-clamp-2">
-                    {article.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">{formatRelativeDate(article.publishedAt)}</span>
-                    <ArrowRight size={16} className="text-accent-blue transform group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+                <Link to={`/article/${article.slug?.current}`} className="group block">
+                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30">
+                    <div className="relative aspect-[16/9]">
+                      <SafeImage
+                        source={article.mainImage}
+                        alt={article.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        fallbackText={article.title}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+                    </div>
+                    
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold mb-2 group-hover:text-accent-blue transition-colors line-clamp-2">
+                        {article.title}
+                      </h3>
+                      {article.excerpt && (
+                        <p className="text-gray-400 text-sm mb-3 line-clamp-2">
+                          {article.excerpt}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <time className="text-sm text-gray-500" dateTime={article.publishedAt}>
+                          {new Date(article.publishedAt || '').toLocaleDateString('fr-FR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </time>
+                        <ArrowRight size={16} className="text-accent-blue transform group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
     </ErrorBoundary>
