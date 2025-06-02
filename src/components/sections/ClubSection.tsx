@@ -68,7 +68,7 @@ const DynamicIcon = ({ name, ...props }: { name: string; [key: string]: any }) =
     Crown
   };
 
-  const IconComponent = iconMap[name] || Users; // Users comme fallback
+  const IconComponent = iconMap[name] || Users;
   return <IconComponent {...props} />;
 };
 
@@ -85,13 +85,11 @@ export const ClubSection = () => {
         setIsLoading(true);
         setError(null);
         
-        // Exécuter les deux requêtes en parallèle
         const [featuresResult, pricingResult] = await Promise.all([
           getClubFeatures(),
           getClubPricing()
         ]);
         
-        // Vérifier et définir les fonctionnalités
         if (featuresResult && featuresResult.length > 0) {
           setFeatures(featuresResult);
           setDataSource('cms');
@@ -99,27 +97,25 @@ export const ClubSection = () => {
         } else {
           setFeatures(mockedFeatures);
           setDataSource('mock');
-          console.log("Aucune fonctionnalité trouvée dans Sanity, utilisation des données mockées");
+          console.log("Aucune fonctionnalité trouvée dans Sanity");
         }
         
-        // Vérifier et définir le tarif
         if (pricingResult && pricingResult.length > 0) {
           setPricing(pricingResult[0]);
           console.log("Tarif du club chargé depuis Sanity CMS");
         } else {
           setPricing(mockedPricing[0]);
           setDataSource('mock');
-          console.log("Aucun tarif trouvé dans Sanity, utilisation des données mockées");
+          console.log("Aucun tarif trouvé dans Sanity");
         }
       } catch (err) {
         console.error("Erreur lors du chargement des données du club:", err);
         setError("Impossible de charger les informations du club");
         
-        // Fallback vers les données mockées en cas d'erreur
         setFeatures(mockedFeatures);
         setPricing(mockedPricing[0]);
         setDataSource('mock');
-        console.log("Erreur de chargement depuis Sanity, utilisation des données mockées");
+        console.log("Utilisation des données mockées suite à une erreur");
       } finally {
         setIsLoading(false);
       }
@@ -147,22 +143,21 @@ export const ClubSection = () => {
     );
   }
 
-  // Utiliser les données mockées comme fallback si nécessaire
   const displayFeatures = features.length > 0 ? features : mockedFeatures;
   const displayPricing = pricing || mockedPricing[0];
-
-  // Déterminer si le prix est en promotion
-  const isPromotion = displayPricing.price < 30; // Exemple de logique pour déterminer si c'est une promotion
+  const isPromotion = displayPricing.price < 30;
   const regularPrice = isPromotion ? 39.90 : null;
 
   return (
     <ErrorBoundary>
       <section className="container py-20">
-        <div className="relative overflow-hidden bg-gradient-to-br from-neutral-900 to-black rounded-3xl p-12 border border-white/10">
-          {/* Background Effects */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-black via-black/95 to-black/90 rounded-3xl p-12 border border-white/10">
+          {/* Enhanced Background Effects */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
+            <div className="absolute inset-0 backdrop-blur-sm" />
           </div>
 
           {/* Content */}
@@ -180,10 +175,13 @@ export const ClubSection = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-6"
+                  className="inline-block relative mb-6"
                 >
-                  <Crown size={18} aria-hidden="true" />
-                  <span>Club High Value</span>
+                  <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-full blur opacity-75"></div>
+                  <div className="relative inline-flex items-center gap-2 px-6 py-3 bg-black rounded-full text-accent-blue font-medium">
+                    <Crown size={18} aria-hidden="true" />
+                    <span>Club High Value</span>
+                  </div>
                 </motion.div>
 
                 <motion.h2
@@ -191,10 +189,10 @@ export const ClubSection = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 }}
-                  className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
                 >
-                  Rejoignez le Club
-                  <span className="bg-gradient-to-r from-accent-blue to-accent-turquoise bg-clip-text text-transparent"> High Value</span>
+                  Rejoignez le Club{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue to-accent-turquoise">High Value</span>
                 </motion.h2>
 
                 <motion.p
@@ -202,34 +200,37 @@ export const ClubSection = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 }}
-                  className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0"
+                  className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0"
                 >
                   Développez votre mindset, votre business et votre réseau avec un accompagnement premium. 
                   Accédez à notre veille stratégique et à notre communauté d'entrepreneurs high value.
                 </motion.p>
 
-                {/* Prix */}
+                {/* Prix avec effets améliorés */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.25 }}
-                  className="mb-8 inline-block bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
+                  className="mb-8 inline-block relative"
                 >
-                  {isPromotion && (
-                    <div className="flex items-center gap-2 mb-3">
-                      <Star className="text-accent-blue" size={20} aria-hidden="true" />
-                      <span className="text-accent-blue font-medium">Offre de lancement limitée</span>
+                  <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-2xl blur opacity-30"></div>
+                  <div className="relative bg-black/50 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+                    {isPromotion && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <Star className="text-accent-blue" size={20} aria-hidden="true" />
+                        <span className="text-accent-blue font-medium">Offre de lancement limitée</span>
+                      </div>
+                    )}
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="text-4xl font-bold">{displayPricing.price.toFixed(2)}€</span>
+                      <span className="text-gray-400">/{displayPricing.period === 'month' ? 'mois' : 'an'}</span>
                     </div>
-                  )}
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-4xl font-bold">{displayPricing.price.toFixed(2)}€</span>
-                    <span className="text-gray-400">/{displayPricing.period === 'month' ? 'mois' : 'an'}</span>
+                    <p className="text-sm text-gray-400">Pour les 100 premiers membres uniquement</p>
+                    {isPromotion && regularPrice && (
+                      <p className="text-xs text-gray-500 mt-2">Puis {regularPrice.toFixed(2)}€/{displayPricing.period === 'month' ? 'mois' : 'an'}</p>
+                    )}
                   </div>
-                  <p className="text-sm text-gray-400">Pour les 100 premiers membres uniquement</p>
-                  {isPromotion && regularPrice && (
-                    <p className="text-xs text-gray-500 mt-2">Puis {regularPrice.toFixed(2)}€/{displayPricing.period === 'month' ? 'mois' : 'an'}</p>
-                  )}
                 </motion.div>
 
                 <motion.div
@@ -241,16 +242,18 @@ export const ClubSection = () => {
                 >
                   <Link
                     to="/club"
-                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-accent-blue to-accent-turquoise hover:from-accent-turquoise hover:to-accent-blue text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-accent-blue/25"
-                    aria-label="Rejoindre le Club High Value"
+                    className="group relative inline-flex items-center justify-center gap-2"
                   >
-                    <span>Rejoindre le Club</span>
-                    <ArrowRight size={20} aria-hidden="true" />
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                    <div className="relative flex items-center justify-center gap-2 bg-black px-8 py-4 rounded-xl text-white font-semibold transition-all duration-300">
+                      <span>Rejoindre le Club</span>
+                      <ArrowRight size={20} aria-hidden="true" />
+                    </div>
                   </Link>
+
                   <a
                     href="#discover"
                     className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-semibold transition-colors"
-                    aria-label="En savoir plus sur le Club High Value"
                   >
                     <span>En savoir plus</span>
                     <ArrowRight size={20} aria-hidden="true" />
@@ -258,7 +261,7 @@ export const ClubSection = () => {
                 </motion.div>
               </div>
 
-              {/* Right Column - Features */}
+              {/* Right Column - Features with Enhanced Design */}
               <div className="lg:w-[450px]">
                 <div className="grid gap-4" role="list" aria-label="Fonctionnalités du Club High Value">
                   {displayFeatures.map((feature, index) => (
@@ -268,16 +271,19 @@ export const ClubSection = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.2 + index * 0.1 }}
-                      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-colors"
+                      className="group relative"
                       role="listitem"
                     >
-                      <div className="flex gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-accent-blue to-accent-turquoise rounded-lg flex items-center justify-center flex-shrink-0">
-                          <DynamicIcon name={feature.icon} size={24} className="text-white" aria-hidden="true" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold mb-1">{feature.title}</h3>
-                          <p className="text-sm text-gray-400">{feature.description}</p>
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-xl blur opacity-30 group-hover:opacity-75 transition-all duration-300"></div>
+                      <div className="relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300">
+                        <div className="flex gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-accent-blue to-accent-turquoise rounded-lg flex items-center justify-center flex-shrink-0">
+                            <DynamicIcon name={feature.icon} size={24} className="text-white" aria-hidden="true" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold mb-1 group-hover:text-accent-blue transition-colors">{feature.title}</h3>
+                            <p className="text-sm text-gray-400">{feature.description}</p>
+                          </div>
                         </div>
                       </div>
                     </motion.div>
