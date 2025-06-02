@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, Filter, ArrowRight, Calendar, Clock, Eye, Heart } from "lucide-react";
+import { Search, ArrowRight } from "lucide-react";
 import { SEO } from "../components/common/SEO";
 import { NewsletterFooterSection } from "../components/sections/NewsletterFooterSection";
 import { LoadingSpinner } from "../components/common/LoadingSpinner";
@@ -9,7 +9,6 @@ import { ErrorMessage } from "../components/common/ErrorMessage";
 import { CategoryFilter } from "../components/common/CategoryFilter";
 import SafeImage from "../components/common/SafeImage";
 import ErrorBoundary from "../components/common/ErrorBoundary";
-import { formatDate } from "../utils/dateUtils";
 
 interface Article {
   _id: string;
@@ -17,15 +16,7 @@ interface Article {
   slug: { current: string };
   mainImage: string;
   excerpt: string;
-  publishedAt: string;
-  readingTime: string;
-  views: number;
-  likes: number;
   categories: Array<{ title: string; slug: { current: string } }>;
-  author?: {
-    name: string;
-    image: string;
-  };
 }
 
 const filters = [
@@ -57,15 +48,7 @@ export function CategoryPage() {
             slug: { current: 'mindset-champions' },
             mainImage: 'https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?auto=format&fit=crop&q=80',
             excerpt: "Une plongée fascinante dans la psychologie des plus grands champions. Découvrez les habitudes mentales qui font la différence entre la réussite et l'excellence.",
-            publishedAt: '2024-03-15',
-            readingTime: '8 min',
-            views: 1543,
-            likes: 89,
-            categories: [{ title: 'Mental', slug: { current: 'mental' } }],
-            author: {
-              name: 'Roger Ormières',
-              image: 'https://yt3.googleusercontent.com/JoLqbdLoPqNLoBUYorqoeyht0KT5uyehGL5ppcCIu5s5PAOeMXi86FoULWWjE2VpJnBKdYPmNj8=s900-c-k-c0x00ffffff-no-rj'
-            }
+            categories: [{ title: 'Mental', slug: { current: 'mental' } }]
           },
           {
             _id: '2',
@@ -73,15 +56,7 @@ export function CategoryPage() {
             slug: { current: 'resilience-superpower' },
             mainImage: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80',
             excerpt: "Comment transformer chaque obstacle en opportunité ? Un guide pratique pour développer votre résilience et rebondir plus fort après chaque épreuve.",
-            publishedAt: '2024-03-14',
-            readingTime: '12 min',
-            views: 982,
-            likes: 67,
-            categories: [{ title: 'Mental', slug: { current: 'mental' } }],
-            author: {
-              name: 'Roger Ormières',
-              image: 'https://yt3.googleusercontent.com/JoLqbdLoPqNLoBUYorqoeyht0KT5uyehGL5ppcCIu5s5PAOeMXi86FoULWWjE2VpJnBKdYPmNj8=s900-c-k-c0x00ffffff-no-rj'
-            }
+            categories: [{ title: 'Mental', slug: { current: 'mental' } }]
           }
         ];
 
@@ -202,7 +177,7 @@ export function CategoryPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="relative aspect-[21/9] rounded-2xl overflow-hidden"
+                      className="relative aspect-[16/9] rounded-2xl overflow-hidden"
                     >
                       <SafeImage
                         source={article.mainImage}
@@ -212,21 +187,7 @@ export function CategoryPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
                       <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
                       
-                      <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full md:w-2/3">
-                        <div className="flex items-center gap-3 mb-4">
-                          <SafeImage
-                            source={article.author?.image}
-                            alt={article.author?.name || "Auteur"}
-                            width={40}
-                            height={40}
-                            className="w-10 h-10 rounded-full object-cover border-2 border-white"
-                          />
-                          <div>
-                            <span className="text-sm text-gray-300">{article.author?.name}</span>
-                            <span className="text-xs text-gray-400 block">{formatDate(article.publishedAt)}</span>
-                          </div>
-                        </div>
-                        
+                      <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
                         <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 group-hover:text-accent-blue transition-colors">
                           {article.title}
                         </h2>
@@ -235,27 +196,10 @@ export function CategoryPage() {
                           {article.excerpt}
                         </p>
                         
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-6 text-gray-400">
-                            <div className="flex items-center gap-2">
-                              <Clock size={16} />
-                              <span>{article.readingTime}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Eye size={16} />
-                              <span>{article.views}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Heart size={16} />
-                              <span>{article.likes}</span>
-                            </div>
-                          </div>
-                          
-                          <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
-                            <span>Lire l'article</span>
-                            <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
-                          </span>
-                        </div>
+                        <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                          <span>Lire l'article</span>
+                          <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
+                        </span>
                       </div>
                     </motion.div>
                   </Link>
