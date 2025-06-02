@@ -79,20 +79,6 @@ const mockAmuseBouches: SanityArticle[] = [
     },
     excerpt: "Découvrez les routines quotidiennes qui font la différence dans votre parcours entrepreneurial.",
     publishedAt: "2024-03-16"
-  },
-  {
-    _id: '6',
-    title: "Le pouvoir du storytelling en business",
-    slug: { _type: "slug", current: 'storytelling-business' },
-    coverImage: {
-      _type: "image",
-      asset: {
-        _ref: 'image-6',
-        _type: "reference"
-      }
-    },
-    excerpt: "Comment utiliser les histoires pour captiver votre audience et développer votre marque.",
-    publishedAt: "2024-03-15"
   }
 ];
 
@@ -117,7 +103,7 @@ const AmuseBoucheSection = ({
       try {
         setIsLoading(true);
         setError(null);
-        const amuseBouchesData = await getAmuseBouches(6);
+        const amuseBouchesData = await getAmuseBouches(10);
         
         if (amuseBouchesData && amuseBouchesData.length > 0) {
           setVideos(amuseBouchesData);
@@ -263,7 +249,7 @@ const AmuseBoucheSection = ({
             {/* Videos Grid */}
             <div
               ref={scrollRef}
-              className="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"
+              className="flex space-x-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"
               role="region"
               aria-label="Carrousel d'amuses-bouches"
             >
@@ -274,19 +260,19 @@ const AmuseBoucheSection = ({
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex-none w-[400px]"
+                  className="flex-none w-[280px]"
                   onMouseEnter={() => setActiveIndex(index)}
                 >
                   <Link to={`/article/${video.slug?.current || '#'}`} className="block group">
                     <div className="relative bg-gradient-to-br from-neutral-900 to-black border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 hover:scale-[1.02]">
-                      <div className="relative aspect-[16/9] w-full overflow-hidden">
+                      <div className="relative aspect-[9/16] w-full overflow-hidden">
                         <SafeImage
                           source={video.coverImage}
                           alt={video.title}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                           fallbackText={video.title}
-                          width={400}
-                          height={225}
+                          width={280}
+                          height={498}
                         />
                         
                         {/* Enhanced Overlay Effects */}
