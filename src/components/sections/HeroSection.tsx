@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Quote } from 'lucide-react';
+import { ArrowRight, Quote, Calendar, Clock, User } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
 import { getAllArticles, getLatestQuote } from '../../utils/sanityAPI';
@@ -144,16 +144,11 @@ export const HeroSection = () => {
         ]);
         
         if (sanityArticles && sanityArticles.length > 0) {
-          // Utiliser le premier article comme article vedette
           setFeaturedArticle(sanityArticles[0]);
-          
-          // Utiliser les 6 articles suivants pour la grille
           setRecentArticles(sanityArticles.slice(1, 7));
-          
           setDataSource('cms');
           console.log('Articles HeroSection récupérés depuis Sanity CMS');
         } else {
-          // Fallback vers les données mockées
           setFeaturedArticle(mockFeaturedArticle);
           setRecentArticles(mockRecentArticles);
           setDataSource('mock');
@@ -167,7 +162,6 @@ export const HeroSection = () => {
         console.error('Erreur lors de la récupération des données pour HeroSection:', error);
         setError("Impossible de charger les articles vedettes");
         
-        // Fallback vers les données mockées en cas d'erreur
         setFeaturedArticle(mockFeaturedArticle);
         setRecentArticles(mockRecentArticles);
         setDataSource('mock');
@@ -182,7 +176,7 @@ export const HeroSection = () => {
 
   if (isLoading) {
     return (
-      <section className="relative min-h-[40vh] flex items-center justify-center pt-6 pb-8">
+      <section className="relative min-h-screen flex items-center justify-center pt-32">
         <LoadingSpinner />
       </section>
     );
@@ -190,7 +184,7 @@ export const HeroSection = () => {
 
   if (error && !featuredArticle && recentArticles.length === 0) {
     return (
-      <section className="relative min-h-[40vh] flex items-center justify-center pt-6 pb-8">
+      <section className="relative min-h-screen flex items-center justify-center pt-32">
         <div className="text-center text-red-500">
           <p>{error}</p>
           <p className="mt-2">Veuillez réessayer ultérieurement.</p>
@@ -201,8 +195,8 @@ export const HeroSection = () => {
 
   return (
     <ErrorBoundary>
-      <section className="relative min-h-[40vh] flex items-center pt-6 pb-8 overflow-hidden">
-        {/* Background Effects */}
+      <section className="relative min-h-screen flex items-center pt-32 pb-20">
+        {/* Enhanced Background Effects */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
@@ -219,78 +213,117 @@ export const HeroSection = () => {
           )}
           
           {/* Featured Article and Quote */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-            {/* Featured Article */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+            {/* Featured Article - Enhanced */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="relative"
+              className="relative group"
             >
-              <Link to={`/article/${featuredArticle.slug?.current}`} className="group block">
-                <div className="relative aspect-[16/9] rounded-2xl overflow-hidden">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
+              <Link to={`/article/${featuredArticle.slug?.current}`} className="relative block bg-black rounded-2xl overflow-hidden">
+                <div className="relative aspect-[16/9] rounded-t-2xl overflow-hidden">
                   <SafeImage
                     source={featuredArticle.mainImage}
                     alt={featuredArticle.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     fallbackText={featuredArticle.title}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90" />
                   <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
-                  
-                  <div className="absolute bottom-0 left-0 p-6 w-full">
-                    {featuredArticle.categories && featuredArticle.categories[0] && (
-                      <span className="inline-block px-3 py-1 bg-accent-blue text-white text-sm font-medium rounded-full mb-3">
+                </div>
+                
+                <div className="relative p-8">
+                  {featuredArticle.categories && featuredArticle.categories[0] && (
+                    <div className="flex gap-3 mb-6">
+                      <span className="px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium">
+                        Article à la une
+                      </span>
+                      <span className="px-4 py-2 bg-white/10 text-white rounded-full text-sm font-medium">
                         {featuredArticle.categories[0].title}
                       </span>
-                    )}
-                    <h2 className="text-2xl md:text-3xl font-bold mb-3 group-hover:text-accent-blue transition-colors">
-                      {featuredArticle.title}
-                    </h2>
-                    <p className="text-gray-300 mb-4 line-clamp-2">
-                      {featuredArticle.excerpt}
-                    </p>
-                    <div className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                    </div>
+                  )}
+                  
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 group-hover:text-accent-blue transition-colors">
+                    {featuredArticle.title}
+                  </h2>
+                  
+                  <p className="text-xl text-gray-300 mb-8 line-clamp-2">
+                    {featuredArticle.excerpt}
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-6 text-gray-400">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={18} />
+                        <time dateTime={featuredArticle.publishedAt}>
+                          {new Date(featuredArticle.publishedAt || '').toLocaleDateString('fr-FR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </time>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock size={18} />
+                        <span>{featuredArticle.readingTime || '5 min'} de lecture</span>
+                      </div>
+                    </div>
+                    
+                    <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
                       <span>Lire l'article</span>
                       <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
-                    </div>
+                    </span>
                   </div>
                 </div>
               </Link>
             </motion.div>
 
-            {/* Quote of the Day */}
+            {/* Quote of the Day - Enhanced */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 flex flex-col justify-center"
+              className="relative h-full"
             >
-              <Quote size={48} className="text-accent-blue/20 mb-6" />
-              <blockquote className="mb-6">
-                <p className="text-2xl font-playfair italic mb-6">
-                  "{quote.text}"
-                </p>
-                <footer className="text-lg">
-                  <cite className="text-accent-blue not-italic">{quote.author}</cite>
-                  {quote.role && (
-                    <span className="text-gray-400 block text-sm mt-1">{quote.role}</span>
-                  )}
-                </footer>
-              </blockquote>
+              <div className="absolute -inset-0.5 bg-gradient-to-br from-accent-violet via-accent-fuchsia to-accent-cyan rounded-2xl blur opacity-50"></div>
+              <div className="relative h-full bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-12 flex flex-col justify-center">
+                <Quote size={64} className="text-accent-violet/20 mb-8" />
+                <blockquote className="mb-8">
+                  <p className="text-3xl font-playfair italic leading-relaxed mb-8 text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-gray-300">
+                    "{quote.text}"
+                  </p>
+                  <footer className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent-violet to-accent-fuchsia flex items-center justify-center">
+                      <User size={24} className="text-white" />
+                    </div>
+                    <div>
+                      <cite className="text-xl font-semibold text-accent-violet not-italic block">
+                        {quote.author}
+                      </cite>
+                      {quote.role && (
+                        <span className="text-gray-400 block mt-1">{quote.role}</span>
+                      )}
+                    </div>
+                  </footer>
+                </blockquote>
+              </div>
             </motion.div>
           </div>
 
-          {/* Recent Articles Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Recent Articles Grid - Enhanced */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {recentArticles.map((article, index) => (
               <motion.div
                 key={article._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
+                className="group"
               >
-                <Link to={`/article/${article.slug?.current}`} className="group block">
-                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30">
-                    <div className="relative aspect-[16/9]">
+                <Link to={`/article/${article.slug?.current}`} className="block h-full">
+                  <div className="relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 h-full">
+                    <div className="relative aspect-video">
                       <SafeImage
                         source={article.mainImage}
                         alt={article.title}
@@ -298,18 +331,19 @@ export const HeroSection = () => {
                         fallbackText={article.title}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
                     </div>
                     
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2 group-hover:text-accent-blue transition-colors line-clamp-2">
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold mb-3 group-hover:text-accent-blue transition-colors line-clamp-2">
                         {article.title}
                       </h3>
                       {article.excerpt && (
-                        <p className="text-gray-400 text-sm mb-3 line-clamp-2">
+                        <p className="text-gray-400 mb-4 line-clamp-2">
                           {article.excerpt}
                         </p>
                       )}
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/10">
                         <time className="text-sm text-gray-500" dateTime={article.publishedAt}>
                           {new Date(article.publishedAt || '').toLocaleDateString('fr-FR', {
                             year: 'numeric',
