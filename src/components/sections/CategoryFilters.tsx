@@ -14,31 +14,22 @@ const filters = [
     id: 'all', 
     name: 'Tous les articles',
     icon: Sparkles,
-    gradient: 'from-accent-blue to-accent-turquoise'
-  },
-  { 
-    id: 'story', 
-    name: 'Story',
-    icon: Star,
-    gradient: 'from-amber-500 to-orange-500'
-  },
-  { 
-    id: 'business', 
-    name: 'Business',
-    icon: Star,
+    description: 'Voir tous les articles',
     gradient: 'from-blue-500 to-cyan-500'
   },
   { 
-    id: 'mental', 
-    name: 'Mental',
-    icon: Star,
-    gradient: 'from-purple-500 to-violet-500'
+    id: 'recent', 
+    name: 'Plus récents',
+    icon: Calendar,
+    description: 'Articles les plus récents',
+    gradient: 'from-violet-500 to-purple-500'
   },
   { 
-    id: 'society', 
-    name: 'Society',
+    id: 'popular', 
+    name: 'Plus populaires',
     icon: Star,
-    gradient: 'from-emerald-500 to-teal-500'
+    description: 'Articles les plus lus',
+    gradient: 'from-amber-500 to-orange-500'
   }
 ];
 
@@ -89,7 +80,7 @@ export const CategoryFilters = ({
 
             {/* Filter Buttons */}
             <div className="flex-1">
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {filters.map((filter) => {
                   const isSelected = selectedFilter === filter.id;
                   return (
@@ -98,18 +89,27 @@ export const CategoryFilters = ({
                       onClick={() => onFilterChange(filter.id)}
                       className={`relative group ${
                         isSelected 
-                          ? `bg-gradient-to-r ${filter.gradient} text-white`
+                          ? 'bg-gradient-to-r from-accent-blue to-accent-turquoise text-white'
                           : 'bg-black/20 hover:bg-black/30 text-gray-300 hover:text-white'
                       } backdrop-blur-sm border border-white/10 rounded-xl p-4 transition-all duration-300`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <div className={`flex items-center gap-3 justify-center`}>
-                        <filter.icon 
-                          size={20} 
-                          className={isSelected ? 'text-white' : 'text-accent-blue'} 
-                        />
-                        <span className="text-sm font-medium">{filter.name}</span>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          isSelected
+                            ? 'bg-white/20'
+                            : 'bg-accent-blue/20'
+                        } transition-colors`}>
+                          <filter.icon 
+                            size={20} 
+                            className={isSelected ? 'text-white' : 'text-accent-blue'} 
+                          />
+                        </div>
+                        <div className="text-left">
+                          <span className="block text-sm font-medium">{filter.name}</span>
+                          <span className="text-xs text-gray-400">{filter.description}</span>
+                        </div>
                       </div>
                     </motion.button>
                   );
@@ -140,9 +140,7 @@ export const CategoryFilters = ({
                   </div>
                 )}
                 {selectedFilter !== 'all' && (
-                  <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
-                    `bg-gradient-to-r ${filters.find(f => f.id === selectedFilter)?.gradient} bg-opacity-20 text-white`
-                  }`}>
+                  <div className="flex items-center gap-2 bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full text-sm">
                     {(() => {
                       const selectedFilterData = filters.find(f => f.id === selectedFilter);
                       if (selectedFilterData?.icon) {
