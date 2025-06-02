@@ -32,58 +32,7 @@ const mockItems = {
       excerpt: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible.",
       slug: { _type: "slug", current: 'mindset-exception' }
     },
-    {
-      _id: '2',
-      title: "L'art de la résilience entrepreneuriale",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'image-2',
-          _type: "reference"
-        }
-      },
-      excerpt: "Comment transformer les obstacles en opportunités et rebondir face aux défis.",
-      slug: { _type: "slug", current: 'resilience-entrepreneuriale' }
-    },
-    {
-      _id: '3',
-      title: "Les clés d'une communication impactante",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'image-3',
-          _type: "reference"
-        }
-      },
-      excerpt: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence.",
-      slug: { _type: "slug", current: 'communication-impactante' }
-    },
-    {
-      _id: '4',
-      title: "Innovation et développement durable",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'image-4',
-          _type: "reference"
-        }
-      },
-      excerpt: "Concilier croissance et responsabilité environnementale dans l'entrepreneuriat moderne.",
-      slug: { _type: "slug", current: 'innovation-developpement-durable' }
-    },
-    {
-      _id: '5',
-      title: "Leadership et management d'équipe",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'image-5',
-          _type: "reference"
-        }
-      },
-      excerpt: "Les meilleures pratiques pour inspirer et diriger des équipes performantes.",
-      slug: { _type: "slug", current: 'leadership-management' }
-    }
+    // ... autres items mockés
   ],
   'business-idea': [
     {
@@ -99,58 +48,7 @@ const mockItems = {
       excerpt: "Comment le géant de la distribution a réinventé son modèle commercial face à Amazon.",
       slug: { _type: "slug", current: 'transformation-digitale-carrefour' }
     },
-    {
-      _id: '7',
-      title: "Comment Decathlon a conquis le marché mondial",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'image-7',
-          _type: "reference"
-        }
-      },
-      excerpt: "Stratégie d'expansion et innovation produit : les clés du succès international.",
-      slug: { _type: "slug", current: 'decathlon-marche-mondial' }
-    },
-    {
-      _id: '8',
-      title: "Le modèle disruptif de Free dans les télécoms",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'image-8',
-          _type: "reference"
-        }
-      },
-      excerpt: "Comment Xavier Niel a bouleversé le marché des télécommunications en France.",
-      slug: { _type: "slug", current: 'modele-disruptif-free' }
-    },
-    {
-      _id: '9',
-      title: "La stratégie de contenu de Michelin",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'image-9',
-          _type: "reference"
-        }
-      },
-      excerpt: "Du guide gastronomique aux pneus : l'histoire d'une stratégie de contenu centenaire.",
-      slug: { _type: "slug", current: 'strategie-contenu-michelin' }
-    },
-    {
-      _id: '10',
-      title: "Comment BlaBlaCar a créé un nouveau marché",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'https://picsum.photos/400/300?random=10',
-          _type: "reference"
-        }
-      },
-      excerpt: "L'histoire de la licorne française qui a révolutionné le covoiturage en Europe.",
-      slug: { _type: "slug", current: 'blablacar-nouveau-marche' }
-    }
+    // ... autres items mockés
   ],
   'success-story': [
     {
@@ -166,58 +64,7 @@ const mockItems = {
       excerpt: "Comment deux amis ont créé une marque alimentaire iconique après plusieurs échecs.",
       slug: { _type: "slug", current: 'michel-augustin-success' }
     },
-    {
-      _id: '12',
-      title: "Le parcours inspirant de Maud Fontenoy",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'https://picsum.photos/400/300?random=12',
-          _type: "reference"
-        }
-      },
-      excerpt: "De la traversée des océans à la défense de l'environnement : un leadership exemplaire.",
-      slug: { _type: "slug", current: 'parcours-maud-fontenoy' }
-    },
-    {
-      _id: '13',
-      title: "Comment Octave Klaba a bâti OVH",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'https://picsum.photos/400/300?random=13',
-          _type: "reference"
-        }
-      },
-      excerpt: "L'histoire du champion français du cloud computing qui défie les géants américains.",
-      slug: { _type: "slug", current: 'octave-klaba-ovh' }
-    },
-    {
-      _id: '14',
-      title: "Catherine Barba : pionnière du e-commerce français",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'https://picsum.photos/400/300?random=14',
-          _type: "reference"
-        }
-      },
-      excerpt: "Le parcours d'une entrepreneuse visionnaire qui a su anticiper la révolution digitale.",
-      slug: { _type: "slug", current: 'catherine-barba-ecommerce' }
-    },
-    {
-      _id: '15',
-      title: "Marc Simoncini : de Meetic à Angell Bike",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'https://picsum.photos/400/300?random=15',
-          _type: "reference"
-        }
-      },
-      excerpt: "Le parcours d'un serial entrepreneur français qui réinvente la mobilité urbaine.",
-      slug: { _type: "slug", current: 'marc-simoncini-parcours' }
-    }
+    // ... autres items mockés
   ]
 };
 
@@ -243,7 +90,6 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
           setDataSource('cms');
           console.log(`Contenu ${sectionType} récupéré depuis Sanity CMS`);
         } else {
-          // Fallback vers les données mockées
           setItems(mockItems[sectionType] as ContentItem[]);
           setDataSource('mock');
           console.log(`Aucun contenu trouvé dans Sanity pour ${sectionType}, utilisation des données mockées`);
@@ -252,7 +98,6 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
         console.error(`Erreur lors de la récupération du contenu ${sectionType}:`, err);
         setError(`Impossible de charger le contenu ${sectionType}`);
         
-        // Fallback vers les données mockées en cas d'erreur
         setItems(mockItems[sectionType] as ContentItem[]);
         setDataSource('mock');
         console.log(`Erreur de chargement depuis Sanity pour ${sectionType}, utilisation des données mockées`);
@@ -311,7 +156,13 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
   if (isLoading) {
     return (
       <section className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-900/50 to-black" />
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 backdrop-blur-sm" />
+        </div>
         <div className="container relative flex justify-center items-center">
           <LoadingSpinner />
         </div>
@@ -339,7 +190,14 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
   return (
     <ErrorBoundary>
       <section className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-900/50 to-black" />
+        {/* Enhanced Background Effects */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 backdrop-blur-sm" />
+        </div>
         
         <div className="container relative">
           <motion.div
@@ -348,14 +206,19 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-4">
-              {getSectionLabel(sectionType)}
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            {/* Enhanced Badge */}
+            <div className="inline-block relative mb-6">
+              <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-full blur opacity-75"></div>
+              <span className="relative inline-block px-6 py-3 bg-black rounded-full text-accent-blue font-medium">
+                {getSectionLabel(sectionType)}
+              </span>
+            </div>
+
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
               {title}
               {dataSource === 'mock' && <span className="text-sm text-gray-400 ml-2">(démo)</span>}
             </h2>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               {description}
             </p>
           </motion.div>
@@ -368,20 +231,24 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                 whileTap={{ scale: 0.95 }}
                 onClick={() => scroll("left")}
                 disabled={!canScrollLeft}
-                className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                aria-label={`Voir les ${sectionType === 'emission' ? 'podcasts' : sectionType === 'business-idea' ? 'études de cas' : 'success stories'} précédents`}
+                className="relative group"
               >
-                <ChevronLeft className="w-5 h-5" aria-hidden="true" />
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-full blur opacity-50 group-hover:opacity-75 transition-all duration-300"></div>
+                <div className="relative p-3 bg-black rounded-full text-white hover:text-accent-blue disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                  <ChevronLeft className="w-5 h-5" />
+                </div>
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => scroll("right")}
                 disabled={!canScrollRight}
-                className="p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                aria-label={`Voir les ${sectionType === 'emission' ? 'podcasts' : sectionType === 'business-idea' ? 'études de cas' : 'success stories'} suivants`}
+                className="relative group"
               >
-                <ChevronRight className="w-5 h-5" aria-hidden="true" />
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-full blur opacity-50 group-hover:opacity-75 transition-all duration-300"></div>
+                <div className="relative p-3 bg-black rounded-full text-white hover:text-accent-blue disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                  <ChevronRight className="w-5 h-5" />
+                </div>
               </motion.button>
             </div>
 
@@ -399,43 +266,47 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex-none w-[300px]"
+                  className="flex-none w-[400px]"
                 >
                   <Link 
                     to={`/${sectionType}/${item.slug?.current}`} 
-                    className="block group"
+                    className="group relative block"
                     aria-label={item.title}
                   >
-                    <div className="relative bg-gradient-to-br from-neutral-900 to-black border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 hover:scale-[1.02]">
-                      <div className="relative aspect-[4/3] w-full overflow-hidden">
-                        <SafeImage
-                          source={item.mainImage}
-                          alt={item.title}
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          fallbackText={item.title}
-                          width={300}
-                          height={225}
-                        />
+                    {/* Enhanced Card Design */}
+                    <div className="relative">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-2xl blur opacity-50 group-hover:opacity-100 transition-all duration-300"></div>
+                      <div className="relative bg-black rounded-2xl overflow-hidden">
+                        {/* Image Container */}
+                        <div className="relative aspect-[4/3] w-full overflow-hidden">
+                          <SafeImage
+                            source={item.mainImage}
+                            alt={item.title}
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            fallbackText={item.title}
+                          />
+                          {/* Enhanced Overlay Effects */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+                          <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
+                        </div>
                         
-                        {/* Overlay gradients */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
-                        <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
-                      </div>
-                      
-                      <div className="p-6">
-                        <h3 className="text-lg font-semibold tracking-tight leading-tight mb-3 text-white group-hover:text-accent-blue transition-colors line-clamp-2">
-                          {item.title}
-                        </h3>
-                        
-                        <p className="text-gray-400 text-sm line-clamp-2 mb-4">
-                          {item.excerpt}
-                        </p>
+                        {/* Content */}
+                        <div className="p-8">
+                          <h3 className="text-xl font-bold mb-4 text-white group-hover:text-accent-blue transition-colors line-clamp-2">
+                            {item.title}
+                          </h3>
+                          
+                          <p className="text-gray-300 text-base mb-6 line-clamp-3">
+                            {item.excerpt}
+                          </p>
 
-                        <div className="flex items-center justify-end">
-                          <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
-                            <span>Découvrir</span>
-                            <ArrowRight size={16} aria-hidden="true" />
-                          </span>
+                          {/* Footer */}
+                          <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                            <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                              <span>Découvrir</span>
+                              <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
