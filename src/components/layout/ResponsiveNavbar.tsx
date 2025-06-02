@@ -20,8 +20,7 @@ export const ResponsiveNavbar = () => {
       path: '/club', 
       slug: 'club',
       badge: 'Bientôt disponible'
-    },
-    { label: 'Coaching', path: '/coaching', slug: 'coaching' }
+    }
   ];
 
   const handleLogoClick = () => {
@@ -99,42 +98,21 @@ export const ResponsiveNavbar = () => {
             </div>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex items-center space-x-4">
-            {/* Coaching Button */}
-            <motion.div 
-              whileHover={{ scale: 1.03 }} 
-              whileTap={{ scale: 0.97 }}
-              className="relative"
+          {/* CTA Button */}
+          <motion.div 
+            whileHover={{ scale: 1.03 }} 
+            whileTap={{ scale: 0.97 }}
+            className="relative group"
+          >
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
+            <Link
+              to="/create-with-roger"
+              className="relative flex items-center gap-2 bg-black px-6 py-3 rounded-lg text-white group-hover:text-white/90 transition-colors"
             >
-              <Link
-                to="/coaching"
-                className={`relative inline-flex items-center justify-center overflow-hidden rounded-lg px-6 py-3 text-sm font-medium transition-all duration-300 ${
-                  location.pathname === "/coaching" 
-                  ? "bg-accent-blue text-white"
-                  : "bg-white/10 hover:bg-accent-blue/20 text-white hover:text-accent-blue"
-                }`}
-              >
-                <span className="relative z-10">Coaching</span>
-              </Link>
-            </motion.div>
-            
-            {/* Votre Histoire Button */}
-            <motion.div 
-              whileHover={{ scale: 1.03 }} 
-              whileTap={{ scale: 0.97 }}
-              className="relative group"
-            >
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
-              <Link
-                to="/create-with-roger"
-                className="relative flex items-center gap-2 bg-black px-6 py-3 rounded-lg text-white group-hover:text-white/90 transition-colors"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Votre histoire</span>
-              </Link>
-            </motion.div>
-          </div>
+              <Sparkles className="w-4 h-4" />
+              <span>Votre histoire</span>
+            </Link>
+          </motion.div>
         </div>
 
         {/* Mobile Menu Button */}
@@ -183,22 +161,13 @@ export const ResponsiveNavbar = () => {
                 );
               })}
 
-              <div className="pt-4 space-y-4">
-                <Link
-                  to="/coaching"
-                  className="block w-full px-4 py-3 text-center bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Coaching
-                </Link>
-                <Link
-                  to="/create-with-roger"
-                  className="block w-full px-4 py-3 text-center bg-accent-blue hover:bg-accent-blue/90 text-white rounded-lg transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Votre histoire
-                </Link>
-              </div>
+              <Link
+                to="/create-with-roger"
+                className="block w-full px-4 py-3 text-center bg-accent-blue hover:bg-accent-blue/90 text-white rounded-lg transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Votre histoire
+              </Link>
             </div>
           </motion.div>
         )}
