@@ -25,17 +25,6 @@ export const ResponsiveNavbar = () => {
   };
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (isOpen && !target.closest('#mobile-menu') && !target.closest('#menu-button')) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [isOpen]);
-
-  useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
 
@@ -112,7 +101,6 @@ export const ResponsiveNavbar = () => {
                 }`}
               >
                 <span className="relative z-10">Coaching</span>
-                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-accent-blue/0 via-accent-blue/0 to-accent-blue/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               </Link>
             </motion.div>
             
@@ -135,32 +123,24 @@ export const ResponsiveNavbar = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="lg:hidden flex items-center">
-          <button
-            id="menu-button"
-            className="p-2 rounded-full text-white hover:bg-white/10 transition-colors"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-expanded={isOpen}
-            aria-controls="mobile-menu"
-            aria-label="Menu principal"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="lg:hidden p-2 text-white"
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
 
       {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            id="mobile-menu"
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "100vh" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="lg:hidden fixed inset-x-0 top-20 bottom-0 bg-black/95 backdrop-blur-xl border-t border-white/10 z-40 overflow-y-auto pb-6"
+            className="lg:hidden fixed inset-x-0 top-20 bg-black"
           >
-            <div className="px-4 pt-6 pb-4 space-y-4">
+            <div className="px-4 py-6 space-y-4">
               {menuItems.map((item) => {
                 const isActive = location.pathname === item.path || 
                                 location.pathname.startsWith(`/rubrique/${item.slug}`);
@@ -180,29 +160,21 @@ export const ResponsiveNavbar = () => {
                   </Link>
                 );
               })}
-            </div>
 
-            <div className="px-4 space-y-4 pt-4 border-t border-white/10">
-              <Link
-                to="/coaching"
-                className={`flex items-center justify-center gap-2 w-full px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                  location.pathname === '/coaching' 
-                  ? 'bg-accent-blue text-white'
-                  : 'bg-white/10 hover:bg-white/20 text-white'
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                Coaching
-              </Link>
-              <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
+              <div className="pt-4 space-y-4">
                 <Link
-                  to="/create-with-roger"
-                  className="relative flex items-center justify-center gap-2 bg-black w-full px-6 py-3 rounded-lg font-medium text-white group-hover:text-white/90 transition-colors"
+                  to="/coaching"
+                  className="block w-full px-4 py-3 text-center bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
-                  <Sparkles className="w-5 h-5" />
-                  <span>Votre histoire</span>
+                  Coaching
+                </Link>
+                <Link
+                  to="/create-with-roger"
+                  className="block w-full px-4 py-3 text-center bg-accent-blue hover:bg-accent-blue/90 text-white rounded-lg transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Votre histoire
                 </Link>
               </div>
             </div>

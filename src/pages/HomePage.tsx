@@ -3,11 +3,10 @@ import { SEO } from '../components/common/SEO';
 import { staticSEO } from '../utils/seo.config';
 import { HeroSection } from '../components/sections/HeroSection';
 import { AmuseBoucheSection } from '../components/sections/AmuseBoucheSection';
-import { HomeArticlesSection } from '../components/sections/HomeArticlesSection';
 import { EditorialSection } from '../components/sections/EditorialSection';
-import { DebateSection } from '../components/sections/DebateSection';
 import ContentSection from '../components/sections/ContentSection';
 import { ClubSection } from '../components/sections/ClubSection';
+import { ExploreArticlesCTA } from '../components/sections/ExploreArticlesCTA';
 import SimpleFooter from '../components/layout/SimpleFooter';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { getAllArticles } from '../utils/sanityAPI';
@@ -125,19 +124,8 @@ export const HomePage = () => {
         {/* Sections de contenu */}
         <HeroSection />
         <AmuseBoucheSection />
-        
-        {isLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <LoadingSpinner />
-          </div>
-        ) : (
-          <HomeArticlesSection 
-            articles={articles} 
-            title={dataSource === 'sanity' ? "Articles récents" : "Articles récents (démo)"}
-          />
-        )}
-        
         <EditorialSection />
+        <ExploreArticlesCTA />
         <ClubSection />
         <ContentSection 
           title="Le podcast High Value"
@@ -154,7 +142,6 @@ export const HomePage = () => {
           description="Parcours inspirants d'entrepreneurs qui ont réussi à concrétiser leur vision"
           sectionType="success-story"
         />
-        <DebateSection />
         
         {/* Espace supplémentaire pour garantir que le footer est visible */}
         <div className="h-16"></div>

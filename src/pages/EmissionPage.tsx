@@ -1,8 +1,8 @@
 import React from 'react';
 import { ArticlePage } from './ArticlePage';
 
-export const BusinessIdeaPage = () => {
+export const EmissionPage = () => {
   return <ArticlePage />;
 };
 
-export default BusinessIdeaPage;
+export default EmissionPage;

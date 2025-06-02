@@ -10,6 +10,7 @@ import { ArticlePage } from './pages/ArticlePage';
 import { CategoryPage } from './pages/CategoryPage';
 import { PodcastPage } from './pages/PodcastPage';
 import { EmissionsPage } from './pages/EmissionsPage';
+import { EmissionPage } from './pages/EmissionPage';
 import { CreateWithRogerPage } from './pages/CreateWithRogerPage';
 import { AboutPage } from './pages/AboutPage';
 import { AllArticlesPage } from './pages/AllArticlesPage';
@@ -17,6 +18,7 @@ import { RecommendationsPage } from './pages/RecommendationsPage';
 import { CoachingPage } from './pages/CoachingPage';
 import { BusinessIdeasPage } from './pages/BusinessIdeasPage';
 import { BusinessIdeaPage } from './pages/BusinessIdeaPage';
+import { SuccessStoryPage } from './pages/SuccessStoryPage';
 import { NotFound } from './pages/NotFound';
 
 function App() {
@@ -42,6 +44,8 @@ function App() {
                 <Route path="/article/:slug" element={<ArticlePage />} />
                 <Route path="/business-ideas" element={<BusinessIdeasPage />} />
                 <Route path="/business-idea/:slug" element={<BusinessIdeaPage />} />
+                <Route path="/success-story/:slug" element={<SuccessStoryPage />} />
+                <Route path="/emission/:slug" element={<EmissionPage />} />
                 <Route path="/rubrique/:categorySlug" element={<CategoryPage />} />
                 <Route path="/podcasts" element={<PodcastPage />} />
                 <Route path="/emissions" element={<EmissionsPage />} />
