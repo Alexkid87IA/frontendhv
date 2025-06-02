@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Calendar, Clock, User, Quote } from 'lucide-react';
+import { ArrowRight, Quote, Calendar, Clock, User } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
 import { getAllArticles, getLatestQuote } from '../../utils/sanityAPI';
@@ -42,7 +42,7 @@ const mockRecentArticles: SanityArticle[] = [
         _type: "reference"
       }
     },
-    excerpt: "Comment transformer les obstacles en opportunités",
+    excerpt: "Découvrez comment transformer les obstacles en opportunités",
     publishedAt: "2024-03-19",
   },
   {
@@ -261,21 +261,9 @@ export const HeroSection = () => {
               className="relative h-full"
             >
               <div className="absolute -inset-0.5 bg-gradient-to-br from-accent-violet via-accent-fuchsia to-accent-cyan rounded-2xl blur opacity-50"></div>
-              <div className="relative h-full bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-12 flex flex-col justify-center overflow-hidden">
-                {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-accent-violet/20 to-accent-fuchsia/20 rounded-full blur-3xl transform translate-x-16 -translate-y-16"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-br from-accent-cyan/20 to-accent-blue/20 rounded-full blur-3xl transform -translate-x-16 translate-y-16"></div>
-                
-                {/* Quote icon with gradient */}
-                <div className="relative mb-8">
-                  <div className="absolute -inset-2 bg-gradient-to-br from-accent-violet to-accent-fuchsia rounded-full blur opacity-50"></div>
-                  <div className="relative w-16 h-16 bg-black rounded-full flex items-center justify-center">
-                    <Quote size={32} className="text-accent-violet transform -translate-y-1" />
-                  </div>
-                </div>
-
-                {/* Quote text with gradient */}
-                <blockquote className="relative mb-8 z-10">
+              <div className="relative h-full bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-12 flex flex-col justify-center">
+                <Quote size={64} className="text-accent-violet/20 mb-8" />
+                <blockquote className="mb-8">
                   <p className="text-3xl font-playfair italic leading-relaxed mb-8 text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-gray-300">
                     "{quote.text}"
                   </p>
@@ -308,7 +296,7 @@ export const HeroSection = () => {
                 className="group"
               >
                 <Link to={`/article/${article.slug?.current}`} className="block h-full">
-                  <div className="relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 h-full flex flex-col">
+                  <div className="relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-blue/30 h-full">
                     <div className="relative aspect-video">
                       <SafeImage
                         source={article.mainImage}
@@ -320,7 +308,7 @@ export const HeroSection = () => {
                       <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
                     </div>
                     
-                    <div className="p-6 flex flex-col flex-grow">
+                    <div className="p-6">
                       <h3 className="text-xl font-bold mb-3 group-hover:text-accent-blue transition-colors line-clamp-2">
                         {article.title}
                       </h3>
