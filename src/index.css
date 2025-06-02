@@ -53,6 +53,12 @@ html {
   @apply bg-accent-blue;
 }
 
+/* Supprime seulement les bordures grises */
+[class*="border-gray"],
+[class*="divide-gray"] {
+  border-color: transparent !important;
+}
+
 /* Background Effects */
 .app-background {
   @apply fixed inset-0 bg-black;
