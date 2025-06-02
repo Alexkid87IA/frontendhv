@@ -119,7 +119,6 @@ export const EditorialSection = () => {
           setDataSource('cms');
           console.log("Univers éditoriaux chargés depuis Sanity CMS");
         } else {
-          // Fallback vers les données mockées si aucun résultat
           setUniverses(mockedUniverses);
           setDataSource('mock');
           console.log("Aucun univers trouvé dans Sanity, utilisation des données mockées");
@@ -128,7 +127,6 @@ export const EditorialSection = () => {
         console.error("Erreur lors du chargement des univers:", err);
         setError("Impossible de charger les univers éditoriaux");
         
-        // Fallback vers les données mockées en cas d'erreur
         setUniverses(mockedUniverses);
         setDataSource('mock');
         console.log("Erreur de chargement depuis Sanity, utilisation des données mockées");
@@ -171,88 +169,94 @@ export const EditorialSection = () => {
 
   return (
     <ErrorBoundary>
-      <section className="container py-12 md:py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-8 md:mb-12"
-        >
-          <span className="inline-block px-4 py-2 bg-accent-blue/20 text-accent-blue rounded-full text-sm font-medium mb-4 md:mb-6">
-            Univers éditoriaux
-          </span>
-          <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
-            Explorez nos univers
-          </h2>
-          <p className="text-base md:text-lg text-tertiary max-w-2xl mx-auto px-4 md:px-0">
-            Plongez dans nos thématiques phares et découvrez des contenus qui vous inspirent et vous transforment
-          </p>
-          {dataSource === 'mock' && (
-            <div className="mt-2 text-xs text-amber-500">
-              (Données de démonstration)
+      <section className="relative py-20 overflow-hidden">
+        {/* Enhanced Background Effects */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 backdrop-blur-sm" />
+        </div>
+
+        <div className="container relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-block relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-full blur opacity-75"></div>
+              <span className="relative inline-block px-6 py-3 bg-black rounded-full text-accent-blue font-medium">
+                Univers éditoriaux
+              </span>
             </div>
-          )}
-        </motion.div>
+            <h2 className="text-4xl md:text-5xl font-bold mt-6 mb-4">
+              Explorez nos univers
+              {dataSource === 'mock' && <span className="text-sm text-gray-400 ml-2">(démo)</span>}
+            </h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Plongez dans nos thématiques phares et découvrez des contenus qui vous inspirent et vous transforment
+            </p>
+          </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 px-4 md:px-0" role="list" aria-label="Univers éditoriaux">
-          {universes.map((universe, index) => (
-            <motion.div
-              key={universe._id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              role="listitem"
-            >
-              <Link 
-                to={`/rubrique/${universe.slug.current}`}
-                className="group relative block aspect-[3/2] md:aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden"
-                aria-label={`Univers ${universe.title}: ${universe.description}`}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8" role="list" aria-label="Univers éditoriaux">
+            {universes.map((universe, index) => (
+              <motion.div
+                key={universe._id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                role="listitem"
+                className="group relative"
               >
-                {/* Background Image */}
-                <div className="absolute inset-0">
-                  <SafeImage 
-                    source={universe.image}
-                    alt={universe.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    fallbackText={universe.title}
-                    width={600}
-                    height={338}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-transparent" />
-                  <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(universe.slug.current)} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
-                </div>
+                {/* Gradient Border Effect */}
+                <div className={`absolute -inset-0.5 bg-gradient-to-r ${getGradient(universe.slug.current)} rounded-2xl blur opacity-50 group-hover:opacity-100 transition-all duration-500`}></div>
+                
+                <Link 
+                  to={`/rubrique/${universe.slug.current}`}
+                  className="relative block bg-black rounded-2xl overflow-hidden"
+                  aria-label={`Univers ${universe.title}: ${universe.description}`}
+                >
+                  {/* Background Image with Enhanced Effects */}
+                  <div className="relative aspect-[16/9] w-full">
+                    <SafeImage 
+                      source={universe.image}
+                      alt={universe.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      fallbackText={universe.title}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(universe.slug.current)} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
+                  </div>
 
-                {/* Content */}
-                <div className="relative h-full p-4 md:p-8 flex flex-col">
-                  {/* Logo - Taille augmentée */}
-                  <div className="mb-auto">
-                    <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
-                      <h3 className="text-2xl md:text-3xl font-bold text-white">
+                  {/* Content Overlay */}
+                  <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end">
+                    {/* Universe Title with Hover Effect */}
+                    <div className="mb-6">
+                      <h3 className="text-3xl md:text-4xl font-bold mb-2 transform group-hover:translate-x-2 transition-transform">
                         {universe.title}
                       </h3>
+                      <p className="text-xl text-accent-blue transform group-hover:translate-x-2 transition-transform delay-75">
+                        {getSubtitle(universe.slug.current)}
+                      </p>
                     </div>
-                  </div>
 
-                  {/* Text Content */}
-                  <div>
-                    <h4 className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-500">
-                      {getSubtitle(universe.slug.current)}
-                    </h4>
-                    <p className="text-white/80 text-sm mb-3 md:mb-4 line-clamp-2 group-hover:text-white transition-colors">
+                    {/* Description with Hover Effect */}
+                    <p className="text-gray-300 text-lg max-w-xl transform group-hover:translate-x-2 transition-transform delay-100">
                       {universe.description}
                     </p>
-                    
-                    {/* Hover Effect Line */}
-                    <div className="h-0.5 w-0 bg-white transition-all duration-500 group-hover:w-full" aria-hidden="true" />
-                  </div>
-                </div>
 
-                {/* Touch Overlay for Mobile */}
-                <div className="absolute inset-0 bg-black/0 active:bg-black/10 md:hidden transition-colors" aria-hidden="true" />
-              </Link>
-            </motion.div>
-          ))}
+                    {/* Animated Line */}
+                    <div className="mt-6 h-0.5 w-12 bg-accent-blue transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform" />
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
     </ErrorBoundary>
