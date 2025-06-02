@@ -66,7 +66,7 @@ const mockArticles = [
     slug: { current: 'resilience-entrepreneuriale' },
     mainImage: {
       asset: {
-        _ref: 'image-2',
+        _ref: 'https://picsum.photos/400/300?random=2',
         url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
       }
     },

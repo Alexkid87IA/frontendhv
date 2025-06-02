@@ -8,7 +8,6 @@ import { getAllArticles, getLatestQuote } from '../../utils/sanityAPI';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { SanityArticle } from '../../types/sanity';
 
-// Données mockées pour fallback
 const mockFeaturedArticle: SanityArticle = {
   _id: '1',
   title: "Comment développer un mindset d'exception",
@@ -39,7 +38,7 @@ const mockRecentArticles: SanityArticle[] = [
     mainImage: {
       _type: "image",
       asset: {
-        _ref: 'image-2',
+        _ref: 'https://picsum.photos/400/300?random=2',
         _type: "reference"
       }
     },
@@ -53,7 +52,7 @@ const mockRecentArticles: SanityArticle[] = [
     mainImage: {
       _type: "image",
       asset: {
-        _ref: 'image-3',
+        _ref: 'https://picsum.photos/400/300?random=3',
         _type: "reference"
       }
     },
@@ -67,7 +66,7 @@ const mockRecentArticles: SanityArticle[] = [
     mainImage: {
       _type: "image",
       asset: {
-        _ref: 'image-4',
+        _ref: 'https://picsum.photos/400/300?random=4',
         _type: "reference"
       }
     },
@@ -81,7 +80,7 @@ const mockRecentArticles: SanityArticle[] = [
     mainImage: {
       _type: "image",
       asset: {
-        _ref: 'image-5',
+        _ref: 'https://picsum.photos/400/300?random=5',
         _type: "reference"
       }
     },
@@ -95,7 +94,7 @@ const mockRecentArticles: SanityArticle[] = [
     mainImage: {
       _type: "image",
       asset: {
-        _ref: 'image-6',
+        _ref: 'https://picsum.photos/400/300?random=6',
         _type: "reference"
       }
     },
@@ -109,7 +108,7 @@ const mockRecentArticles: SanityArticle[] = [
     mainImage: {
       _type: "image",
       asset: {
-        _ref: 'image-7',
+        _ref: 'https://picsum.photos/400/300?random=7',
         _type: "reference"
       }
     },
