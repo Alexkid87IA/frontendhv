@@ -53,37 +53,38 @@ html {
   @apply bg-accent-blue;
 }
 
-/* Force black background everywhere */
-* {
-  background-image: none !important;
+/* Background Effects */
+.app-background {
+  @apply fixed inset-0 bg-black;
 }
 
-section, main, div[class*="gradient"], div[class*="bg-gradient"], [class*="backdrop-blur"] {
-  background: transparent !important;
-  background-image: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+.app-background::before {
+  content: '';
+  @apply absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)];
 }
 
-.bg-black, [class*="bg-black"] {
-  background-color: #000000 !important;
+.app-background::after {
+  content: '';
+  @apply absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)];
 }
 
-/* Remove all borders between sections */
-section + section {
-  border-top: none !important;
+.app-background-overlay {
+  @apply absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(99,253,253,0.15),transparent_50%)];
 }
 
-[class*="border-t"], [class*="border-b"], [class*="divide-y"] {
-  border: none !important;
+.app-background-blur {
+  @apply absolute inset-0 backdrop-blur-[100px];
 }
 
-/* Force transparent or black backgrounds */
-[class*="bg-neutral"], [class*="bg-gray"], [class*="bg-white"] {
-  background-color: transparent !important;
+/* Gradient Backgrounds */
+.bg-gradient-accent {
+  @apply bg-gradient-to-r from-accent-blue to-accent-turquoise;
 }
 
-/* Override any radial or linear gradients */
-[style*="radial-gradient"], [style*="linear-gradient"] {
-  background: transparent !important;
+.bg-gradient-accent-diagonal {
+  @apply bg-gradient-to-br from-accent-blue to-accent-turquoise;
+}
+
+.bg-gradient-accent-radial {
+  background: radial-gradient(circle at center, rgba(0, 164, 249, 0.2), rgba(99, 253, 253, 0.1));
 }
