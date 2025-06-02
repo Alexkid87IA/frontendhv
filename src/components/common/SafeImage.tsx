@@ -9,6 +9,15 @@ interface SafeImageProps {
 }
 
 export default function SafeImage({ source, alt, className, width, height }: SafeImageProps) {
+  // AJOUTEZ CES LIGNES POUR DEBUG
+  console.log('SafeImage debug:', {
+    source,
+    alt,
+    hasAsset: source?.asset,
+    hasRef: source?.asset?._ref,
+    sourceType: typeof source
+  });
+
   // Si c'est déjà une URL, l'utiliser directement
   if (typeof source === 'string') {
     return <img src={source} alt={alt} className={className} />;
