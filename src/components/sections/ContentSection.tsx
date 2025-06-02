@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
 import { getContentItems } from '../../utils/sanityAPI';
-import { SanityPodcast, SanityCaseStudy, SanitySuccessStory } from '../../types/sanity';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 
 interface ContentSectionProps {
@@ -14,64 +13,14 @@ interface ContentSectionProps {
   sectionType: 'emission' | 'business-idea' | 'success-story';
 }
 
-type ContentItem = SanityPodcast | SanityCaseStudy | SanitySuccessStory;
-
-const mockItems = {
-  'emission': [
-    {
-      _id: '1',
-      title: "Comment développer un mindset d'exception",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'https://picsum.photos/400/300?random=1',
-          _type: "reference"
-        }
-      },
-      excerpt: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible.",
-      slug: { _type: "slug", current: 'mindset-exception' }
-    }
-  ],
-  'business-idea': [
-    {
-      _id: '6',
-      title: "Étude de cas : La transformation digitale de Carrefour",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'https://picsum.photos/400/300?random=6',
-          _type: "reference"
-        }
-      },
-      excerpt: "Comment le géant de la distribution a réinventé son modèle commercial face à Amazon.",
-      slug: { _type: "slug", current: 'transformation-digitale-carrefour' }
-    }
-  ],
-  'success-story': [
-    {
-      _id: '11',
-      title: "De l'échec à la réussite : l'histoire de Michel et Augustin",
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: 'https://picsum.photos/400/300?random=11',
-          _type: "reference"
-        }
-      },
-      excerpt: "Comment deux amis ont créé une marque alimentaire iconique après plusieurs échecs.",
-      slug: { _type: "slug", current: 'michel-augustin-success' }
-    }
-  ]
-};
-
 const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sectionType }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const [items, setItems] = useState<ContentItem[]>([]);
+  const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -86,17 +35,13 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
           setDataSource('cms');
           console.log(`Contenu ${sectionType} récupéré depuis Sanity CMS`);
         } else {
-          setItems(mockItems[sectionType] as ContentItem[]);
           setDataSource('mock');
-          console.log(`Aucun contenu trouvé dans Sanity pour ${sectionType}, utilisation des données mockées`);
+          console.log(`Aucun contenu trouvé dans Sanity pour ${sectionType}`);
         }
       } catch (err) {
         console.error(`Erreur lors de la récupération du contenu ${sectionType}:`, err);
         setError(`Impossible de charger le contenu ${sectionType}`);
-        
-        setItems(mockItems[sectionType] as ContentItem[]);
         setDataSource('mock');
-        console.log(`Erreur de chargement depuis Sanity pour ${sectionType}, utilisation des données mockées`);
       } finally {
         setIsLoading(false);
       }
@@ -136,29 +81,9 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
     }
   };
 
-  const getSectionLabel = (type: string) => {
-    switch (type) {
-      case 'emission':
-        return 'Le podcast High Value';
-      case 'business-idea':
-        return 'Des études de cas';
-      case 'success-story':
-        return 'Des parcours incroyables';
-      default:
-        return '';
-    }
-  };
-
   if (isLoading) {
     return (
       <section className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 backdrop-blur-sm" />
-        </div>
         <div className="container relative flex justify-center items-center">
           <LoadingSpinner />
         </div>
@@ -179,9 +104,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
     );
   }
 
-  if (!items.length) {
-    return null;
-  }
+  if (!items.length) return null;
 
   return (
     <ErrorBoundary>
@@ -202,18 +125,12 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            {/* Enhanced Badge */}
             <div className="inline-block relative mb-6">
               <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-full blur opacity-75"></div>
               <span className="relative inline-block px-6 py-3 bg-black rounded-full text-accent-blue font-medium">
-                {getSectionLabel(sectionType)}
+                {title}
               </span>
             </div>
-
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              {title}
-              {dataSource === 'mock' && <span className="text-sm text-gray-400 ml-2">(démo)</span>}
-            </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               {description}
             </p>
@@ -253,7 +170,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
               ref={scrollRef}
               className="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"
               role="region"
-              aria-label={`Carrousel de ${sectionType === 'emission' ? 'podcasts' : sectionType === 'business-idea' ? 'études de cas' : 'success stories'}`}
+              aria-label={`Carrousel de ${sectionType === 'emission' ? 'émissions' : sectionType === 'business-idea' ? 'études de cas' : 'success stories'}`}
             >
               {items.map((item, index) => (
                 <motion.div
@@ -266,43 +183,45 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
                 >
                   <Link 
                     to={`/${sectionType}/${item.slug?.current}`} 
-                    className="group relative block"
-                    aria-label={item.title}
+                    className="block group"
                   >
-                    {/* Enhanced Card Design */}
-                    <div className="relative">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-2xl blur opacity-50 group-hover:opacity-100 transition-all duration-300"></div>
-                      <div className="relative bg-black rounded-2xl overflow-hidden">
-                        {/* Image Container */}
-                        <div className="relative aspect-[4/3] w-full overflow-hidden">
-                          <SafeImage
-                            source={item.mainImage}
-                            alt={item.title}
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            fallbackText={item.title}
-                          />
-                          {/* Enhanced Overlay Effects */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
-                          <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
-                        </div>
+                    <div className="relative bg-black/20 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden transition-all duration-300 hover:border-accent-blue/30">
+                      {/* Image Container */}
+                      <div className="relative aspect-[16/9] overflow-hidden">
+                        <SafeImage
+                          source={item.mainImage}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          fallbackText={item.title}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold mb-3 group-hover:text-accent-blue transition-colors line-clamp-2">
+                          {item.title}
+                        </h3>
                         
-                        {/* Content */}
-                        <div className="p-8">
-                          <h3 className="text-xl font-bold mb-4 text-white group-hover:text-accent-blue transition-colors line-clamp-2">
-                            {item.title}
-                          </h3>
-                          
-                          <p className="text-gray-300 text-base mb-6 line-clamp-3">
-                            {item.excerpt}
-                          </p>
+                        <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                          {item.excerpt}
+                        </p>
 
-                          {/* Footer */}
-                          <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                            <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
-                              <span>Découvrir</span>
-                              <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
-                            </span>
-                          </div>
+                        {/* Footer */}
+                        <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                          <time className="text-sm text-gray-400" dateTime={item.publishedAt}>
+                            {new Date(item.publishedAt || '').toLocaleDateString('fr-FR', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </time>
+                          
+                          <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
+                            <span>Lire</span>
+                            <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
+                          </span>
                         </div>
                       </div>
                     </div>
