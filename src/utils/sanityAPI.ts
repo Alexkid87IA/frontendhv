@@ -106,13 +106,11 @@ export const getArticleBySlug = async (slug: string): Promise<SanityArticle | nu
 };
 
 // Récupérer les articles par catégorie
-// Remplacez la fonction getArticlesByCategory par celle-ci :
-
 export const getArticlesByCategory = async (categorySlug: string): Promise<SanityArticle[]> => {
   return getWithCache(`articles_category_${categorySlug}`, async () => {
     try {
       // D'abord, on trouve la catégorie pour avoir son _id
-      const categoryQuery = `*[_type == "categorie" && slug.current == $categorySlug][0]._id`;
+      const categoryQuery = `*[_type == "category" && slug.current == $categorySlug][0]._id`;
       const categoryId = await sanityClient.fetch(categoryQuery, { categorySlug });
       
       if (!categoryId) {
@@ -150,8 +148,7 @@ export const getArticlesByCategory = async (categorySlug: string): Promise<Sanit
 export const getCategoryBySlug = async (slug: string) => {
   return getWithCache(`category_${slug}`, async () => {
     try {
-      const query = `*[_type == "categorie" && slug.current == $slug][0] {
-
+      const query = `*[_type == "category" && slug.current == $slug][0] {
         _id,
         title,
         slug,
