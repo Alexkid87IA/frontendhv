@@ -218,7 +218,7 @@ export const ClubSection = () => {
                   <div className="relative bg-black/50 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
                     {isPromotion && (
                       <div className="flex items-center gap-2 mb-3">
-                        <Star className="text-accent-blue" size={20} aria-hidden="true" />
+                        <Star className="text-accent-blue\" size={20} aria-hidden="true" />
                         <span className="text-accent-blue font-medium">Offre de lancement limitée</span>
                       </div>
                     )}
