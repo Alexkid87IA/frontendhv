@@ -141,9 +141,14 @@ export const CategoryFilters = ({
                 )}
                 {selectedFilter !== 'all' && (
                   <div className="flex items-center gap-2 bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full text-sm">
-                    {filters.find(f => f.id === selectedFilter)?.icon && (
-                      <filters.find(f => f.id === selectedFilter)!.icon size={14} />
-                    )}
+                    {(() => {
+                      const selectedFilterData = filters.find(f => f.id === selectedFilter);
+                      if (selectedFilterData?.icon) {
+                        const IconComponent = selectedFilterData.icon;
+                        return <IconComponent size={14} />;
+                      }
+                      return null;
+                    })()}
                     <span>{filters.find(f => f.id === selectedFilter)?.name}</span>
                     <button
                       onClick={() => onFilterChange('all')}
