@@ -106,10 +106,22 @@ export const getArticleBySlug = async (slug: string): Promise<SanityArticle | nu
 };
 
 // Récupérer les articles par catégorie
+// Remplacez la fonction getArticlesByCategory par celle-ci :
+
 export const getArticlesByCategory = async (categorySlug: string): Promise<SanityArticle[]> => {
   return getWithCache(`articles_category_${categorySlug}`, async () => {
     try {
-      const query = `*[_type == "article" && $categorySlug in categories[]->slug.current] | order(publishedAt desc) {
+      // D'abord, on trouve la catégorie pour avoir son _id
+      const categoryQuery = `*[_type == "categorie" && slug.current == $categorySlug][0]._id`;
+      const categoryId = await sanityClient.fetch(categoryQuery, { categorySlug });
+      
+      if (!categoryId) {
+        console.log(`Catégorie non trouvée pour le slug: ${categorySlug}`);
+        return [];
+      }
+      
+      // Ensuite, on cherche les articles qui référencent cette catégorie
+      const query = `*[_type == "article" && references($categoryId)] | order(publishedAt desc) {
         _id,
         title,
         slug,
@@ -123,7 +135,10 @@ export const getArticlesByCategory = async (categorySlug: string): Promise<Sanit
         }
       }`;
       
-      return await sanityClient.fetch(query, { categorySlug });
+      const articles = await sanityClient.fetch(query, { categoryId });
+      console.log(`Articles trouvés pour ${categorySlug}: ${articles.length}`);
+      
+      return articles;
     } catch (error) {
       console.error(`Erreur lors de la récupération des articles de la catégorie ${categorySlug}:`, error);
       return [];
@@ -135,7 +150,8 @@ export const getArticlesByCategory = async (categorySlug: string): Promise<Sanit
 export const getCategoryBySlug = async (slug: string) => {
   return getWithCache(`category_${slug}`, async () => {
     try {
-      const query = `*[_type == "category" && slug.current == $slug][0] {
+      const query = `*[_type == "categorie" && slug.current == $slug][0] {
+
         _id,
         title,
         slug,
