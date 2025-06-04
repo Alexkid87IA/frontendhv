@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { SEO } from '../components/common/SEO';
-import { NewsletterForm } from '../components/common/NewsletterForm';
 import { ArticlesHeroSection } from '../components/sections/ArticlesHeroSection';
 import { ArticlesFilterSection } from '../components/sections/ArticlesFilterSection';
 import { ArticlesGridSection } from '../components/sections/ArticlesGridSection';
@@ -11,6 +10,7 @@ import { ArticlesContributorsSection } from '../components/sections/ArticlesCont
 import { ArticlesBookmarksSection } from '../components/sections/ArticlesBookmarksSection';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
+import { NewsletterFooterSection } from '../components/sections/NewsletterFooterSection';
 
 const mockArticles = [
   {
@@ -89,7 +89,7 @@ export const AllArticlesPage = () => {
           <div className="absolute inset-0 backdrop-blur-sm" />
         </div>
 
-        <div className="relative pb-20">
+        <div className="relative">
           {/* Hero Section */}
           <ArticlesHeroSection />
           
@@ -142,10 +142,8 @@ export const AllArticlesPage = () => {
             </div>
           )}
 
-          {/* Newsletter Section */}
-          <section className="container mt-20">
-            <NewsletterForm />
-          </section>
+          {/* Newsletter Footer Section */}
+          <NewsletterFooterSection />
         </div>
       </div>
     </>
