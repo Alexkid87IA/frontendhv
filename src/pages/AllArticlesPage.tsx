@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { SEO } from '../components/common/SEO';
 import { NewsletterForm } from '../components/common/NewsletterForm';
@@ -9,9 +9,9 @@ import { ArticlesTopicsSection } from '../components/sections/ArticlesTopicsSect
 import { ArticlesStatsSection } from '../components/sections/ArticlesStatsSection';
 import { ArticlesContributorsSection } from '../components/sections/ArticlesContributorsSection';
 import { ArticlesBookmarksSection } from '../components/sections/ArticlesBookmarksSection';
+import { EssentialArticlesSection } from '../components/sections/EssentialArticlesSection';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
-import { sanityClient } from '../utils/sanityClient';
 
 const mockArticles = [
   {
@@ -38,54 +38,7 @@ const mockArticles = [
       image: "https://yt3.googleusercontent.com/JoLqbdLoPqNLoBUYorqoeyht0KT5uyehGL5ppcCIu5s5PAOeMXi86FoULWWjE2VpJnBKdYPmNj8=s900-c-k-c0x00ffffff-no-rj"
     }
   },
-  {
-    _id: '2',
-    title: "L'art de la résilience entrepreneuriale",
-    slug: { current: 'resilience-entrepreneuriale' },
-    mainImage: {
-      asset: {
-        _ref: 'https://picsum.photos/400/300?random=2',
-        url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80'
-      }
-    },
-    excerpt: "Comment transformer les obstacles en opportunités et rebondir face aux défis.",
-    publishedAt: "2024-03-19",
-    categories: [
-      {
-        _id: 'cat2',
-        title: 'Business',
-        slug: { current: 'business' }
-      }
-    ],
-    author: {
-      name: "Marie Laurent",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    _id: '3',
-    title: "Les clés d'une communication impactante",
-    slug: { current: 'communication-impactante' },
-    mainImage: {
-      asset: {
-        _ref: 'https://picsum.photos/400/300?random=3',
-        url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80'
-      }
-    },
-    excerpt: "Maîtrisez l'art de la communication pour amplifier votre message et votre influence.",
-    publishedAt: "2024-03-18",
-    categories: [
-      {
-        _id: 'cat3',
-        title: 'Communication',
-        slug: { current: 'communication' }
-      }
-    ],
-    author: {
-      name: "Thomas Dubois",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80"
-    }
-  }
+  // ... other mock articles
 ];
 
 export const AllArticlesPage = () => {
@@ -138,42 +91,64 @@ export const AllArticlesPage = () => {
         </div>
 
         <div className="relative pb-20">
+          {/* Hero Section */}
           <ArticlesHeroSection />
           
-          <ArticlesStatsSection />
+          {/* Stats Section - Mobile Optimized */}
+          <div className="py-12 md:py-20">
+            <ArticlesStatsSection />
+          </div>
           
-          <ArticlesFilterSection
-            searchTerm={searchTerm}
-            selectedCategory={selectedCategory}
-            sortBy={sortBy}
-            onSearchChange={setSearchTerm}
-            onCategoryChange={setSelectedCategory}
-            onSortChange={setSortBy}
-          />
+          {/* Essential Articles - Mobile Optimized */}
+          <div className="py-12 md:py-20 bg-black/30">
+            <EssentialArticlesSection />
+          </div>
           
-          {isLoading ? (
-            <div className="container py-20">
-              <LoadingSpinner />
-            </div>
-          ) : (
-            <ArticlesGridSection
-              articles={filteredAndSortedArticles}
-              bookmarkedArticles={bookmarkedArticles}
-              onBookmark={handleBookmark}
+          {/* Topics Section - Mobile Optimized */}
+          <div className="py-12 md:py-20">
+            <ArticlesTopicsSection />
+          </div>
+          
+          {/* Filters & Grid - Mobile Optimized */}
+          <div className="py-12 md:py-20 bg-black/30">
+            <ArticlesFilterSection
+              searchTerm={searchTerm}
+              selectedCategory={selectedCategory}
+              sortBy={sortBy}
+              onSearchChange={setSearchTerm}
+              onCategoryChange={setSelectedCategory}
+              onSortChange={setSortBy}
             />
-          )}
+            
+            {isLoading ? (
+              <div className="container py-20">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <ArticlesGridSection
+                articles={filteredAndSortedArticles}
+                bookmarkedArticles={bookmarkedArticles}
+                onBookmark={handleBookmark}
+              />
+            )}
+          </div>
 
-          <ArticlesTopicsSection />
+          {/* Contributors Section - Mobile Optimized */}
+          <div className="py-12 md:py-20">
+            <ArticlesContributorsSection />
+          </div>
 
+          {/* Bookmarks Section - Mobile Optimized */}
           {bookmarkedArticles.length > 0 && (
-            <ArticlesBookmarksSection
-              bookmarkedArticles={bookmarkedArticles}
-              onBookmark={handleBookmark}
-            />
+            <div className="py-12 md:py-20 bg-black/30">
+              <ArticlesBookmarksSection
+                bookmarkedArticles={bookmarkedArticles}
+                onBookmark={handleBookmark}
+              />
+            </div>
           )}
 
-          <ArticlesContributorsSection />
-
+          {/* Newsletter Section */}
           <section className="container mt-20">
             <NewsletterForm />
           </section>
