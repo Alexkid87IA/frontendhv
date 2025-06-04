@@ -57,7 +57,7 @@ export const HomeArticlesSection: React.FC<HomeArticlesSectionProps> = ({
             </div>
             
             <Link 
-              to="/articles" 
+              to="/articles"
               className="group inline-flex items-center gap-2 text-accent-blue hover:text-accent-turquoise transition-colors"
             >
               <span>Voir tous les articles</span>
