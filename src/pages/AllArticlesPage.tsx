@@ -6,7 +6,6 @@ import { ArticlesFilterSection } from '../components/sections/ArticlesFilterSect
 import { ArticlesGridSection } from '../components/sections/ArticlesGridSection';
 import { ArticlesTopicsSection } from '../components/sections/ArticlesTopicsSection';
 import { ArticlesStatsSection } from '../components/sections/ArticlesStatsSection';
-import { ArticlesContributorsSection } from '../components/sections/ArticlesContributorsSection';
 import { ArticlesBookmarksSection } from '../components/sections/ArticlesBookmarksSection';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
@@ -125,11 +124,6 @@ export const AllArticlesPage = () => {
           {/* Stats Section */}
           <div className="py-12 md:py-20">
             <ArticlesStatsSection />
-          </div>
-
-          {/* Contributors Section */}
-          <div className="py-12 md:py-20 bg-black/30">
-            <ArticlesContributorsSection />
           </div>
 
           {/* Bookmarks Section - Only shown if there are bookmarks */}
