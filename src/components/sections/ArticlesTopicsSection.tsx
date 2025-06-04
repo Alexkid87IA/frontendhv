@@ -22,7 +22,7 @@ const topics = [
     icon: Palette,
     name: 'Culture',
     description: 'Art et société',
-    color: 'from-pink-500/20 to-pink-900/20',
+    color: 'from-emerald-500/20 to-emerald-900/20',
     count: 25
   },
   {
@@ -50,9 +50,9 @@ const topics = [
 
 export const ArticlesTopicsSection = () => {
   return (
-    <section className="container mb-20">
+    <section className="container">
       <h2 className="text-2xl font-bold mb-8">Explorer par thématique</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {topics.map((topic, index) => (
           <motion.div
             key={index}
@@ -68,17 +68,17 @@ export const ArticlesTopicsSection = () => {
               className="relative block bg-neutral-900/30 backdrop-blur-sm border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all duration-300"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-accent-violet rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-accent-blue rounded-xl flex items-center justify-center">
                   <topic.icon size={24} className="text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold group-hover:text-accent-fuchsia transition-colors">
+                  <h3 className="text-xl font-bold group-hover:text-accent-turquoise transition-colors">
                     {topic.name}
                   </h3>
                   <p className="text-sm text-tertiary">{topic.description}</p>
                 </div>
               </div>
-              <div className="mt-4 text-sm text-accent-violet">
+              <div className="mt-4 text-sm text-accent-blue">
                 {topic.count} articles
               </div>
             </Link>
@@ -88,3 +88,5 @@ export const ArticlesTopicsSection = () => {
     </section>
   );
 };
+
+export default ArticlesTopicsSection;
