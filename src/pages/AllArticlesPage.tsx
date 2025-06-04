@@ -9,7 +9,6 @@ import { ArticlesTopicsSection } from '../components/sections/ArticlesTopicsSect
 import { ArticlesStatsSection } from '../components/sections/ArticlesStatsSection';
 import { ArticlesContributorsSection } from '../components/sections/ArticlesContributorsSection';
 import { ArticlesBookmarksSection } from '../components/sections/ArticlesBookmarksSection';
-import { EssentialArticlesSection } from '../components/sections/EssentialArticlesSection';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 
@@ -38,7 +37,7 @@ const mockArticles = [
       image: "https://yt3.googleusercontent.com/JoLqbdLoPqNLoBUYorqoeyht0KT5uyehGL5ppcCIu5s5PAOeMXi86FoULWWjE2VpJnBKdYPmNj8=s900-c-k-c0x00ffffff-no-rj"
     }
   },
-  // ... other mock articles
+  // ... autres articles mockés
 ];
 
 export const AllArticlesPage = () => {
@@ -94,22 +93,12 @@ export const AllArticlesPage = () => {
           {/* Hero Section */}
           <ArticlesHeroSection />
           
-          {/* Stats Section - Mobile Optimized */}
-          <div className="py-12 md:py-20">
-            <ArticlesStatsSection />
-          </div>
-          
-          {/* Essential Articles - Mobile Optimized */}
-          <div className="py-12 md:py-20 bg-black/30">
-            <EssentialArticlesSection />
-          </div>
-          
-          {/* Topics Section - Mobile Optimized */}
+          {/* Topics Section - Directly after Hero */}
           <div className="py-12 md:py-20">
             <ArticlesTopicsSection />
           </div>
           
-          {/* Filters & Grid - Mobile Optimized */}
+          {/* Filters & Grid */}
           <div className="py-12 md:py-20 bg-black/30">
             <ArticlesFilterSection
               searchTerm={searchTerm}
@@ -133,14 +122,19 @@ export const AllArticlesPage = () => {
             )}
           </div>
 
-          {/* Contributors Section - Mobile Optimized */}
+          {/* Stats Section */}
           <div className="py-12 md:py-20">
+            <ArticlesStatsSection />
+          </div>
+
+          {/* Contributors Section */}
+          <div className="py-12 md:py-20 bg-black/30">
             <ArticlesContributorsSection />
           </div>
 
-          {/* Bookmarks Section - Mobile Optimized */}
+          {/* Bookmarks Section - Only shown if there are bookmarks */}
           {bookmarkedArticles.length > 0 && (
-            <div className="py-12 md:py-20 bg-black/30">
+            <div className="py-12 md:py-20">
               <ArticlesBookmarksSection
                 bookmarkedArticles={bookmarkedArticles}
                 onBookmark={handleBookmark}
