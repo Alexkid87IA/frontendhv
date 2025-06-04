@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ArticleCard } from "../common/ArticleCard";
-import { urlFor } from "../../utils/sanityClient"; // Fixed import path
+import SafeImage from "../common/SafeImage";
 
 interface SanityArticle {
   slug: string;
@@ -39,23 +39,16 @@ export const ArticlesGridSection = ({
       className="container"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {articles.map((article) => {
-          const imageUrl = article.mainImage 
-            ? urlFor(article.mainImage).width(400).height(300).fit("crop").url() 
-            : "https://via.placeholder.com/400x300?text=Image+Indisponible";
-
-          return (
-            <ArticleCard
-              key={article.slug}
-              slug={article.slug}
-              source={imageUrl}
-              title={article.title}
-              tag={article.tag || "Non défini"}
-              summary={article.summary || ""}
-            />
-          );
-        })}
+        {articles.map((article) => (
+          <ArticleCard
+            key={article.slug}
+            article={article}
+            variant="default"
+          />
+        ))}
       </div>
     </motion.section>
   );
 };
+
+export default ArticlesGridSection;
