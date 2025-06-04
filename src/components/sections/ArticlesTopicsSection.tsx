@@ -1,58 +1,48 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Rocket, Palette, Users, Target, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Brain, Rocket, Globe, BookOpen } from 'lucide-react';
 
 const topics = [
   {
-    icon: Brain,
-    name: 'Mindset',
-    description: 'Développement personnel et psychologie',
-    color: 'from-purple-500/20 to-purple-900/20',
-    count: 42
+    icon: BookOpen,
+    name: 'Story',
+    description: 'Des histoires authentiques qui redéfinissent le possible',
+    color: 'from-amber-500/20 to-orange-500/20',
+    count: 42,
+    slug: 'story'
   },
   {
     icon: Rocket,
-    name: 'Innovation',
-    description: 'Technologies et disruption',
-    color: 'from-blue-500/20 to-blue-900/20',
-    count: 38
-  },
-  {
-    icon: Palette,
-    name: 'Culture',
-    description: 'Art et société',
-    color: 'from-emerald-500/20 to-emerald-900/20',
-    count: 25
-  },
-  {
-    icon: Users,
-    name: 'Leadership',
-    description: 'Management et équipes',
-    color: 'from-green-500/20 to-green-900/20',
-    count: 31
-  },
-  {
-    icon: Target,
     name: 'Business',
-    description: 'Stratégie et entrepreneuriat',
-    color: 'from-orange-500/20 to-orange-900/20',
-    count: 45
+    description: 'Les stratégies qui font la différence',
+    color: 'from-blue-500/20 to-cyan-500/20',
+    count: 38,
+    slug: 'business'
+  },
+  {
+    icon: Brain,
+    name: 'Mental',
+    description: 'Développe une psychologie de champion',
+    color: 'from-purple-500/20 to-violet-500/20',
+    count: 31,
+    slug: 'mental'
   },
   {
     icon: Globe,
-    name: 'Société',
-    description: 'Tendances et mutations',
-    color: 'from-cyan-500/20 to-cyan-900/20',
-    count: 28
+    name: 'Society',
+    description: 'Comprendre les mutations de notre époque',
+    color: 'from-emerald-500/20 to-teal-500/20',
+    count: 28,
+    slug: 'society'
   }
 ];
 
 export const ArticlesTopicsSection = () => {
   return (
     <section className="container">
-      <h2 className="text-2xl font-bold mb-8">Explorer par thématique</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      <h2 className="text-2xl font-bold mb-8">Thématiques</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
         {topics.map((topic, index) => (
           <motion.div
             key={index}
@@ -64,7 +54,7 @@ export const ArticlesTopicsSection = () => {
           >
             <div className={`absolute inset-0 bg-gradient-to-br ${topic.color} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
             <Link
-              to={`/articles?topic=${topic.name.toLowerCase()}`}
+              to={`/rubrique/${topic.slug}`}
               className="relative block bg-neutral-900/30 backdrop-blur-sm border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all duration-300"
             >
               <div className="flex items-center gap-4">
