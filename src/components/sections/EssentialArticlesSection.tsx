@@ -63,8 +63,15 @@ export const EssentialArticlesSection = () => {
           }`;
           
           const fallbackArticles = await sanityClient.fetch(fallbackQuery);
-          setEssentialArticles(fallbackArticles);
-          console.log('Articles de fallback récupérés:', fallbackArticles.length);
+          
+          // Mapper categories vers category pour uniformiser
+          const mappedArticles = fallbackArticles.map((article: any) => ({
+            ...article,
+            category: article.categories
+          }));
+          
+          setEssentialArticles(mappedArticles);
+          console.log('Articles de fallback récupérés:', mappedArticles.length);
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des articles essentiels:', error);
@@ -123,7 +130,7 @@ export const EssentialArticlesSection = () => {
               viewport={{ once: true }}
               className="lg:row-span-2 group"
             >
-              <Link to={`/article/${essentialArticles[0].slug.current}`} className="block h-full">
+              <Link to={`/article/${essentialArticles[0].slug?.current || essentialArticles[0].slug}`} className="block h-full">
                 <div className="relative h-full bg-black/20 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
                   <div className="relative aspect-[3/4] lg:aspect-auto lg:h-full">
                     <SafeImage
@@ -174,7 +181,7 @@ export const EssentialArticlesSection = () => {
                 transition={{ delay: index * 0.1 }}
                 className="group"
               >
-                <Link to={`/article/${article.slug.current}`} className="block">
+                <Link to={`/article/${article.slug?.current || article.slug}`} className="block">
                   <div className="relative bg-black/20 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
                     <div className="flex items-center">
                       <div className="w-1/3">
