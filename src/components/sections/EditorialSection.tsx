@@ -90,16 +90,6 @@ const universeGradients: Record<string, string> = {
   "default": "from-accent-blue to-accent-turquoise"
 };
 
-// Mapping des sous-titres pour les univers
-const universeSubtitles: Record<string, string> = {
-  "story": "Pour t'inspirer",
-  "recits": "Pour t'inspirer",
-  "business": "Pour faire du chiffre",
-  "mental": "Pour ta tête",
-  "society": "Pour ta culture",
-  "default": "Pour t'enrichir"
-};
-
 export const EditorialSection = () => {
   const [universes, setUniverses] = useState<SanityUniverse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -137,16 +127,6 @@ export const EditorialSection = () => {
     
     fetchUniverses();
   }, []);
-
-  // Fonction pour obtenir le gradient approprié pour un univers
-  const getGradient = (slug: string): string => {
-    return universeGradients[slug] || universeGradients.default;
-  };
-
-  // Fonction pour obtenir le sous-titre approprié pour un univers
-  const getSubtitle = (slug: string): string => {
-    return universeSubtitles[slug] || universeSubtitles.default;
-  };
 
   if (isLoading) {
     return (
@@ -212,29 +192,26 @@ export const EditorialSection = () => {
                 role="listitem"
                 className="group relative"
               >
-                {/* Gradient Border Effect */}
-                <div className={`absolute -inset-0.5 bg-gradient-to-r ${getGradient(universe.slug.current)} rounded-2xl blur opacity-50 group-hover:opacity-100 transition-all duration-500`}></div>
-                
                 <Link 
                   to={`/rubrique/${universe.slug.current}`}
-                  className="relative block bg-black rounded-2xl overflow-hidden"
-                  aria-label={`Univers ${universe.title}: ${universe.description}`}
+                  className="relative block h-full"
                 >
-                  {/* Background Image with Enhanced Effects */}
-                  <div className="relative aspect-[16/9] w-full">
-                    <SafeImage 
-                      source={universe.image}
-                      alt={universe.title}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      fallbackText={universe.title}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
-                    <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(universe.slug.current)} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
+                  {/* Animated Gradient Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-black to-neutral-900 rounded-2xl overflow-hidden">
+                    <div className={`absolute inset-0 bg-gradient-to-r ${getGradient(universe.slug.current)} opacity-20 group-hover:opacity-30 transition-opacity duration-500`} />
+                    <div className="absolute inset-0 animate-gradient-xy bg-[length:400%_400%]" style={{
+                      backgroundImage: `linear-gradient(45deg, 
+                        rgba(0,0,0,0) 0%,
+                        rgba(255,255,255,0.05) 25%,
+                        rgba(255,255,255,0.1) 50%,
+                        rgba(255,255,255,0.05) 75%,
+                        rgba(0,0,0,0) 100%
+                      )`
+                    }} />
                   </div>
 
-                  {/* Content Overlay */}
-                  <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end">
+                  {/* Content */}
+                  <div className="relative p-8 md:p-10 h-full flex flex-col justify-end">
                     {/* Universe Title with Hover Effect */}
                     <div className="mb-6">
                       <h3 className="text-3xl md:text-4xl font-bold mb-2 transform group-hover:translate-x-2 transition-transform">
