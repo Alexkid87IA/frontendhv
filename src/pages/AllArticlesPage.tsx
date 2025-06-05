@@ -9,6 +9,7 @@ import { ArticlesStatsSection } from '../components/sections/ArticlesStatsSectio
 import { ArticlesBookmarksSection } from '../components/sections/ArticlesBookmarksSection';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
+<<<<<<< Updated upstream
 import { NewsletterFooterSection } from '../components/sections/NewsletterFooterSection';
 
 const mockArticles = [
@@ -38,14 +39,45 @@ const mockArticles = [
   },
   // ... autres articles mockés
 ];
+=======
+import { getAllArticles } from '../utils/sanityAPI';
+import { SanityArticle } from '../types/sanity';
+>>>>>>> Stashed changes
 
 export const AllArticlesPage = () => {
-  const [articles, setArticles] = useState(mockArticles);
-  const [isLoading, setIsLoading] = useState(false);
+  const [articles, setArticles] = useState<SanityArticle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('date');
   const [bookmarkedArticles, setBookmarkedArticles] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        const sanityArticles = await getAllArticles();
+        
+        if (sanityArticles && sanityArticles.length > 0) {
+          setArticles(sanityArticles);
+          console.log(`${sanityArticles.length} articles récupérés depuis Sanity`);
+        } else {
+          setArticles([]);
+          console.log('Aucun article trouvé dans Sanity');
+        }
+      } catch (err) {
+        setError('Une erreur est survenue lors du chargement des articles.');
+        console.error('Erreur lors de la récupération des articles:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
 
   const handleBookmark = (slug: string) => {
     setBookmarkedArticles(prev => 
@@ -70,6 +102,14 @@ export const AllArticlesPage = () => {
       }
       return 0;
     });
+
+  if (error) {
+    return (
+      <div className="container py-20">
+        <ErrorMessage message={error} />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -97,6 +137,7 @@ export const AllArticlesPage = () => {
             <ArticlesTopicsSection />
           </div>
           
+<<<<<<< Updated upstream
           {/* Filters & Grid */}
           <div className="py-12 md:py-20 bg-black/30">
             <ArticlesFilterSection
@@ -120,6 +161,36 @@ export const AllArticlesPage = () => {
               />
             )}
           </div>
+=======
+          <ArticlesFilterSection
+            searchTerm={searchTerm}
+            selectedCategory={selectedCategory}
+            sortBy={sortBy}
+            onSearchChange={setSearchTerm}
+            onCategoryChange={setSelectedCategory}
+            onSortChange={setSortBy}
+          />
+          
+          {isLoading ? (
+            <div className="container py-20">
+              <LoadingSpinner />
+            </div>
+          ) : filteredAndSortedArticles.length > 0 ? (
+            <ArticlesGridSection
+              articles={filteredAndSortedArticles}
+              bookmarkedArticles={bookmarkedArticles}
+              onBookmark={handleBookmark}
+            />
+          ) : (
+            <div className="container py-20">
+              <p className="text-center text-gray-400 text-lg">
+                {searchTerm || selectedCategory !== 'all' 
+                  ? "Aucun article ne correspond à vos critères de recherche."
+                  : "Aucun article disponible pour le moment."}
+              </p>
+            </div>
+          )}
+>>>>>>> Stashed changes
 
           {/* Stats Section */}
           <div className="py-12 md:py-20">
