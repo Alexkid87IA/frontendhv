@@ -9,7 +9,6 @@ import { ArticlesStatsSection } from '../components/sections/ArticlesStatsSectio
 import { ArticlesBookmarksSection } from '../components/sections/ArticlesBookmarksSection';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
-<<<<<<< Updated upstream
 import { NewsletterFooterSection } from '../components/sections/NewsletterFooterSection';
 
 const mockArticles = [
@@ -39,10 +38,6 @@ const mockArticles = [
   },
   // ... autres articles mockés
 ];
-=======
-import { getAllArticles } from '../utils/sanityAPI';
-import { SanityArticle } from '../types/sanity';
->>>>>>> Stashed changes
 
 export const AllArticlesPage = () => {
   const [articles, setArticles] = useState<SanityArticle[]>([]);
@@ -137,7 +132,6 @@ export const AllArticlesPage = () => {
             <ArticlesTopicsSection />
           </div>
           
-<<<<<<< Updated upstream
           {/* Filters & Grid */}
           <div className="py-12 md:py-20 bg-black/30">
             <ArticlesFilterSection
@@ -161,36 +155,6 @@ export const AllArticlesPage = () => {
               />
             )}
           </div>
-=======
-          <ArticlesFilterSection
-            searchTerm={searchTerm}
-            selectedCategory={selectedCategory}
-            sortBy={sortBy}
-            onSearchChange={setSearchTerm}
-            onCategoryChange={setSelectedCategory}
-            onSortChange={setSortBy}
-          />
-          
-          {isLoading ? (
-            <div className="container py-20">
-              <LoadingSpinner />
-            </div>
-          ) : filteredAndSortedArticles.length > 0 ? (
-            <ArticlesGridSection
-              articles={filteredAndSortedArticles}
-              bookmarkedArticles={bookmarkedArticles}
-              onBookmark={handleBookmark}
-            />
-          ) : (
-            <div className="container py-20">
-              <p className="text-center text-gray-400 text-lg">
-                {searchTerm || selectedCategory !== 'all' 
-                  ? "Aucun article ne correspond à vos critères de recherche."
-                  : "Aucun article disponible pour le moment."}
-              </p>
-            </div>
-          )}
->>>>>>> Stashed changes
 
           {/* Stats Section */}
           <div className="py-12 md:py-20">
