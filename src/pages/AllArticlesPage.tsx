@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { SEO } from '../components/common/SEO';
 import { ArticlesHeroSection } from '../components/sections/ArticlesHeroSection';
@@ -10,34 +10,8 @@ import { ArticlesBookmarksSection } from '../components/sections/ArticlesBookmar
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 import { NewsletterFooterSection } from '../components/sections/NewsletterFooterSection';
-
-const mockArticles = [
-  {
-    _id: '1',
-    title: "Comment développer un mindset d'exception",
-    slug: { current: 'mindset-exception' },
-    mainImage: {
-      asset: {
-        _ref: 'https://picsum.photos/400/300?random=1',
-        url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80'
-      }
-    },
-    excerpt: "Découvrez les secrets des entrepreneurs qui réussissent et transforment leur vision du possible.",
-    publishedAt: "2024-03-20",
-    categories: [
-      {
-        _id: 'cat1',
-        title: 'Mindset',
-        slug: { current: 'mindset' }
-      }
-    ],
-    author: {
-      name: "Roger Ormières",
-      image: "https://yt3.googleusercontent.com/JoLqbdLoPqNLoBUYorqoeyht0KT5uyehGL5ppcCIu5s5PAOeMXi86FoULWWjE2VpJnBKdYPmNj8=s900-c-k-c0x00ffffff-no-rj"
-    }
-  },
-  // ... autres articles mockés
-];
+import { getAllArticles } from '../utils/sanityAPI';
+import { SanityArticle } from '../types/sanity';
 
 export const AllArticlesPage = () => {
   const [articles, setArticles] = useState<SanityArticle[]>([]);
@@ -147,12 +121,20 @@ export const AllArticlesPage = () => {
               <div className="container py-20">
                 <LoadingSpinner />
               </div>
-            ) : (
+            ) : filteredAndSortedArticles.length > 0 ? (
               <ArticlesGridSection
                 articles={filteredAndSortedArticles}
                 bookmarkedArticles={bookmarkedArticles}
                 onBookmark={handleBookmark}
               />
+            ) : (
+              <div className="container py-20">
+                <p className="text-center text-gray-400 text-lg">
+                  {searchTerm || selectedCategory !== 'all' 
+                    ? "Aucun article ne correspond à vos critères de recherche."
+                    : "Aucun article disponible pour le moment."}
+                </p>
+              </div>
             )}
           </div>
 
