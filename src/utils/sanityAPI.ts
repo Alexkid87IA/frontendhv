@@ -1,4 +1,4 @@
-import { sanityClient } from './sanityClient';
+import { sanityClient, previewClient } from './sanityClient';
 import { SanityArticle, SanityDebate, SanityPodcast, SanityCaseStudy, SanitySuccessStory, SanityUniverse, SanityClubFeature, SanityClubPricing, SanityQuote } from '../types/sanity';
 
 // Cache pour les requêtes fréquentes
@@ -72,8 +72,106 @@ export const getAllArticles = async (): Promise<SanityArticle[]> => {
   });
 };
 
-// Récupérer un article par son slug
-export const getArticleBySlug = async (slug: string): Promise<SanityArticle | null> => {
+// Récupérer un article par son slug (modifié pour supporter le preview)
+export const getArticleBySlug = async (slug: string, preview = false): Promise<SanityArticle | null> => {
+  // Logs de débogage détaillés
+  console.log("🔍 getArticleBySlug appelé avec:", { slug, preview });
+  
+  // Si preview, utiliser le client preview sans cache
+  if (preview) {
+    try {
+      // Log pour vérifier le client utilisé
+      console.log("🔐 Utilisation du previewClient");
+      console.log("📊 Configuration du previewClient:", {
+        dataset: previewClient.config().dataset,
+        perspective: previewClient.config().perspective,
+        hasToken: !!previewClient.config().token
+      });
+      
+      // Requête modifiée pour chercher aussi les brouillons
+      const query = `*[_type == "article" && slug.current == $slug][0] {
+        _id,
+        _rev,
+        _type,
+        title,
+        slug,
+        mainImage,
+        body,
+        excerpt,
+        publishedAt,
+        categories[]->{
+          _id,
+          title,
+          slug
+        },
+        author->{
+          _id,
+          name,
+          image,
+          bio
+        }
+      }`;
+      
+      console.log("📝 Exécution de la requête preview pour slug:", slug);
+      console.log("🔎 Requête GROQ:", query);
+      
+      const result = await previewClient.fetch(query, { slug });
+      
+      console.log("✅ Résultat de la requête preview:", {
+        found: !!result,
+        id: result?._id,
+        title: result?.title,
+        isPublished: result?._id && !result._id.startsWith('drafts.')
+      });
+      
+      // Si pas de résultat, essayer de chercher spécifiquement les brouillons
+      if (!result) {
+        console.log("⚠️ Aucun article trouvé, recherche des brouillons...");
+        
+        const draftQuery = `*[_type == "article" && (_id match "drafts.*") && slug.current == $slug][0] {
+          _id,
+          _rev,
+          _type,
+          title,
+          slug,
+          mainImage,
+          body,
+          excerpt,
+          publishedAt,
+          categories[]->{
+            _id,
+            title,
+            slug
+          },
+          author->{
+            _id,
+            name,
+            image,
+            bio
+          }
+        }`;
+        
+        console.log("🔎 Requête spécifique brouillons:", draftQuery);
+        const draftResult = await previewClient.fetch(draftQuery, { slug });
+        
+        console.log("📋 Résultat recherche brouillons:", {
+          found: !!draftResult,
+          id: draftResult?._id
+        });
+        
+        return draftResult;
+      }
+      
+      return result;
+    } catch (error) {
+      console.error(`❌ Erreur lors de la récupération preview de l'article ${slug}:`, error);
+      console.error("Détails de l'erreur:", error);
+      return null;
+    }
+  }
+  
+  // Mode normal avec cache
+  console.log("📚 Utilisation du mode normal (avec cache)");
   return getWithCache(`article_${slug}`, async () => {
     try {
       const query = `*[_type == "article" && slug.current == $slug][0] {

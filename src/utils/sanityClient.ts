@@ -2,16 +2,32 @@ import { createClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
 import type { SanityImage } from "../pages/ArticlePage";
 
-// Create a single Sanity client instance with the provided credentials
+// Client public pour les contenus publiés
 export const sanityClient = createClient({
   projectId: "z9wsynas",
   dataset: "production",
   apiVersion: "2024-05-13",
   useCdn: true,
-  // Remove token requirement since we're only doing public reads
   perspective: "published",
-  cors: true // Enable CORS support
+  cors: true
 });
+
+// Client preview pour les brouillons (avec token)
+export const previewClient = createClient({
+  projectId: "z9wsynas",
+  dataset: "production",
+  apiVersion: "2024-05-13",
+  useCdn: false, // Pas de CDN pour le preview
+  perspective: "raw", // CHANGÉ : "raw" permet de voir tous les documents (publiés et brouillons)
+  cors: true,
+  token: import.meta.env.VITE_SANITY_PREVIEW_TOKEN || import.meta.env.VITE_SANITY_TOKEN || process.env.VITE_SANITY_TOKEN,
+  ignoreBrowserTokenWarning: true
+});
+
+// Logs de débogage pour vérifier le preview
+console.log("🔑 Token preview chargé:", !!import.meta.env.VITE_SANITY_PREVIEW_TOKEN);
+console.log("📋 Preview client configuré avec perspective:", previewClient.config().perspective);
+console.log("🏗️ Dataset utilisé:", previewClient.config().dataset);
 
 // Create a reusable image builder instance
 const builder = imageUrlBuilder(sanityClient);

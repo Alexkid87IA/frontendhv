@@ -46,14 +46,19 @@ export const ArticlePage = () => {
         setIsLoading(true);
         setError(null);
         
+        // Détecter si on est en mode preview
+        const urlParams = new URLSearchParams(window.location.search);
+        const isPreview = urlParams.get('preview') === 'true';
+        
         // Essayer d'abord Sanity, puis fallback sur données locales
         let fetchedArticle = null;
         
         try {
-          fetchedArticle = await getArticleBySlug(slug);
+          // Passer le paramètre preview à la fonction
+          fetchedArticle = await getArticleBySlug(slug, isPreview);
           if (fetchedArticle) {
             setDataSource('sanity');
-            console.log("✅ Article chargé depuis Sanity");
+            console.log(isPreview ? "✅ Article preview chargé depuis Sanity" : "✅ Article chargé depuis Sanity");
           }
         } catch (sanityError) {
           console.log("⚠️ Sanity non disponible, utilisation des données locales");
@@ -155,6 +160,10 @@ export const ArticlePage = () => {
     );
   }
 
+  // Détecter si on est en mode preview
+  const urlParams = new URLSearchParams(window.location.search);
+  const isPreviewMode = urlParams.get('preview') === 'true';
+
   return (
     <ErrorBoundary>
       <SEO
@@ -166,6 +175,13 @@ export const ArticlePage = () => {
       {dataSource === 'local' && (
         <div className="bg-yellow-500 text-black p-2 text-center font-medium text-sm">
           ⚠️ Mode démo - Données locales utilisées
+        </div>
+      )}
+
+      {/* Indicateur de mode preview */}
+      {isPreviewMode && (
+        <div className="bg-purple-600 text-white p-3 text-center font-medium">
+          👁️ Mode preview - Vous visualisez un brouillon non publié
         </div>
       )}
 
