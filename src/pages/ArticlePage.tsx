@@ -1,4 +1,4 @@
-// src/pages/ArticlePage.tsx - Version finale avec imports corrigés
+// src/pages/ArticlePage.tsx - Version complète avec débogage et améliorations
 
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -17,10 +17,10 @@ import { ShareButtons } from "../components/common/ShareButtons";
 import SafeImage from "../components/common/SafeImage";
 import ErrorBoundary from "../components/common/ErrorBoundary";
 
-// Nouveau système de données local
+// Système de données local
 import { LocalDataAPI, useLocalArticle, Article } from "../utils/localDataSystem";
 
-// Fallback vers Sanity si nécessaire
+// Fallback vers Sanity
 import { getArticleBySlug, getAllArticles } from "../utils/sanityAPI";
 
 export const ArticlePage = () => {
@@ -59,9 +59,45 @@ export const ArticlePage = () => {
           if (fetchedArticle) {
             setDataSource('sanity');
             console.log(isPreview ? "✅ Article preview chargé depuis Sanity" : "✅ Article chargé depuis Sanity");
+            
+            // DÉBOGAGE COMPLET
+            console.log("🔍 DÉBOGAGE COMPLET DE L'ARTICLE:");
+            console.log("Article complet:", fetchedArticle);
+            console.log("🔑 keyPoints:", fetchedArticle.keyPoints);
+            console.log("📝 body:", fetchedArticle.body);
+            console.log("📝 content:", fetchedArticle.content);
+            
+            // Analyser la structure du body
+            console.log("📊 ANALYSE DU BODY:");
+            if (fetchedArticle.body && Array.isArray(fetchedArticle.body)) {
+              fetchedArticle.body.forEach((block, index) => {
+                console.log(`Block ${index} - Type: ${block._type}`, block);
+                
+                // Si c'est un bloc avec des enfants
+                if (block.children && Array.isArray(block.children)) {
+                  block.children.forEach((child, childIndex) => {
+                    console.log(`  └─ Child ${childIndex}:`, child);
+                  });
+                }
+                
+                // Si c'est une image
+                if (block._type === 'image') {
+                  console.log("🖼️ IMAGE TROUVÉE:", {
+                    type: block._type,
+                    asset: block.asset,
+                    alt: block.alt,
+                    caption: block.caption,
+                    fullBlock: block
+                  });
+                }
+              });
+            } else {
+              console.log("⚠️ Le body n'est pas un tableau ou est vide");
+            }
           }
         } catch (sanityError) {
           console.log("⚠️ Sanity non disponible, utilisation des données locales");
+          console.error("Erreur Sanity:", sanityError);
         }
         
         // Si Sanity échoue, utiliser les données locales
@@ -77,17 +113,28 @@ export const ArticlePage = () => {
           setArticle(fetchedArticle);
           setLocalLikes(fetchedArticle.likes || 0);
           
+          // Vérifier les bookmarks sauvegardés
+          const savedBookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+          setIsBookmarked(savedBookmarks.includes(fetchedArticle._id));
+          
           // Charger les articles liés
-          const relatedData = dataSource === 'sanity' 
-            ? await getAllArticles()
-            : await LocalDataAPI.getAllArticles();
-            
-          setRelatedArticles(
-            relatedData.filter((a: any) => a._id !== fetchedArticle._id).slice(0, 3)
-          );
+          try {
+            const relatedData = dataSource === 'sanity' 
+              ? await getAllArticles()
+              : await LocalDataAPI.getAllArticles();
+              
+            setRelatedArticles(
+              relatedData
+                .filter((a: any) => a._id !== fetchedArticle._id)
+                .slice(0, 3)
+            );
+          } catch (err) {
+            console.error("Erreur lors du chargement des articles liés:", err);
+            setRelatedArticles([]);
+          }
         }
       } catch (err) {
-        console.error("Erreur:", err);
+        console.error("Erreur générale:", err);
         setError("Erreur lors du chargement de l'article.");
       } finally {
         setIsLoading(false);
@@ -98,39 +145,61 @@ export const ArticlePage = () => {
     window.scrollTo(0, 0);
   }, [slug]);
 
+  // Fonction utilitaire pour formater la date
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "long", 
-      day: "numeric"
-    });
-  };
-
-  const toggleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
-    // Ici vous pouvez ajouter la logique pour sauvegarder en localStorage
-    const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-    if (isBookmarked) {
-      const updated = bookmarks.filter((id: string) => id !== article?._id);
-      localStorage.setItem('bookmarks', JSON.stringify(updated));
-    } else {
-      bookmarks.push(article?._id);
-      localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    try {
+      return new Date(dateString).toLocaleDateString("fr-FR", {
+        year: "numeric",
+        month: "long", 
+        day: "numeric"
+      });
+    } catch (err) {
+      console.error("Erreur de formatage de date:", err);
+      return dateString;
     }
   };
 
+  // Gestion des bookmarks
+  const toggleBookmark = () => {
+    if (!article) return;
+    
+    const newBookmarkState = !isBookmarked;
+    setIsBookmarked(newBookmarkState);
+    
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+    if (newBookmarkState) {
+      bookmarks.push(article._id);
+    } else {
+      const index = bookmarks.indexOf(article._id);
+      if (index > -1) {
+        bookmarks.splice(index, 1);
+      }
+    }
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+  };
+
+  // Gestion des likes
   const toggleLike = async () => {
     if (!article) return;
     
-    setIsLiked(!isLiked);
-    setLocalLikes(prev => isLiked ? prev - 1 : prev + 1);
+    const newLikeState = !isLiked;
+    setIsLiked(newLikeState);
+    setLocalLikes(prev => newLikeState ? prev + 1 : prev - 1);
     
     // Mettre à jour les likes dans le système local
     if (dataSource === 'local') {
-      await LocalDataAPI.toggleLike(article._id);
+      try {
+        await LocalDataAPI.toggleLike(article._id);
+      } catch (err) {
+        console.error("Erreur lors de la mise à jour des likes:", err);
+        // Revenir à l'état précédent en cas d'erreur
+        setIsLiked(!newLikeState);
+        setLocalLikes(prev => newLikeState ? prev - 1 : prev + 1);
+      }
     }
   };
 
+  // État de chargement
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
@@ -142,6 +211,7 @@ export const ArticlePage = () => {
     );
   }
 
+  // État d'erreur
   if (error || !article) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
@@ -164,11 +234,25 @@ export const ArticlePage = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const isPreviewMode = urlParams.get('preview') === 'true';
 
+  // DÉBOGAGE FINAL - Ce qui est passé à ArticleContent
+  console.log("📤 PROPS PASSÉES À ARTICLECONTENT:", {
+    content: article.body || article.content,
+    keyPoints: article.keyPoints,
+    "article.body existe?": !!article.body,
+    "article.content existe?": !!article.content,
+    "article.keyPoints existe?": !!article.keyPoints,
+    "Type de content": Array.isArray(article.body) ? 'array' : typeof article.body
+  });
+
   return (
     <ErrorBoundary>
       <SEO
         title={article.title}
         description={article.excerpt}
+        keywords={article.tags?.map((tag: any) => tag.title).join(', ')}
+        author={article.author?.name}
+        publishedTime={article.publishedAt}
+        image={article.mainImage}
       />
 
       {/* Indicateur de source de données */}
@@ -207,7 +291,7 @@ export const ArticlePage = () => {
               <div className="flex flex-wrap gap-2 mb-6">
                 {article.categories.map((category: any, idx: number) => (
                   <span
-                    key={idx}
+                    key={category._id || idx}
                     className={`inline-block px-4 py-2 rounded-full text-sm font-medium text-white ${
                       ["bg-purple-600", "bg-pink-600", "bg-blue-500", "bg-green-500"][idx % 4]
                     }`}
@@ -290,6 +374,7 @@ export const ArticlePage = () => {
                     ? "bg-red-500 text-white" 
                     : "bg-white/10 text-white hover:bg-white/20"
                 }`}
+                aria-label={isLiked ? "Retirer le j'aime" : "J'aime"}
               >
                 <Heart size={20} className={isLiked ? "fill-current" : ""} />
                 <span>{localLikes}</span>
@@ -302,6 +387,7 @@ export const ArticlePage = () => {
                     ? "bg-blue-500 text-white" 
                     : "bg-white/10 text-white hover:bg-white/20"
                 }`}
+                aria-label={isBookmarked ? "Retirer des favoris" : "Ajouter aux favoris"}
               >
                 <Bookmark size={20} className={isBookmarked ? "fill-current" : ""} />
               </button>
@@ -318,42 +404,44 @@ export const ArticlePage = () => {
             <main className="flex-1 max-w-4xl">
               {/* Featured Image */}
               {article.mainImage && (
-                <div className="mb-12 rounded-2xl overflow-hidden">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="mb-12 rounded-2xl overflow-hidden"
+                >
                   <SafeImage
                     source={article.mainImage}
                     alt={article.title}
                     className="w-full h-auto"
                   />
-                </div>
+                </motion.div>
               )}
 
-              {/* Article Body */}
-              <motion.article 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="prose prose-invert prose-lg max-w-none"
-              >
-                <ArticleContent content={article.body || article.content} />
-              </motion.article>
+              {/* Article Body - Utilisation du composant ArticleContent */}
+              <ArticleContent 
+                content={article.body || article.content} 
+                keyPoints={article.keyPoints} 
+              />
 
               {/* Tags */}
               {article.tags && article.tags.length > 0 && (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
+                  transition={{ delay: 0.6 }}
                   className="mt-12 pt-8 border-t border-white/10"
                 >
                   <h3 className="text-lg font-medium mb-4">Tags :</h3>
                   <div className="flex flex-wrap gap-2">
                     {article.tags.map((tag: any, idx: number) => (
-                      <span
-                        key={idx}
-                        className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-full text-sm transition-colors cursor-pointer"
+                      <Link
+                        key={tag._id || idx}
+                        to={`/tags/${tag.slug?.current || tag.title.toLowerCase()}`}
+                        className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-full text-sm transition-colors"
                       >
                         #{tag.title}
-                      </span>
+                      </Link>
                     ))}
                   </div>
                 </motion.div>
@@ -364,16 +452,24 @@ export const ArticlePage = () => {
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
+                  transition={{ delay: 0.7 }}
                   className="mt-12 p-6 bg-white/5 rounded-xl"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
                       <User size={24} className="text-white" />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-xl font-bold mb-2">À propos de {article.author.name}</h3>
-                      <p className="text-gray-300">{article.author.bio}</p>
+                      <p className="text-gray-300 mb-3">{article.author.bio || "Auteur passionné par la technologie et l'innovation."}</p>
+                      {article.author.email && (
+                        <a 
+                          href={`mailto:${article.author.email}`}
+                          className="text-blue-400 hover:text-blue-300 transition-colors"
+                        >
+                          Contacter l'auteur
+                        </a>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -405,7 +501,10 @@ export const ArticlePage = () => {
                 >
                   <div className="flex flex-wrap gap-2 mb-3">
                     {relatedArticle.categories?.slice(0, 1).map((cat: any, idx: number) => (
-                      <span key={idx} className="text-xs px-2 py-1 rounded-full text-white bg-blue-500">
+                      <span 
+                        key={cat._id || idx} 
+                        className="text-xs px-2 py-1 rounded-full text-white bg-blue-500"
+                      >
                         {cat.title}
                       </span>
                     ))}
@@ -423,6 +522,7 @@ export const ArticlePage = () => {
                   <Link
                     to={`/article/${relatedArticle.slug?.current || relatedArticle.slug}`}
                     className="absolute inset-0"
+                    aria-label={`Lire l'article: ${relatedArticle.title}`}
                   />
                 </motion.article>
               ))}

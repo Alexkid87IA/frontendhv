@@ -57,6 +57,7 @@ export const getAllArticles = async (): Promise<SanityArticle[]> => {
         mainImage,
         excerpt,
         publishedAt,
+        keyPoints,
         categories[]->{
           _id,
           title,
@@ -99,6 +100,7 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         body,
         excerpt,
         publishedAt,
+        keyPoints,
         categories[]->{
           _id,
           title,
@@ -121,6 +123,7 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         found: !!result,
         id: result?._id,
         title: result?.title,
+        keyPoints: result?.keyPoints,
         isPublished: result?._id && !result._id.startsWith('drafts.')
       });
       
@@ -138,6 +141,7 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
           body,
           excerpt,
           publishedAt,
+          keyPoints,
           categories[]->{
             _id,
             title,
@@ -156,7 +160,8 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         
         console.log("📋 Résultat recherche brouillons:", {
           found: !!draftResult,
-          id: draftResult?._id
+          id: draftResult?._id,
+          keyPoints: draftResult?.keyPoints
         });
         
         return draftResult;
@@ -182,6 +187,7 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         body,
         excerpt,
         publishedAt,
+        keyPoints,
         categories[]->{
           _id,
           title,
@@ -195,7 +201,9 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         }
       }`;
       
-      return await sanityClient.fetch(query, { slug });
+      const result = await sanityClient.fetch(query, { slug });
+      console.log("📋 Article récupéré avec keyPoints:", result?.keyPoints);
+      return result;
     } catch (error) {
       console.error(`Erreur lors de la récupération de l'article ${slug}:`, error);
       return null;
@@ -224,6 +232,7 @@ export const getArticlesByCategory = async (categorySlug: string): Promise<Sanit
         mainImage,
         excerpt,
         publishedAt,
+        keyPoints,
         categories[]->{
           _id,
           title,
@@ -275,6 +284,7 @@ export const getAmuseBouches = async (limit = 5): Promise<any[]> => {
         "coverImage": mainImage,  // AmuseBoucheSection utilise coverImage
         excerpt,
         publishedAt,
+        keyPoints,
         "duration": coalesce(readingTime, "5 min"),
         "videoUrl": videoUrl
       }`;
@@ -432,6 +442,7 @@ export const getContentItems = async (contentType: string, limit = 5): Promise<a
         mainImage,
         excerpt,
         slug,
+        keyPoints,
         "sectionTypeTitle": sectionType->title,
         "typeDeSection": typeDeSection->title,
         "typeTitle": type->title
