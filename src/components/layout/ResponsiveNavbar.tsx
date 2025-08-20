@@ -1,195 +1,600 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Sparkles, Crown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, Sparkles, ArrowRight, ChevronDown, Bell, Search } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
+
 // Import de tous les logos
 import logoMedia from '../../assets/logos/LOGO_HV_MEDIA.svg';
 import logoBusiness from '../../assets/logos/LOGO_HV_BUSINESS.svg';
 import logoMental from '../../assets/logos/LOGO_HV_PSYCHO.svg';
 import logoSociety from '../../assets/logos/LOGO_HV_SOCIETY.svg';
 import logoStory from '../../assets/logos/LOGO_HV_STORY.svg';
+
 export const ResponsiveNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const { visible } = useScrollDirection();
-// Fonction pour obtenir le logo selon la page
-const getCurrentLogo = () => {
-  const path = location.pathname;
+  const { scrollY } = useScroll();
   
-  if (path.includes('/story')) return logoStory;
-  if (path.includes('/business')) return logoBusiness;
-  if (path.includes('/mental')) return logoMental;
-  if (path.includes('/society')) return logoSociety;
-  
-  // Logo par défaut
-  return logoMedia;
-};
+  // Effet de transparence basé sur le scroll
+  const navbarBackground = useTransform(
+    scrollY,
+    [0, 100],
+    ['rgba(0, 0, 0, 0.4)', 'rgba(0, 0, 0, 0.95)']
+  );
+
+  // Fonction pour obtenir le logo selon la page
+  const getCurrentLogo = () => {
+    const path = location.pathname;
+    
+    if (path.includes('/story')) return logoStory;
+    if (path.includes('/business')) return logoBusiness;
+    if (path.includes('/mental')) return logoMental;
+    if (path.includes('/society')) return logoSociety;
+    
+    return logoMedia;
+  };
+
+  // Navigation avec sous-catégories
   const menuItems = [
-    { label: 'Story', path: '/rubrique/story', slug: 'story' },
-    { label: 'Business', path: '/rubrique/business', slug: 'business' },
-    { label: 'Mental', path: '/rubrique/mental', slug: 'mental' },
-    { label: 'Society', path: '/rubrique/society', slug: 'society' },
     { 
-      label: 'Le Club', 
-      path: '/club', 
-      slug: 'club',
-      badge: 'Bientôt disponible'
+      label: 'Story', 
+      path: '/rubrique/story', 
+      slug: 'story',
+      color: 'amber',
+      subcategories: [
+        { label: 'Parcours inspirants', path: '/rubrique/story/parcours' },
+        { label: 'Success stories', path: '/rubrique/story/success' },
+        { label: 'Échecs formateurs', path: '/rubrique/story/echecs' },
+        { label: 'Transformations', path: '/rubrique/story/transformations' }
+      ]
     },
-    { label: 'Coaching', path: '/coaching', slug: 'coaching' }
+    { 
+      label: 'Business', 
+      path: '/rubrique/business', 
+      slug: 'business',
+      color: 'blue',
+      subcategories: [
+        { label: 'Stratégie', path: '/rubrique/business/strategie' },
+        { label: 'Innovation', path: '/rubrique/business/innovation' },
+        { label: 'Leadership', path: '/rubrique/business/leadership' },
+        { label: 'Croissance', path: '/rubrique/business/croissance' },
+        { label: 'Finance', path: '/rubrique/business/finance' }
+      ]
+    },
+    { 
+      label: 'Mental', 
+      path: '/rubrique/mental', 
+      slug: 'mental',
+      color: 'purple',
+      subcategories: [
+        { label: 'Mindset', path: '/rubrique/mental/mindset' },
+        { label: 'Productivité', path: '/rubrique/mental/productivite' },
+        { label: 'Résilience', path: '/rubrique/mental/resilience' },
+        { label: 'Focus', path: '/rubrique/mental/focus' },
+        { label: 'Bien-être', path: '/rubrique/mental/bien-etre' }
+      ]
+    },
+    { 
+      label: 'Society', 
+      path: '/rubrique/society', 
+      slug: 'society',
+      color: 'emerald',
+      subcategories: [
+        { label: 'Tendances', path: '/rubrique/society/tendances' },
+        { label: 'Impact social', path: '/rubrique/society/impact' },
+        { label: 'Futur du travail', path: '/rubrique/society/futur' },
+        { label: 'Tech & IA', path: '/rubrique/society/tech' },
+        { label: 'Environnement', path: '/rubrique/society/environnement' }
+      ]
+    }
   ];
 
-  const handleLogoClick = () => {
-    if (!isAnimating) {
-      setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 600);
+  const specialItems = [
+    { 
+      label: 'Le Club', 
+      path: '/club',
+      isNew: true
+    },
+    { 
+      label: 'Podcasts', 
+      path: '/podcasts'
     }
-  };
+  ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     setIsOpen(false);
+    setActiveDropdown(null);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  const getGradientByColor = (color: string) => {
+    const gradients = {
+      amber: 'from-amber-400 to-orange-500',
+      blue: 'from-blue-400 to-cyan-500',
+      purple: 'from-purple-400 to-violet-500',
+      emerald: 'from-emerald-400 to-teal-500'
+    };
+    return gradients[color as keyof typeof gradients] || gradients.blue;
+  };
+
   return (
-    <motion.nav
-      initial={{ y: 0 }}
-      animate={{ y: visible ? 0 : -150 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xl border-b border-white/10 shadow-lg"
-    >
-      <div className="max-w-7xl mx-auto flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
-        {/* Logo with Glow Effect */}
-        <Link 
-          to="/" 
-          className="flex-shrink-0 flex items-center relative group" 
-          onClick={handleLogoClick}
-        >
-          <motion.div
-            animate={isAnimating ? { 
-              scale: [1, 1.05, 1], 
-              filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"] 
-            } : {}}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-            className="relative h-10 md:h-12"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-accent-blue to-accent-turquoise opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500" />
-            <img 
-              src={getCurrentLogo()}
-              alt="High Value Media"
-              className="h-full w-auto object-contain relative z-10" 
-            />
-          </motion.div>
-        </Link>
+    <>
+      <motion.nav
+        initial={{ y: 0 }}
+        animate={{ y: visible || isOpen ? 0 : -120 }}
+        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{ backgroundColor: navbarBackground as any }}
+        onMouseLeave={() => setActiveDropdown(null)}
+      >
+        {/* Effet de blur premium */}
+        <div className="absolute inset-0 backdrop-blur-2xl" />
         
-        {/* Desktop Navigation */}
-        <div className="hidden lg:flex flex-1 items-center justify-between ml-6">
-          <div className="flex-1 flex justify-center">
-            <div className="flex items-center space-x-8">
-              {menuItems.map((item) => {
-                const isActive = location.pathname === item.path || 
-                                location.pathname.startsWith(`/rubrique/${item.slug}`);
-                
-                return (
-                  <div key={item.path} className="relative group">
+        {/* Ligne de gradient en haut */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        
+        {/* Contenu principal */}
+        <div className="relative">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-20">
+              {/* Logo */}
+              <Link 
+                to="/" 
+                className="flex-shrink-0 relative group"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative"
+                >
+                  {/* Effet de lueur */}
+                  <div className="absolute inset-0 bg-white/20 blur-2xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <img 
+                    src={getCurrentLogo()}
+                    alt="High Value Media"
+                    className="h-10 md:h-12 w-auto relative z-10 filter group-hover:brightness-125 transition-all duration-300" 
+                  />
+                </motion.div>
+              </Link>
+              
+              {/* Desktop Navigation */}
+              <div className="hidden lg:flex items-center flex-1 justify-center px-8">
+                <div className="flex items-center space-x-1">
+                  {menuItems.map((item) => {
+                    const isActive = location.pathname.includes(item.slug);
+                    const gradient = getGradientByColor(item.color);
+                    
+                    return (
+                      <div
+                        key={item.slug}
+                        className="relative"
+                        onMouseEnter={() => setActiveDropdown(item.slug)}
+                      >
+                        <Link
+                          to={item.path}
+                          className={`relative px-5 py-2 text-sm font-medium transition-all duration-300 flex items-center gap-1 group ${
+                            isActive 
+                              ? 'text-white' 
+                              : 'text-gray-300 hover:text-white'
+                          }`}
+                        >
+                          <span>{item.label}</span>
+                          <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${
+                            activeDropdown === item.slug ? 'rotate-180' : ''
+                          }`} />
+                          
+                          {/* Indicateur actif */}
+                          {isActive && (
+                            <motion.div
+                              layoutId="navbar-active"
+                              className={`absolute -bottom-2 left-0 right-0 h-0.5 bg-gradient-to-r ${gradient}`}
+                              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            />
+                          )}
+                        </Link>
+
+                        {/* Dropdown */}
+                        <AnimatePresence>
+                          {activeDropdown === item.slug && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                              transition={{ duration: 0.2, ease: "easeOut" }}
+                              className="absolute top-full left-1/2 -translate-x-1/2 mt-6 w-[600px]"
+                            >
+                              <div className="relative">
+                                {/* Flèche avec gradient */}
+                                <div className={`absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-gradient-to-br ${gradient} rotate-45 rounded-sm`} />
+                                
+                                {/* Container principal avec gradient border */}
+                                <div className="relative rounded-3xl p-[1px] bg-gradient-to-br from-white/20 to-white/5">
+                                  <div className="bg-black/95 backdrop-blur-2xl rounded-3xl p-8">
+                                    {/* Header de la catégorie */}
+                                    <div className="mb-6">
+                                      <div className={`text-xs font-bold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r ${gradient} mb-2`}>
+                                        Explorer {item.label}
+                                      </div>
+                                      <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                    </div>
+                                    
+                                    {/* Grid des sous-catégories */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                      {item.subcategories.map((sub, idx) => (
+                                        <Link
+                                          key={sub.path}
+                                          to={sub.path}
+                                          className="group relative"
+                                        >
+                                          <motion.div
+                                            whileHover={{ scale: 1.02, x: 5 }}
+                                            className="relative p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300"
+                                          >
+                                            {/* Numéro stylisé */}
+                                            <div className={`absolute top-4 right-4 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-br ${gradient} opacity-20 group-hover:opacity-40 transition-opacity`}>
+                                              0{idx + 1}
+                                            </div>
+                                            
+                                            {/* Contenu */}
+                                            <div className="relative z-10">
+                                              <h4 className="text-white font-medium mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:${gradient} transition-all">
+                                                {sub.label}
+                                              </h4>
+                                              <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
+                                                Découvrir les articles →
+                                              </p>
+                                            </div>
+                                            
+                                            {/* Hover effect gradient */}
+                                            <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity`} />
+                                          </motion.div>
+                                        </Link>
+                                      ))}
+                                    </div>
+                                    
+                                    {/* Footer avec stats */}
+                                    <div className="mt-6 pt-6 border-t border-white/5">
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-6">
+                                          <div className="text-sm">
+                                            <span className="text-gray-500">Articles</span>
+                                            <span className="ml-2 font-bold text-white">247</span>
+                                          </div>
+                                          <div className="text-sm">
+                                            <span className="text-gray-500">Auteurs</span>
+                                            <span className="ml-2 font-bold text-white">18</span>
+                                          </div>
+                                        </div>
+                                        <Link
+                                          to={item.path}
+                                          className={`text-sm font-medium text-transparent bg-clip-text bg-gradient-to-r ${gradient} hover:opacity-80 transition-opacity`}
+                                        >
+                                          Voir tout →
+                                        </Link>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+
+                  {/* Séparateur */}
+                  <div className="w-px h-6 bg-white/10 mx-2" />
+
+                  {/* Items spéciaux */}
+                  {specialItems.map((item) => (
                     <Link
+                      key={item.path}
                       to={item.path}
-                      className={`text-lg font-medium transition-colors ${
-                        isActive 
-                          ? "text-accent-blue" 
-                          : "text-white hover:text-accent-blue"
-                      }`}
+                      className="relative px-5 py-2 text-sm font-medium text-gray-300 hover:text-white transition-all duration-300 flex items-center gap-2"
                     >
-                      {item.label}
-                      {item.badge && (
-                        <span className="text-xs bg-accent-blue/20 text-accent-blue px-2 py-0.5 rounded-full ml-1">
-                          {item.badge}
+                      <span>{item.label}</span>
+                      {item.isNew && (
+                        <span className="px-2 py-0.5 text-[10px] font-bold bg-gradient-to-r from-yellow-400 to-amber-500 text-black rounded-full">
+                          NEW
                         </span>
                       )}
                     </Link>
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent-blue transition-all duration-300 group-hover:w-full" />
-                  </div>
-                );
-              })}
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions à droite */}
+              <div className="hidden lg:flex items-center gap-3">
+                {/* Search Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsSearchOpen(!isSearchOpen)}
+                  className="p-2.5 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 hover:bg-white/10 transition-all"
+                >
+                  <Search className="w-4 h-4 text-gray-300" />
+                </motion.button>
+
+                {/* Notification */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative p-2.5 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 hover:bg-white/10 transition-all"
+                >
+                  <Bell className="w-4 h-4 text-gray-300" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full" />
+                </motion.button>
+
+                {/* CTA Principal */}
+                <motion.div
+                  className="relative group"
+                >
+                  <Link
+                    to="/create-with-roger"
+                    className="relative block"
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="relative"
+                    >
+                      {/* Effet de glow animé */}
+                      <div 
+                        className="absolute -inset-1 rounded-2xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+                        style={{
+                          background: 'linear-gradient(90deg, #3b82f6, #06b6d4, #a855f7)',
+                          backgroundSize: '200% 200%',
+                          animation: 'gradientShift 4s ease infinite'
+                        }}
+                      />
+                      
+                      {/* Bouton principal */}
+                      <div className="relative flex items-center gap-3 px-6 py-3 bg-black border border-white/10 rounded-2xl group-hover:border-white/20 transition-all">
+                        {/* Icône animée */}
+                        <motion.div
+                          animate={{
+                            rotate: [0, 10, -10, 0],
+                          }}
+                          transition={{
+                            duration: 4,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <Sparkles className="w-4 h-4 text-white" />
+                        </motion.div>
+                        
+                        {/* Texte avec gradient au hover */}
+                        <span className="font-medium text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:via-cyan-400 group-hover:to-purple-400 transition-all">
+                          Racontez votre histoire
+                        </span>
+                        
+                        {/* Flèche qui apparaît au hover */}
+                        <ArrowRight className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 -ml-2 group-hover:ml-0 transition-all duration-300" />
+                      </div>
+                    </motion.div>
+                  </Link>
+                </motion.div>
+              </div>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="lg:hidden relative p-2 text-white"
+              >
+                <div className="relative w-6 h-5 flex flex-col justify-between">
+                  <motion.span
+                    className="w-full h-0.5 bg-white rounded-full origin-left"
+                    animate={isOpen ? {
+                      rotate: 45,
+                      y: -2,
+                      x: 1
+                    } : {
+                      rotate: 0,
+                      y: 0,
+                      x: 0
+                    }}
+                  />
+                  <motion.span
+                    className="w-full h-0.5 bg-white rounded-full"
+                    animate={isOpen ? {
+                      opacity: 0,
+                      x: -20
+                    } : {
+                      opacity: 1,
+                      x: 0
+                    }}
+                  />
+                  <motion.span
+                    className="w-full h-0.5 bg-white rounded-full origin-left"
+                    animate={isOpen ? {
+                      rotate: -45,
+                      y: 2,
+                      x: 1
+                    } : {
+                      rotate: 0,
+                      y: 0,
+                      x: 0
+                    }}
+                  />
+                </div>
+              </button>
             </div>
           </div>
 
-          {/* CTA Button */}
-          <motion.div 
-            whileHover={{ scale: 1.03 }} 
-            whileTap={{ scale: 0.97 }}
-            className="relative group"
-          >
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
-            <Link
-              to="/create-with-roger"
-              className="relative flex items-center gap-2 bg-black px-6 py-3 rounded-lg text-white group-hover:text-white/90 transition-colors"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Votre histoire</span>
-            </Link>
-          </motion.div>
+          {/* Search Bar Overlay */}
+          <AnimatePresence>
+            {isSearchOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="border-t border-white/10 overflow-hidden"
+              >
+                <div className="max-w-3xl mx-auto p-4">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Rechercher un article, un podcast, un auteur..."
+                      className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
+                      autoFocus
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden p-2 text-white"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
+      </motion.nav>
 
       {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "100vh" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden fixed inset-x-0 top-20 bg-black/95 backdrop-blur-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 lg:hidden"
           >
-            <div className="px-4 py-6 space-y-4">
-              {menuItems.map((item) => {
-                const isActive = location.pathname === item.path || 
-                                location.pathname.startsWith(`/rubrique/${item.slug}`);
-                
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`block px-4 py-3 text-lg font-medium rounded-lg transition-colors relative group ${
-                      isActive 
-                        ? 'text-accent-blue bg-accent-blue/10' 
-                        : 'text-white hover:text-accent-blue hover:bg-white/5'
-                    }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <div className="flex items-center">
-                      {item.label}
-                      {item.badge && (
-                        <span className="text-xs bg-accent-blue/20 text-accent-blue px-2 py-0.5 rounded-full ml-2">
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/98 backdrop-blur-2xl"
+            />
 
-              <Link
-                to="/create-with-roger"
-                className="block w-full px-4 py-3 text-center bg-accent-blue hover:bg-accent-blue/90 text-white rounded-lg transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                Votre histoire
-              </Link>
-            </div>
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="absolute inset-y-0 right-0 w-full max-w-md bg-black/95 backdrop-blur-2xl border-l border-white/10"
+            >
+              <div className="h-full overflow-y-auto pt-24 px-6 pb-8">
+                {/* Mobile Menu Items */}
+                <div className="space-y-2">
+                  {menuItems.map((item) => {
+                    const isActive = location.pathname.includes(item.slug);
+                    const gradient = getGradientByColor(item.color);
+                    
+                    return (
+                      <div key={item.slug} className="space-y-1">
+                        <Link
+                          to={item.path}
+                          onClick={() => setIsOpen(false)}
+                          className={`block px-4 py-3 rounded-xl font-medium transition-all ${
+                            isActive 
+                              ? 'bg-white/10 text-white' 
+                              : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span>{item.label}</span>
+                            {isActive && (
+                              <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${gradient}`} />
+                            )}
+                          </div>
+                        </Link>
+                        
+                        {/* Mobile Subcategories */}
+                        <div className="pl-4 space-y-1">
+                          {item.subcategories.map((sub) => (
+                            <Link
+                              key={sub.path}
+                              to={sub.path}
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                            >
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Divider */}
+                  <div className="my-4 h-px bg-white/10" />
+
+                  {/* Special Items */}
+                  {specialItems.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className="block px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all font-medium"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>{item.label}</span>
+                        {item.isNew && (
+                          <span className="px-2 py-0.5 text-[10px] font-bold bg-gradient-to-r from-yellow-400 to-amber-500 text-black rounded-full">
+                            NEW
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+
+                  {/* Mobile CTA */}
+                  <Link
+                    to="/create-with-roger"
+                    onClick={() => setIsOpen(false)}
+                    className="block mt-6"
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full px-6 py-3 bg-white text-black rounded-xl font-medium text-center"
+                    >
+                      Racontez votre histoire
+                    </motion.div>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+
+      {/* Background overlay when dropdown is open */}
+      <AnimatePresence>
+        {activeDropdown && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden lg:block"
+            onClick={() => setActiveDropdown(null)}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

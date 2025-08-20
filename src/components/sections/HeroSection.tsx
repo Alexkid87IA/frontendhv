@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Quote, Calendar, Clock, User, Sparkles, TrendingUp, Star, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { ArrowRight, Quote, Calendar, Clock, User, Sparkles, TrendingUp, Star, Play, Pause, Volume2, VolumeX, Share2, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
 import { getAllArticles } from '../../utils/sanityAPI';
@@ -103,17 +103,20 @@ const dailyQuotes = [
   {
     text: "Le succès n'est pas une destination, c'est un voyage constant d'apprentissage et de dépassement de soi.",
     author: "Roger Ormières",
-    role: "Fondateur High Value"
+    role: "Fondateur High Value",
+    avatar: "RO"
   },
   {
     text: "L'excellence n'est jamais un accident. C'est toujours le résultat d'une intention élevée et d'une exécution intelligente.",
     author: "Sarah Mitchell",
-    role: "CEO Fortune 500"
+    role: "CEO Fortune 500",
+    avatar: "SM"
   },
   {
     text: "Votre mindset détermine votre plafond. Élevez vos pensées, élevez votre vie.",
     author: "Marcus Chen",
-    role: "Serial Entrepreneur"
+    role: "Serial Entrepreneur",
+    avatar: "MC"
   }
 ];
 
@@ -124,16 +127,70 @@ export const HeroSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
   const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isLiked, setIsLiked] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const [isTyping, setIsTyping] = useState(true);
+  
+  // Motion values pour l'effet 3D
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useTransform(mouseY, [-100, 100], [10, -10]);
+  const rotateY = useTransform(mouseX, [-100, 100], [-10, 10]);
+
+  const currentQuote = dailyQuotes[currentQuoteIndex];
+
+  // Effet typewriter pour la citation
+  useEffect(() => {
+    setDisplayedText('');
+    setIsTyping(true);
+    
+    const text = currentQuote.text;
+    let currentIndex = 0;
+    
+    const interval = setInterval(() => {
+      if (currentIndex <= text.length) {
+        setDisplayedText(text.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        setIsTyping(false);
+        clearInterval(interval);
+      }
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, [currentQuoteIndex, currentQuote.text]);
 
   // Rotation automatique des citations
   useEffect(() => {
-    if (isAutoPlay) {
-      const interval = setInterval(() => {
-        setCurrentQuoteIndex((prev) => (prev + 1) % dailyQuotes.length);
+    if (isAutoPlay && !isTyping) {
+      const timeout = setTimeout(() => {
+        handleNextQuote();
       }, 5000);
-      return () => clearInterval(interval);
+      return () => clearTimeout(timeout);
     }
-  }, [isAutoPlay]);
+  }, [isAutoPlay, isTyping, currentQuoteIndex]);
+
+  const handleNextQuote = () => {
+    setCurrentQuoteIndex((prev) => (prev + 1) % dailyQuotes.length);
+  };
+
+  const handlePrevQuote = () => {
+    setCurrentQuoteIndex((prev) => (prev - 1 + dailyQuotes.length) % dailyQuotes.length);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -171,7 +228,6 @@ export const HeroSection = () => {
     );
   }
 
-  const currentQuote = dailyQuotes[currentQuoteIndex];
   const categoryColors = {
     'Story': 'from-amber-500 to-orange-500',
     'Business': 'from-blue-500 to-cyan-500',
@@ -312,7 +368,7 @@ export const HeroSection = () => {
               </Link>
             </motion.div>
 
-            {/* Citation du jour - Améliorée */}
+            {/* Citation du jour - VERSION AMÉLIORÉE */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -321,92 +377,254 @@ export const HeroSection = () => {
             >
               <div className="relative h-full">
                 <div className="sticky top-8">
-                  {/* Header de la citation */}
+                  {/* Header amélioré */}
                   <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-2">
-                      <Quote className="w-5 h-5 text-accent-violet" />
-                      <span className="text-sm font-medium text-gray-400 uppercase tracking-wider">
-                        Citation du jour
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => setIsAutoPlay(!isAutoPlay)}
-                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                    <motion.div 
+                      className="flex items-center gap-3"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 }}
                     >
-                      {isAutoPlay ? (
-                        <Pause className="w-4 h-4 text-gray-400" />
-                      ) : (
-                        <Play className="w-4 h-4 text-gray-400" />
-                      )}
-                    </button>
+                      {/* Badge animé */}
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-xl opacity-60 animate-pulse" />
+                        <div className="relative flex items-center gap-2 px-4 py-2 bg-black/80 backdrop-blur-sm rounded-full border border-blue-500/30">
+                          <Quote className="w-4 h-4 text-blue-400" />
+                          <span className="text-xs font-medium text-white uppercase tracking-wider">
+                            Inspirations du jour
+                          </span>
+                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    {/* Contrôles */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setIsAutoPlay(!isAutoPlay)}
+                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all hover:scale-110"
+                      >
+                        {isAutoPlay ? (
+                          <Pause className="w-4 h-4 text-gray-400" />
+                        ) : (
+                          <Play className="w-4 h-4 text-gray-400" />
+                        )}
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Citation Card */}
-                  <div className="relative bg-gradient-to-br from-violet-500/10 to-purple-500/10 backdrop-blur-xl border border-violet-500/20 rounded-2xl p-8 overflow-hidden">
-                    {/* Decoration */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/20 rounded-full blur-3xl" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl" />
-                    
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={currentQuoteIndex}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.5 }}
-                        className="relative z-10"
-                      >
-                        <Quote className="w-8 h-8 text-violet-400/30 mb-4" />
-                        
-                        <blockquote className="text-xl md:text-2xl font-light text-white leading-relaxed mb-6">
-                          {currentQuote.text}
-                        </blockquote>
-                        
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-400 to-purple-400 flex items-center justify-center">
-                            <User className="w-6 h-6 text-white" />
-                          </div>
-                          <div>
-                            <cite className="block text-white font-semibold not-italic">
-                              {currentQuote.author}
-                            </cite>
-                            <span className="text-sm text-gray-400">
-                              {currentQuote.role}
-                            </span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    </AnimatePresence>
+                  {/* Carte 3D avec effet de perspective */}
+                  <motion.div
+                    className="relative perspective-1000"
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                      rotateX,
+                      rotateY,
+                      transformStyle: "preserve-3d"
+                    }}
+                  >
+                    {/* Bordure animée gradient */}
+                    <div className="absolute -inset-[1px] rounded-3xl opacity-60">
+                      <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500 via-cyan-500 to-sky-500" />
+                    </div>
 
-                    {/* Progress dots */}
-                    <div className="flex gap-2 mt-6">
+                    {/* Carte principale */}
+                    <div className="relative bg-black/40 backdrop-blur-2xl border border-blue-500/20 rounded-3xl p-8 overflow-hidden">
+                      {/* Particules flottantes dans la carte - SIMPLIFIÉ */}
+                      <div className="absolute inset-0">
+                        {[...Array(8)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className="absolute w-1 h-1 bg-blue-400/20 rounded-full"
+                            initial={{
+                              x: Math.random() * 100 + '%',
+                              y: Math.random() * 100 + '%',
+                            }}
+                            animate={{
+                              y: [0, -20, 0],
+                              opacity: [0.2, 0.5, 0.2],
+                            }}
+                            transition={{
+                              duration: 8 + i * 2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        ))}
+                      </div>
+
+                      {/* Background pattern */}
+                      <div 
+                        className="absolute inset-0 opacity-5"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                        }}
+                      />
+
+                      {/* Effet de lumière qui suit le curseur */}
+                      <motion.div
+                        className="absolute w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"
+                        style={{
+                          x: mouseX,
+                          y: mouseY,
+                        }}
+                      />
+                      
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={currentQuoteIndex}
+                          initial={{ opacity: 0, scale: 0.9, rotateX: -20 }}
+                          animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+                          exit={{ opacity: 0, scale: 0.9, rotateX: 20 }}
+                          transition={{ duration: 0.5, type: "spring" }}
+                          className="relative z-10"
+                        >
+                          {/* Guillemets stylisés */}
+                          <div className="relative mb-6">
+                            <motion.div
+                              initial={{ scale: 0, rotate: -180 }}
+                              animate={{ scale: 1, rotate: 0 }}
+                              transition={{ delay: 0.2, type: "spring" }}
+                            >
+                              <Quote className="w-10 h-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400" />
+                            </motion.div>
+                          </div>
+                          
+                          {/* Citation avec effet typewriter */}
+                          <blockquote className="text-xl md:text-2xl font-light text-white leading-relaxed mb-8 min-h-[120px]">
+                            {displayedText}
+                            {isTyping && (
+                              <motion.span
+                                animate={{ opacity: [1, 0] }}
+                                transition={{ duration: 0.5, repeat: Infinity }}
+                                className="inline-block w-0.5 h-6 bg-blue-400 ml-1"
+                              />
+                            )}
+                          </blockquote>
+                          
+                          {/* Auteur avec avatar animé */}
+                          <motion.div 
+                            className="flex items-center gap-4"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                          >
+                            {/* Avatar avec effet glow */}
+                            <div className="relative">
+                              <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full blur-lg opacity-60 animate-pulse" />
+                              <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center">
+                                <span className="text-white font-bold text-lg">
+                                  {currentQuote.avatar}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex-1">
+                              <cite className="block text-white font-semibold not-italic">
+                                {currentQuote.author}
+                              </cite>
+                              <span className="text-sm text-gray-400">
+                                {currentQuote.role}
+                              </span>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex items-center gap-2">
+                              <motion.button
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => setIsLiked(!isLiked)}
+                                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
+                              >
+                                <Heart 
+                                  className={`w-4 h-4 transition-all ${
+                                    isLiked ? 'text-red-500 fill-red-500' : 'text-gray-400'
+                                  }`}
+                                />
+                              </motion.button>
+                              <motion.button
+                                whileTap={{ scale: 0.9 }}
+                                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
+                              >
+                                <Share2 className="w-4 h-4 text-gray-400" />
+                              </motion.button>
+                            </div>
+                          </motion.div>
+                        </motion.div>
+                      </AnimatePresence>
+
+                      {/* Navigation arrows */}
+                      <div className="absolute top-1/2 -translate-y-1/2 left-2 right-2 flex justify-between pointer-events-none">
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={handlePrevQuote}
+                          className="p-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 pointer-events-auto hover:bg-white/10 transition-all"
+                        >
+                          <ChevronLeft className="w-4 h-4 text-white" />
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={handleNextQuote}
+                          className="p-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 pointer-events-auto hover:bg-white/10 transition-all"
+                        >
+                          <ChevronRight className="w-4 h-4 text-white" />
+                        </motion.button>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Progress bar avec animation */}
+                  <div className="relative mt-6">
+                    <div className="flex gap-2">
                       {dailyQuotes.map((_, index) => (
                         <button
                           key={index}
                           onClick={() => setCurrentQuoteIndex(index)}
-                          className={`h-1 rounded-full transition-all duration-300 ${
-                            index === currentQuoteIndex 
-                              ? 'w-8 bg-violet-400' 
-                              : 'w-4 bg-violet-400/30 hover:bg-violet-400/50'
-                          }`}
-                        />
+                          className="relative flex-1 h-1 bg-blue-400/20 rounded-full overflow-hidden"
+                        >
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400"
+                            initial={{ scaleX: 0 }}
+                            animate={{ 
+                              scaleX: index === currentQuoteIndex ? 1 : 0
+                            }}
+                            transition={{ 
+                              duration: index === currentQuoteIndex && isAutoPlay && !isTyping ? 5 : 0.3,
+                              ease: "linear"
+                            }}
+                            style={{ transformOrigin: "left" }}
+                          />
+                        </button>
                       ))}
                     </div>
                   </div>
 
-                  {/* Stats rapides */}
-                  <div className="grid grid-cols-3 gap-4 mt-6">
+                  {/* Stats avec animation */}
+                  <motion.div 
+                    className="grid grid-cols-3 gap-4 mt-6"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
                     {[
-                      { label: 'Articles', value: '500+' },
-                      { label: 'Lecteurs', value: '12K+' },
-                      { label: 'Minutes', value: '50K+' }
-                    ].map((stat) => (
-                      <div key={stat.label} className="text-center">
-                        <div className="text-2xl font-bold text-white">{stat.value}</div>
+                      { label: 'Inspirés', value: '12K+', icon: Sparkles },
+                      { label: 'Partagés', value: '3.5K', icon: Share2 },
+                      { label: 'Aimés', value: '8.2K', icon: Heart }
+                    ].map((stat, index) => (
+                      <motion.div
+                        key={stat.label}
+                        className="relative text-center p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10"
+                        whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.08)" }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <stat.icon className="w-4 h-4 text-blue-400 mx-auto mb-2" />
+                        <div className="text-xl font-bold text-white">{stat.value}</div>
                         <div className="text-xs text-gray-500 uppercase tracking-wider">{stat.label}</div>
-                      </div>
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </motion.div>
@@ -523,6 +741,16 @@ export const HeroSection = () => {
             </p>
           </motion.div>
         </div>
+
+        {/* Styles pour les animations */}
+        <style jsx>{`
+          .perspective-1000 {
+            perspective: 1000px;
+          }
+          .animation-delay-2000 {
+            animation-delay: 2s;
+          }
+        `}</style>
       </section>
     </ErrorBoundary>
   );
