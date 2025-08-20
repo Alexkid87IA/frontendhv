@@ -1,300 +1,272 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Crown, Users, Calendar, Brain, ArrowRight, Shield, Zap, Target, Star } from 'lucide-react';
-import { getClubFeatures, getClubPricing } from '../../utils/sanityAPI';
-import { SanityClubFeature, SanityClubPricing } from '../../types/sanity';
-import { LoadingSpinner } from '../common/LoadingSpinner';
-import ErrorBoundary from '../common/ErrorBoundary';
-
-// Données mockées pour fallback
-const mockedFeatures: SanityClubFeature[] = [
-  {
-    _id: "mock-feature-1",
-    title: "Live hebdomadaire",
-    description: "Sessions en direct avec des experts et entrepreneurs à succès",
-    icon: "Calendar",
-    order: 1
-  },
-  {
-    _id: "mock-feature-2",
-    title: "Mindset & Stratégie",
-    description: "Développez votre psychologie de champion et votre vision business",
-    icon: "Brain",
-    order: 2
-  },
-  {
-    _id: "mock-feature-3",
-    title: "Veille exclusive",
-    description: "Analyses approfondies et insights stratégiques",
-    icon: "Shield",
-    order: 3
-  },
-  {
-    _id: "mock-feature-4",
-    title: "Réseau privilégié",
-    description: "Connexions avec des entrepreneurs et décideurs high value",
-    icon: "Users",
-    order: 4
-  }
-];
-
-const mockedPricing: SanityClubPricing[] = [
-  {
-    _id: "mock-pricing",
-    price: 19.90,
-    currency: "EUR",
-    period: "month",
-    features: [
-      "Accès à tous les contenus premium",
-      "Participation aux lives hebdomadaires",
-      "Accès à la communauté privée",
-      "Veille stratégique exclusive"
-    ],
-    isActive: true
-  }
-];
-
-// Composant pour rendre dynamiquement les icônes Lucide
-const DynamicIcon = ({ name, ...props }: { name: string; [key: string]: any }) => {
-  const iconMap: { [key: string]: React.ComponentType<any> } = {
-    Calendar,
-    Brain,
-    Shield,
-    Users,
-    Zap,
-    Target,
-    Star,
-    Crown
-  };
-
-  const IconComponent = iconMap[name] || Users;
-  return <IconComponent {...props} />;
-};
+import { 
+  Crown, 
+  Sparkles, 
+  Users, 
+  Zap, 
+  Calendar,
+  Bell,
+  CheckCircle,
+  ArrowRight,
+  Clock,
+  Trophy,
+  Star,
+  Lock
+} from 'lucide-react';
 
 export const ClubSection = () => {
-  const [features, setFeatures] = useState<SanityClubFeature[]>([]);
-  const [pricing, setPricing] = useState<SanityClubPricing | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
+  const [email, setEmail] = useState('');
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
-  useEffect(() => {
-    const fetchClubData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        const [featuresResult, pricingResult] = await Promise.all([
-          getClubFeatures(),
-          getClubPricing()
-        ]);
-        
-        if (featuresResult && featuresResult.length > 0) {
-          setFeatures(featuresResult);
-          setDataSource('cms');
-          console.log("Fonctionnalités du club chargées depuis Sanity CMS");
-        } else {
-          setFeatures(mockedFeatures);
-          setDataSource('mock');
-          console.log("Aucune fonctionnalité trouvée dans Sanity");
-        }
-        
-        if (pricingResult && pricingResult.length > 0) {
-          setPricing(pricingResult[0]);
-          console.log("Tarif du club chargé depuis Sanity CMS");
-        } else {
-          setPricing(mockedPricing[0]);
-          setDataSource('mock');
-          console.log("Aucun tarif trouvé dans Sanity");
-        }
-      } catch (err) {
-        console.error("Erreur lors du chargement des données du club:", err);
-        setError("Impossible de charger les informations du club");
-        
-        setFeatures(mockedFeatures);
-        setPricing(mockedPricing[0]);
-        setDataSource('mock');
-        console.log("Utilisation des données mockées suite à une erreur");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchClubData();
-  }, []);
+  const handleWaitlist = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      // TODO: Connecter à votre service d'email
+      console.log('Email ajouté à la liste d\'attente:', email);
+      setIsSubscribed(true);
+      setTimeout(() => {
+        setEmail('');
+        setIsSubscribed(false);
+      }, 5000);
+    }
+  };
 
-  if (isLoading) {
-    return (
-      <section className="container py-20 flex justify-center items-center">
-        <LoadingSpinner />
-      </section>
-    );
-  }
-
-  if (error && features.length === 0 && !pricing) {
-    return (
-      <section className="container py-20">
-        <div className="text-center text-red-500">
-          <p>{error}</p>
-          <p className="mt-2">Veuillez réessayer ultérieurement.</p>
-        </div>
-      </section>
-    );
-  }
-
-  const displayFeatures = features.length > 0 ? features : mockedFeatures;
-  const displayPricing = pricing || mockedPricing[0];
-  const isPromotion = displayPricing.price < 30;
-  const regularPrice = isPromotion ? 39.90 : null;
+  const features = [
+    {
+      icon: Crown,
+      title: 'Accès VIP aux contenus',
+      description: 'Articles exclusifs, podcasts en avant-première et analyses approfondies'
+    },
+    {
+      icon: Users,
+      title: 'Communauté privée',
+      description: 'Rejoignez un cercle fermé d\'entrepreneurs ambitieux et engagés'
+    },
+    {
+      icon: Calendar,
+      title: 'Events mensuels',
+      description: 'Masterclass live, Q&A exclusifs et networking de haut niveau'
+    },
+    {
+      icon: Zap,
+      title: 'Outils & ressources',
+      description: 'Templates, frameworks et méthodes utilisés par les leaders du marché'
+    }
+  ];
 
   return (
-    <ErrorBoundary>
-      <section className="container py-20">
-        <div className="relative overflow-hidden bg-gradient-to-br from-black via-black/95 to-black/90 rounded-3xl p-12 border border-white/10">
-          {/* Enhanced Background Effects */}
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
-            <div className="absolute inset-0 backdrop-blur-sm" />
-          </div>
+    <section className="relative py-24 overflow-hidden">
+      {/* Background premium */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-900 to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,215,0,0.15),transparent_70%)]" />
+        
+        {/* Particules dorées animées */}
+        <div className="absolute inset-0">
+          {[...Array(30)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-yellow-400/30 rounded-full"
+              initial={{ 
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                opacity: 0
+              }}
+              animate={{ 
+                y: [null, -30, 0],
+                opacity: [0, 1, 0]
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 5
+              }}
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`
+              }}
+            />
+          ))}
+        </div>
+      </div>
 
-          {/* Content */}
+      <div className="container relative z-10">
+        {/* Header de section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          {/* Badge "Bientôt disponible" */}
+          <motion.div 
+            initial={{ scale: 0.9 }}
+            animate={{ scale: [0.9, 1.05, 1] }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 rounded-full mb-6"
+          >
+            <Clock className="w-4 h-4 text-yellow-400 animate-pulse" />
+            <span className="text-sm font-medium text-yellow-400">Lancement imminent</span>
+          </motion.div>
+
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <span className="text-white">Rejoignez le </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500">
+              Club Élite
+            </span>
+          </h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Accédez à un écosystème exclusif conçu pour les entrepreneurs qui visent l'excellence 
+            et veulent passer au niveau supérieur
+          </p>
+        </motion.div>
+
+        {/* Box offre spéciale */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="max-w-4xl mx-auto mb-16"
+        >
           <div className="relative">
-            {dataSource === 'mock' && (
-              <div className="absolute top-2 right-2 text-xs text-amber-500 bg-black/50 px-2 py-1 rounded">
-                Données de démonstration
-              </div>
-            )}
+            {/* Glow effect */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-400 rounded-3xl blur-lg opacity-30 animate-pulse" />
             
-            <div className="flex flex-col lg:flex-row gap-12 items-center">
-              {/* Left Column */}
-              <div className="flex-1 text-center lg:text-left">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="inline-block relative mb-6"
-                >
-                  <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-full blur opacity-75"></div>
-                  <div className="relative inline-flex items-center gap-2 px-6 py-3 bg-black rounded-full text-accent-blue font-medium">
-                    <Crown size={18} aria-hidden="true" />
-                    <span>Club High Value</span>
-                  </div>
-                </motion.div>
-
-                <motion.h2
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 }}
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
-                >
-                  Rejoignez le Club{' '}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue to-accent-turquoise">High Value</span>
-                </motion.h2>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 }}
-                  className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0"
-                >
-                  Développez votre mindset, votre business et votre réseau avec un accompagnement premium. 
-                  Accédez à notre veille stratégique et à notre communauté d'entrepreneurs high value.
-                </motion.p>
-
-                {/* Prix avec effets améliorés */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.25 }}
-                  className="mb-8 inline-block relative"
-                >
-                  <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-2xl blur opacity-30"></div>
-                  <div className="relative bg-black/50 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-                    {isPromotion && (
-                      <div className="flex items-center gap-2 mb-3">
-                        <Star className="text-accent-blue\" size={20} aria-hidden="true" />
-                        <span className="text-accent-blue font-medium">Offre de lancement limitée</span>
-                      </div>
-                    )}
-                    <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-4xl font-bold">{displayPricing.price.toFixed(2)}€</span>
-                      <span className="text-gray-400">/{displayPricing.period === 'month' ? 'mois' : 'an'}</span>
-                    </div>
-                    <p className="text-sm text-gray-400">Pour les 100 premiers membres uniquement</p>
-                    {isPromotion && regularPrice && (
-                      <p className="text-xs text-gray-500 mt-2">Puis {regularPrice.toFixed(2)}€/{displayPricing.period === 'month' ? 'mois' : 'an'}</p>
-                    )}
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3 }}
-                  className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-                >
-                  <Link
-                    to="/club"
-                    className="group relative inline-flex items-center justify-center gap-2"
-                  >
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
-                    <div className="relative flex items-center justify-center gap-2 bg-black px-8 py-4 rounded-xl text-white font-semibold transition-all duration-300">
-                      <span>Rejoindre le Club</span>
-                      <ArrowRight size={20} aria-hidden="true" />
-                    </div>
-                  </Link>
-
-                  <a
-                    href="#discover"
-                    className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-semibold transition-colors"
-                  >
-                    <span>En savoir plus</span>
-                    <ArrowRight size={20} aria-hidden="true" />
-                  </a>
-                </motion.div>
+            <div className="relative bg-gradient-to-br from-neutral-900 via-black to-neutral-900 border border-yellow-500/20 rounded-3xl p-8 md:p-12">
+              {/* Ruban "Offre limitée" */}
+              <div className="absolute -top-4 right-8 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+                🔥 Offre de lancement limitée
               </div>
 
-              {/* Right Column - Features with Enhanced Design */}
-              <div className="lg:w-[450px]">
-                <div className="grid gap-4" role="list" aria-label="Fonctionnalités du Club High Value">
-                  {displayFeatures.map((feature, index) => (
-                    <motion.div
-                      key={feature._id}
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.2 + index * 0.1 }}
-                      className="group relative"
-                      role="listitem"
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                {/* Pricing */}
+                <div className="text-center md:text-left">
+                  <div className="mb-4">
+                    <span className="text-gray-400 line-through text-2xl">199€</span>
+                    <span className="text-red-500 text-sm font-bold ml-2">-50%</span>
+                  </div>
+                  <div className="flex items-baseline gap-2 justify-center md:justify-start mb-2">
+                    <span className="text-6xl md:text-7xl font-bold text-white">99€</span>
+                    <span className="text-gray-400 text-xl">/mois</span>
+                  </div>
+                  <p className="text-yellow-400 font-medium mb-6">
+                    Prix exclusif pour les 100 premiers membres
+                  </p>
+                  
+                  {/* Countdown urgence */}
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <Bell className="w-4 h-4 text-yellow-400" />
+                    <span>Limité aux <strong className="text-white">100 premiers</strong> inscrits</span>
+                  </div>
+                </div>
+
+                {/* CTA Waitlist */}
+                <div className="space-y-4">
+                  <form onSubmit={handleWaitlist} className="space-y-3">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Votre meilleur email"
+                      required
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-colors"
+                    />
+                    
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full px-6 py-4 bg-gradient-to-r from-yellow-400 to-amber-400 text-black font-bold rounded-xl shadow-lg hover:shadow-yellow-400/20 transition-all duration-300 flex items-center justify-center gap-2"
+                      disabled={isSubscribed}
                     >
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-xl blur opacity-30 group-hover:opacity-75 transition-all duration-300"></div>
-                      <div className="relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300">
-                        <div className="flex gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-accent-blue to-accent-turquoise rounded-lg flex items-center justify-center flex-shrink-0">
-                            <DynamicIcon name={feature.icon} size={24} className="text-white" aria-hidden="true" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold mb-1 group-hover:text-accent-blue transition-colors">{feature.title}</h3>
-                            <p className="text-sm text-gray-400">{feature.description}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                      {isSubscribed ? (
+                        <>
+                          <CheckCircle className="w-5 h-5" />
+                          <span>Inscrit sur la liste !</span>
+                        </>
+                      ) : (
+                        <>
+                          <Bell className="w-5 h-5" />
+                          <span>Rejoindre la liste d'attente</span>
+                        </>
+                      )}
+                    </motion.button>
+                  </form>
+                  
+                  <p className="text-xs text-gray-500 text-center">
+                    <Lock className="w-3 h-3 inline mr-1" />
+                    Vos données sont sécurisées. Zéro spam.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
+        </motion.div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="group"
+              >
+                <div className="h-full p-6 bg-neutral-900/50 backdrop-blur-sm border border-yellow-500/10 rounded-2xl hover:border-yellow-500/30 transition-all duration-300">
+                  <div className="mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-amber-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Icon className="w-6 h-6 text-black" />
+                    </div>
+                  </div>
+                  <h3 className="font-bold text-white mb-2">{feature.title}</h3>
+                  <p className="text-sm text-gray-400">{feature.description}</p>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
-      </section>
-    </ErrorBoundary>
+
+        {/* Testimonials / Social Proof */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <div className="flex items-center justify-center gap-8 mb-6">
+            <div className="flex -space-x-2">
+              {[...Array(5)].map((_, i) => (
+                <div
+                  key={i}
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-amber-400 border-2 border-black flex items-center justify-center"
+                >
+                  <span className="text-xs font-bold text-black">{i + 1}</span>
+                </div>
+              ))}
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-1 mb-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <p className="text-sm text-gray-400">
+                <strong className="text-white">+500 entrepreneurs</strong> déjà inscrits
+              </p>
+            </div>
+          </div>
+
+          <p className="text-gray-500 text-sm">
+            Rejoignez l'élite entrepreneuriale française
+          </p>
+        </motion.div>
+      </div>
+    </section>
   );
 };
 

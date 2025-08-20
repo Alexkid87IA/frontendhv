@@ -1,7 +1,19 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Facebook, Twitter, Instagram, Youtube, ArrowRight, Mail, MapPin, Phone, Sparkles } from 'lucide-react';
+import { 
+  Twitter, 
+  Instagram, 
+  Youtube, 
+  Linkedin,
+  ArrowUpRight,
+  Sparkles,
+  Zap,
+  Crown,
+  Rocket,
+  TrendingUp
+} from 'lucide-react';
+
 // Import de tous les logos
 import logoMedia from '../../assets/logos/LOGO_HV_MEDIA.svg';
 import logoBusiness from '../../assets/logos/LOGO_HV_BUSINESS.svg';
@@ -10,12 +22,6 @@ import logoSociety from '../../assets/logos/LOGO_HV_SOCIETY.svg';
 import logoStory from '../../assets/logos/LOGO_HV_STORY.svg';
 
 export const Footer = () => {
-  const mainLinks = [
-    { label: 'Story', path: '/rubrique/story' },
-    { label: 'Business', path: '/rubrique/business' },
-    { label: 'Mental', path: '/rubrique/mental' },
-    { label: 'Society', path: '/rubrique/society' }
-  ];
   const location = useLocation();
   
   // Fonction pour obtenir le logo selon la page
@@ -29,153 +35,291 @@ export const Footer = () => {
     
     return logoMedia;
   };
-  const legalLinks = [
-    { label: 'Mentions légales', path: '/mentions-legales' },
-    { label: 'Politique de confidentialité', path: '/confidentialite' },
-    { label: 'CGV', path: '/cgv' }
+
+  // Navigation principale avec icônes
+  const mainNav = [
+    { 
+      label: 'Story', 
+      path: '/rubrique/story',
+      icon: Sparkles,
+      description: 'Histoires inspirantes',
+      gradient: 'from-amber-500 to-orange-500'
+    },
+    { 
+      label: 'Business', 
+      path: '/rubrique/business',
+      icon: TrendingUp,
+      description: 'Stratégies gagnantes',
+      gradient: 'from-blue-500 to-cyan-500'
+    },
+    { 
+      label: 'Mental', 
+      path: '/rubrique/mental',
+      icon: Crown,
+      description: 'Mindset d\'exception',
+      gradient: 'from-purple-500 to-violet-500'
+    },
+    { 
+      label: 'Society', 
+      path: '/rubrique/society',
+      icon: Rocket,
+      description: 'Mutations sociétales',
+      gradient: 'from-emerald-500 to-teal-500'
+    }
   ];
 
-  const socialLinks = [
-    { icon: Facebook, url: '#', label: 'Facebook' },
-    { icon: Twitter, url: '#', label: 'Twitter' },
-    { icon: Instagram, url: '#', label: 'Instagram' },
-    { icon: Youtube, url: '#', label: 'Youtube' }
+  // Liens ressources
+  const resourceLinks = [
+    { label: 'Tous les articles', path: '/articles' },
+    { label: 'Podcasts', path: '/emissions' },
+    { label: 'Newsletter', path: '#newsletter' },
+    { label: 'Le Club', path: '#club' }
   ];
+
+  // Réseaux sociaux
+  const socialLinks = [
+    { 
+      icon: Twitter, 
+      url: 'https://twitter.com/highvalue',
+      label: 'Twitter',
+      color: 'hover:text-blue-400'
+    },
+    { 
+      icon: Instagram, 
+      url: 'https://instagram.com/highvalue',
+      label: 'Instagram',
+      color: 'hover:text-pink-400'
+    },
+    { 
+      icon: Youtube, 
+      url: 'https://youtube.com/highvalue',
+      label: 'Youtube',
+      color: 'hover:text-red-500'
+    },
+    { 
+      icon: Linkedin, 
+      url: 'https://linkedin.com/company/highvalue',
+      label: 'LinkedIn',
+      color: 'hover:text-blue-500'
+    }
+  ];
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
 
   return (
-    <footer className="relative overflow-hidden border-t border-white/5">
-      {/* Background Effects */}
+    <footer className="relative overflow-hidden bg-black border-t border-white/5">
+      {/* Background avec effet de mesh gradient */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-900/50 to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-900/20 via-black to-black" />
+        
+        {/* Mesh gradient animé */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-[100px] animate-pulse" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[100px] animate-pulse animation-delay-2000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] animate-pulse animation-delay-4000" />
+        </div>
+
+        {/* Grille décorative */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
       </div>
 
-      {/* Main Footer Content */}
-      <div className="relative container pt-20 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12">
-          {/* Logo & Description */}
-          <div className="lg:col-span-1">
-            <Link to="/" className="block mb-6">
+      <div className="relative container py-20">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {/* Top Section avec Logo et Tagline */}
+          <motion.div 
+            variants={itemVariants}
+            className="text-center mb-20"
+          >
+            <Link to="/" className="inline-block mb-6">
               <motion.img 
                 src={getCurrentLogo()}
                 alt="High Value Media"
-                className="h-16 w-auto"
+                className="h-20 w-auto mx-auto"
                 whileHover={{
                   scale: 1.05,
-                  filter: "brightness(1.2)",
-                  transition: { duration: 0.2 }
+                  filter: "brightness(1.3)"
                 }}
+                transition={{ duration: 0.2 }}
               />
             </Link>
-            <p className="text-gray-400 mb-6">
-              Développez votre mindset d'exception et transformez votre vision du possible.
+            
+            <p className="text-2xl md:text-3xl font-bold mb-4">
+              <span className="text-white">Développez votre</span>
+              <span className="text-accent-turquoise ml-2">mindset d'exception</span>
             </p>
-            <div className="flex gap-4">
-              {socialLinks.map((social, index) => (
-                <motion.a
-                  key={index}
-                  href={social.url}
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-accent-blue/20 hover:text-accent-blue transition-colors"
-                  aria-label={social.label}
-                >
-                  <social.icon size={20} />
-                </motion.a>
-              ))}
-            </div>
-          </div>
+            
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Rejoignez une communauté d'entrepreneurs ambitieux qui transforment leurs idées en empire
+            </p>
+          </motion.div>
 
-          {/* Navigation Links */}
-          <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <div>
-              <h5 className="font-semibold mb-6">Navigation</h5>
-              <ul className="space-y-4">
-                {mainLinks.map((link, index) => (
-                  <motion.li
-                    key={index}
-                    whileHover={{ x: 4 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+          {/* Navigation Cards - Disposition en grille */}
+          <motion.div 
+            variants={itemVariants}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20"
+          >
+            {mainNav.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="group relative"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.02, y: -5 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="relative h-full p-6 bg-white/[0.02] backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:bg-white/[0.05] hover:border-white/20"
                   >
-                    <Link
-                      to={link.path}
-                      className="text-gray-400 hover:text-accent-blue transition-colors inline-flex items-center gap-2 group"
+                    {/* Gradient overlay au hover */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+                    
+                    {/* Content */}
+                    <div className="relative z-10">
+                      <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${item.gradient} mb-4`}>
+                        <Icon className="w-6 h-6 text-white" />
+                      </div>
+                      
+                      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all">
+                        {item.label}
+                      </h3>
+                      
+                      <p className="text-sm text-gray-500 group-hover:text-gray-400 transition-colors">
+                        {item.description}
+                      </p>
+                      
+                      {/* Arrow indicator */}
+                      <ArrowUpRight className="absolute top-6 right-6 w-4 h-4 text-gray-600 group-hover:text-white transition-all transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                    </div>
+                  </motion.div>
+                </Link>
+              );
+            })}
+          </motion.div>
+
+          {/* Middle Section - Ressources et Social */}
+          <motion.div 
+            variants={itemVariants}
+            className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-20"
+          >
+            {/* Ressources */}
+            <div className="md:col-span-2">
+              <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-6">
+                Ressources
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {resourceLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className="group"
+                  >
+                    <motion.div
+                      whileHover={{ x: 5 }}
+                      className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
                     >
                       <span>{link.label}</span>
-                      <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
-                  </motion.li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-semibold mb-6">Contact</h5>
-              <ul className="space-y-4">
-                <li>
-                  <a href="mailto:contact@highvalue.fr" className="text-gray-400 hover:text-accent-blue transition-colors flex items-center gap-2">
-                    <Mail size={16} />
-                    <span>contact@highvalue.fr</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="tel:+33600000000" className="text-gray-400 hover:text-accent-blue transition-colors flex items-center gap-2">
-                    <Phone size={16} />
-                    <span>+33 6 00 00 00 00</span>
-                  </a>
-                </li>
-                <li className="flex items-center gap-2 text-gray-400">
-                  <MapPin size={16} />
-                  <span>Paris, France</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* CTA Section */}
-          <div className="lg:col-span-1">
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-              <h5 className="font-semibold mb-4">Créez avec nous</h5>
-              <p className="text-gray-400 text-sm mb-6">
-                Transformez votre expertise en contenu premium qui inspire et convertit.
-              </p>
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="relative group"
-              >
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300 animate-tilt"></div>
-                <Link
-                  to="/create-with-roger"
-                  className="relative flex items-center justify-center gap-2 bg-black px-6 py-3 rounded-lg text-white group-hover:text-white/90 transition-colors"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Commencer</span>
-                </Link>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="pt-8 mt-12 border-t border-white/5">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-sm text-center md:text-left">
-              &copy; {new Date().getFullYear()} High Value Media. Tous droits réservés.
-            </p>
-            <ul className="flex flex-wrap justify-center gap-4 md:gap-6">
-              {legalLinks.map((link, index) => (
-                <li key={index}>
-                  <Link
-                    to={link.path}
-                    className="text-sm text-gray-400 hover:text-accent-blue transition-colors"
-                  >
-                    {link.label}
+                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </motion.div>
                   </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Social Links */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-6">
+                Suivez-nous
+              </h4>
+              <div className="flex gap-3">
+                {socialLinks.map((social) => (
+                  <motion.a
+                    key={social.label}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1, y: -3 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl flex items-center justify-center text-gray-400 transition-all hover:bg-white/10 hover:border-white/20 ${social.color}`}
+                    aria-label={social.label}
+                  >
+                    <social.icon className="w-5 h-5" />
+                  </motion.a>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Bottom Bar */}
+          <motion.div 
+            variants={itemVariants}
+            className="pt-8 border-t border-white/10"
+          >
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              {/* Copyright avec animation */}
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <span>&copy; {new Date().getFullYear()}</span>
+                <span className="text-gray-600">•</span>
+                <span>High Value Media</span>
+                <span className="text-gray-600">•</span>
+                <span className="flex items-center gap-1">
+                  Crafted with
+                  <motion.div
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                    }}
+                    transition={{ 
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <Zap className="w-3 h-3 text-yellow-400" />
+                  </motion.div>
+                  in Paris
+                </span>
+              </div>
+
+              {/* Legal Links */}
+              <div className="flex gap-6">
+                {['Mentions légales', 'Confidentialité', 'CGV'].map((item) => (
+                  <Link
+                    key={item}
+                    to={`/${item.toLowerCase().replace(' ', '-')}`}
+                    className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
+                  >
+                    {item}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
     </footer>
   );

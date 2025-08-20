@@ -5,10 +5,10 @@ import { HeroSection } from '../components/sections/HeroSection';
 import { AmuseBoucheSection } from '../components/sections/AmuseBoucheSection';
 import { EditorialSection } from '../components/sections/EditorialSection';
 import ContentSection from '../components/sections/ContentSection';
-import { ClubSection } from '../components/sections/ClubSection';
-import { ExploreArticlesCTA } from '../components/sections/ExploreArticlesCTA';
 import { EssentialArticlesSection } from '../components/sections/EssentialArticlesSection';
+import { ClubSection } from '../components/sections/ClubSection';
 import { NewsletterFooterSection } from '../components/sections/NewsletterFooterSection';
+import { Footer } from '../components/layout/Footer';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { getAllArticles } from '../utils/sanityAPI';
 
@@ -82,30 +82,48 @@ export const HomePage = () => {
         </div>
 
         <main className="pt-20">
+          {/* 1. Hero avec article à la une + 6 articles récents + CTA */}
           <HeroSection />
+          
+          {/* 2. Contenus RS/snackables pour engagement rapide */}
           <AmuseBoucheSection />
+          
+          {/* 3. Navigation thématique + stats + CTA */}
           <EditorialSection />
-          <ExploreArticlesCTA />
-          <EssentialArticlesSection />
-          <ClubSection />
+          
+          {/* 4. Nos formats : Podcasts */}
           <ContentSection 
             title="Le podcast High Value"
             description="Des conversations authentiques avec ceux qui façonnent le monde de demain"
             sectionType="emission"
           />
+          
+          {/* 5. Nos formats : Études de cas */}
           <ContentSection 
             title="Des études de cas"
             description="Découvrez les stratégies et idées qui transforment le monde des affaires"
             sectionType="business-idea"
           />
+          
+          {/* 6. Nos formats : Parcours exceptionnels */}
           <ContentSection 
             title="Des parcours incroyables"
             description="Parcours inspirants d'entrepreneurs qui ont réussi à concrétiser leur vision"
             sectionType="success-story"
           />
+          
+          {/* 7. Articles essentiels (différents du Hero) */}
+          <EssentialArticlesSection />
+          
+          {/* 8. Proposition premium */}
+          <ClubSection />
         </main>
         
+        {/* 9. Capture email */}
         <NewsletterFooterSection />
+        
+        {/* 10. Footer avec liens et infos */}
+        <Footer />
       </div>
     </>
   );

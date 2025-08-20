@@ -237,29 +237,44 @@ const ContentSection: React.FC<ContentSectionProps> = ({
 
   return (
     <ErrorBoundary>
-      <section className="relative py-20 overflow-hidden">
-        {/* Background subtil */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-900/50 to-black" />
+      <section className="relative py-16 overflow-hidden">
+        {/* Background très subtil */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent" />
         
         <div className="container relative">
-          {/* Header de section */}
+          {/* Header de section amélioré */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="mb-12"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`p-2 rounded-lg bg-gradient-to-r ${config.gradient}`}>
-                <Icon className="w-5 h-5 text-white" />
+            {/* Badge et label du type */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className={`p-2.5 rounded-xl bg-gradient-to-r ${config.gradient} shadow-lg`}>
+                <Icon className="w-6 h-6 text-white" />
               </div>
-              <span className={`text-sm font-medium text-${config.color}-400 uppercase tracking-wider`}>
-                {config.label}
-              </span>
+              <div>
+                <span className={`text-xs font-medium text-${config.color}-400 uppercase tracking-wider`}>
+                  {config.label}
+                </span>
+                <span className="text-xs text-gray-500 ml-2">
+                  • {items.length} nouveaux contenus
+                </span>
+              </div>
             </div>
             
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{title}</h2>
-            <p className="text-lg text-gray-400 max-w-2xl">{description}</p>
+            {/* Titre et description avec meilleure hiérarchie */}
+            <div className="max-w-3xl">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+                  {title}
+                </span>
+              </h2>
+              <p className="text-lg text-gray-400 leading-relaxed">
+                {description}
+              </p>
+            </div>
           </motion.div>
 
           {/* Grille de contenu */}
@@ -334,19 +349,19 @@ const ContentSection: React.FC<ContentSectionProps> = ({
             ))}
           </div>
 
-          {/* CTA */}
+          {/* CTA plus discret mais élégant */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center"
+            className="flex justify-end"
           >
             <Link
               to={config.link}
-              className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white font-medium transition-all duration-300"
+              className="group inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
             >
-              <span>Voir tous les {config.label.toLowerCase()}s</span>
-              <ArrowRight className="w-5 h-5" />
+              <span className="text-sm">Explorer tous les {config.label.toLowerCase()}s</span>
+              <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
         </div>
