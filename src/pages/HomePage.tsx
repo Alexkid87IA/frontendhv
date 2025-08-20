@@ -7,7 +7,6 @@ import { EditorialSection } from '../components/sections/EditorialSection';
 import ContentSection from '../components/sections/ContentSection';
 import { EssentialArticlesSection } from '../components/sections/EssentialArticlesSection';
 import { ClubSection } from '../components/sections/ClubSection';
-import { NewsletterFooterSection } from '../components/sections/NewsletterFooterSection';
 import { Footer } from '../components/layout/Footer';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { getAllArticles } from '../utils/sanityAPI';
@@ -119,10 +118,7 @@ export const HomePage = () => {
           <ClubSection />
         </main>
         
-        {/* 9. Capture email */}
-        <NewsletterFooterSection />
-        
-        {/* 10. Footer avec liens et infos */}
+        {/* 9. Footer avec liens et infos */}
         <Footer />
       </div>
     </>
