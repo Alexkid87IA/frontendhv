@@ -1,262 +1,290 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { BookOpen, TrendingUp, Brain, Users, ArrowRight, BookOpenCheck, Users2, Clock } from 'lucide-react';
 import { getUniverses } from '../../utils/sanityAPI';
-import { SanityUniverse } from '../../types/sanity';
-import { urlFor } from '../../utils/sanityImage';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import ErrorBoundary from '../common/ErrorBoundary';
-import SafeImage from '../common/SafeImage';
 
 // Données mockées pour fallback
-const mockedUniverses: SanityUniverse[] = [
+const mockUniverses = [
   {
-    _id: "mock-story",
-    title: "Story",
-    description: "Des histoires authentiques qui redéfinissent le possible",
-    image: {
-      _type: "image",
-      asset: {
-        _ref: "image-mock-story",
-        _type: "reference"
-      }
-    },
-    slug: {
-      _type: "slug",
-      current: "recits"
-    },
-    order: 1
+    _id: '1',
+    title: 'Story',
+    subtitle: 'Pour t\'inspirer',
+    description: 'Des histoires authentiques qui redéfinissent le possible',
+    slug: { current: 'story' },
+    icon: 'book',
+    color: 'amber',
+    gradient: 'from-amber-500 to-orange-500'
   },
   {
-    _id: "mock-business",
-    title: "Business",
-    description: "Les stratégies qui font la différence",
-    image: {
-      _type: "image",
-      asset: {
-        _ref: "image-mock-business",
-        _type: "reference"
-      }
-    },
-    slug: {
-      _type: "slug",
-      current: "business"
-    },
-    order: 2
+    _id: '2',
+    title: 'Business',
+    subtitle: 'Pour faire du chiffre',
+    description: 'Les stratégies qui font la différence',
+    slug: { current: 'business' },
+    icon: 'trending',
+    color: 'blue',
+    gradient: 'from-blue-500 to-cyan-500'
   },
   {
-    _id: "mock-mental",
-    title: "Mental",
-    description: "Développe une psychologie de champion",
-    image: {
-      _type: "image",
-      asset: {
-        _ref: "image-mock-mental",
-        _type: "reference"
-      }
-    },
-    slug: {
-      _type: "slug",
-      current: "mental"
-    },
-    order: 3
+    _id: '3',
+    title: 'Mental',
+    subtitle: 'Pour ta tête',
+    description: 'Développe une psychologie de champion',
+    slug: { current: 'mental' },
+    icon: 'brain',
+    color: 'purple',
+    gradient: 'from-purple-500 to-violet-500'
   },
   {
-    _id: "mock-society",
-    title: "Society",
-    description: "Comprendre les mutations de notre époque",
-    image: {
-      _type: "image",
-      asset: {
-        _ref: "image-mock-society",
-        _type: "reference"
-      }
-    },
-    slug: {
-      _type: "slug",
-      current: "society"
-    },
-    order: 4
+    _id: '4',
+    title: 'Society',
+    subtitle: 'Pour ta culture',
+    description: 'Comprendre les mutations de notre époque',
+    slug: { current: 'society' },
+    icon: 'users',
+    color: 'emerald',
+    gradient: 'from-emerald-500 to-teal-500'
   }
 ];
 
-// Mapping des gradients pour les univers
-const universeGradients: Record<string, string> = {
-  "story": "from-amber-500 to-orange-500",
-  "recits": "from-amber-500 to-orange-500",
-  "business": "from-blue-500 to-cyan-500",
-  "mental": "from-purple-500 to-violet-500",
-  "society": "from-emerald-500 to-teal-500",
-  "default": "from-accent-blue to-accent-turquoise"
-};
-
-// Mapping des sous-titres pour les univers
-const universeSubtitles: Record<string, string> = {
-  "story": "Pour t'inspirer",
-  "recits": "Pour t'inspirer",
-  "business": "Pour faire du chiffre",
-  "mental": "Pour ta tête",
-  "society": "Pour ta culture",
-  "default": "Pour t'enrichir"
+const iconMap = {
+  book: BookOpen,
+  trending: TrendingUp,
+  brain: Brain,
+  users: Users
 };
 
 export const EditorialSection = () => {
-  const [universes, setUniverses] = useState<SanityUniverse[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [universes, setUniverses] = useState(mockUniverses);
+  const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
 
   useEffect(() => {
     const fetchUniverses = async () => {
       try {
         setIsLoading(true);
-        setError(null);
+        const sanityUniverses = await getUniverses();
         
-        const result = await getUniverses();
-        
-        if (result && result.length > 0) {
-          setUniverses(result);
+        if (sanityUniverses && sanityUniverses.length > 0) {
+          setUniverses(sanityUniverses);
           setDataSource('cms');
-          console.log("Univers éditoriaux chargés depuis Sanity CMS");
+          console.log('Univers récupérés depuis Sanity CMS');
         } else {
-          setUniverses(mockedUniverses);
+          setUniverses(mockUniverses);
           setDataSource('mock');
-          console.log("Aucun univers trouvé dans Sanity, utilisation des données mockées");
+          console.log('Utilisation des univers mockés (fallback)');
         }
-      } catch (err) {
-        console.error("Erreur lors du chargement des univers:", err);
-        setError("Impossible de charger les univers éditoriaux");
-        
-        setUniverses(mockedUniverses);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des univers:', error);
+        setUniverses(mockUniverses);
         setDataSource('mock');
-        console.log("Erreur de chargement depuis Sanity, utilisation des données mockées");
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchUniverses();
   }, []);
 
-  // Fonction pour obtenir le gradient approprié pour un univers
-  const getGradient = (slug: string): string => {
-    return universeGradients[slug] || universeGradients.default;
-  };
-
-  // Fonction pour obtenir le sous-titre approprié pour un univers
-  const getSubtitle = (slug: string): string => {
-    return universeSubtitles[slug] || universeSubtitles.default;
-  };
-
   if (isLoading) {
     return (
-      <section className="container py-12 md:py-20 flex justify-center items-center">
+      <section className="relative py-20 flex items-center justify-center">
         <LoadingSpinner />
-      </section>
-    );
-  }
-
-  if (error && universes.length === 0) {
-    return (
-      <section className="container py-12 md:py-20">
-        <div className="text-center text-red-500">
-          <p>{error}</p>
-          <p className="mt-2">Veuillez réessayer ultérieurement.</p>
-        </div>
       </section>
     );
   }
 
   return (
     <ErrorBoundary>
-      <section className="relative py-20 overflow-hidden">
-        {/* Enhanced Background Effects */}
+      <section className="relative py-24 overflow-hidden">
+        {/* Fond amélioré avec effets visuels subtils */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 backdrop-blur-sm" />
+          {/* Gradient de base plus subtil */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/50" />
+          
+          {/* Grille en perspective avec opacité réduite */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [transform:perspective(1000px)_rotateX(35deg)]" />
+          
+          {/* Orbes lumineux animés avec opacité réduite */}
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-[128px] animate-pulse" />
+          <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[128px] animate-pulse animation-delay-2000" />
+          <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] animate-pulse animation-delay-4000" />
+          <div className="absolute bottom-1/2 right-1/3 w-96 h-96 bg-emerald-500/10 rounded-full blur-[128px] animate-pulse animation-delay-6000" />
+          
+          {/* Particules flottantes avec opacité réduite */}
+          <div className="absolute inset-0">
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-1 bg-white/10 rounded-full animate-float"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 10}s`,
+                  animationDuration: `${10 + Math.random() * 20}s`
+                }}
+              />
+            ))}
+          </div>
         </div>
 
-        <div className="container relative">
+        <div className="container relative z-10">
+          {/* En-tête avec effet glow */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
-            <div className="inline-block relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-full blur opacity-75"></div>
-              <span className="relative inline-block px-6 py-3 bg-black rounded-full text-accent-blue font-medium">
-                Univers éditoriaux
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              <span className="text-white">Explorez nos </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue to-accent-turquoise">
+                univers
               </span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold mt-6 mb-4">
-              Explorez nos univers
-              {dataSource === 'mock' && <span className="text-sm text-gray-400 ml-2">(démo)</span>}
             </h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
               Plongez dans nos thématiques phares et découvrez des contenus qui vous inspirent et vous transforment
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8" role="list" aria-label="Univers éditoriaux">
-            {universes.map((universe, index) => (
-              <motion.div
-                key={universe._id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                role="listitem"
-                className="group relative"
-              >
-                {/* Gradient Border Effect */}
-                <div className={`absolute -inset-0.5 bg-gradient-to-r ${getGradient(universe.slug.current)} rounded-2xl blur opacity-50 group-hover:opacity-100 transition-all duration-500`}></div>
-                
-                <Link 
-                  to={`/rubrique/${universe.slug.current}`}
-                  className="relative block bg-black rounded-2xl overflow-hidden"
-                  aria-label={`Univers ${universe.title}: ${universe.description}`}
+          {/* Grille des univers avec effets améliorés */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            {universes.map((universe, index) => {
+              const Icon = iconMap[universe.icon as keyof typeof iconMap] || BookOpen;
+              const gradientColors = {
+                amber: 'from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30',
+                blue: 'from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30',
+                purple: 'from-purple-500/20 to-violet-500/20 hover:from-purple-500/30 hover:to-violet-500/30',
+                emerald: 'from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30'
+              };
+              const borderColors = {
+                amber: 'border-amber-500/30 hover:border-amber-500/50',
+                blue: 'border-blue-500/30 hover:border-blue-500/50',
+                purple: 'border-purple-500/30 hover:border-purple-500/50',
+                emerald: 'border-emerald-500/30 hover:border-emerald-500/50'
+              };
+              const glowColors = {
+                amber: 'hover:shadow-amber-500/25',
+                blue: 'hover:shadow-blue-500/25',
+                purple: 'hover:shadow-purple-500/25',
+                emerald: 'hover:shadow-emerald-500/25'
+              };
+
+              return (
+                <motion.div
+                  key={universe._id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02 }}
+                  className="group relative"
                 >
-                  {/* Background Image with Enhanced Effects */}
-                  <div className="relative aspect-[16/9] w-full">
-                    <SafeImage 
-                      source={universe.image}
-                      alt={universe.title}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      fallbackText={universe.title}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
-                    <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(universe.slug.current)} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
-                  </div>
-
-                  {/* Content Overlay */}
-                  <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end">
-                    {/* Universe Title with Hover Effect */}
-                    <div className="mb-6">
-                      <h3 className="text-3xl md:text-4xl font-bold mb-2 transform group-hover:translate-x-2 transition-transform">
-                        {universe.title}
-                      </h3>
-                      <p className="text-xl text-accent-blue transform group-hover:translate-x-2 transition-transform delay-75">
-                        {getSubtitle(universe.slug.current)}
-                      </p>
+                  {/* Effet de lumière en arrière-plan au hover */}
+                  <div className={`absolute -inset-0.5 bg-gradient-to-r ${universe.gradient} rounded-2xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-500`} />
+                  
+                  <Link to={`/rubrique/${universe.slug.current}`}>
+                    <div className={`
+                      relative h-full p-8 rounded-2xl
+                      bg-gradient-to-br ${gradientColors[universe.color as keyof typeof gradientColors]}
+                      backdrop-blur-sm border ${borderColors[universe.color as keyof typeof borderColors]}
+                      transition-all duration-500
+                      hover:shadow-2xl ${glowColors[universe.color as keyof typeof glowColors]}
+                      overflow-hidden
+                    `}>
+                      {/* Motif de fond subtil */}
+                      <div className="absolute inset-0 opacity-10">
+                        <div 
+                          className="absolute inset-0 bg-center"
+                          style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                            backgroundSize: '60px 60px'
+                          }}
+                        />
+                      </div>
+                      
+                      {/* Contenu */}
+                      <div className="relative z-10">
+                        <div className="flex items-start justify-between mb-6">
+                          <div>
+                            <h3 className="text-3xl font-bold text-white mb-2">
+                              {universe.title}
+                            </h3>
+                            <p className={`text-sm font-medium text-${universe.color}-400`}>
+                              {universe.subtitle}
+                            </p>
+                          </div>
+                          <div className={`
+                            p-3 rounded-xl
+                            bg-gradient-to-br ${universe.gradient}
+                            shadow-lg transform group-hover:rotate-12 transition-transform duration-300
+                          `}>
+                            <Icon className="w-6 h-6 text-white" />
+                          </div>
+                        </div>
+                        
+                        <p className="text-gray-300 leading-relaxed mb-6">
+                          {universe.description}
+                        </p>
+                        
+                        {/* Barre de progression décorative */}
+                        <div className="relative h-1 bg-white/10 rounded-full overflow-hidden">
+                          <div className={`
+                            absolute inset-y-0 left-0 w-0 group-hover:w-full
+                            bg-gradient-to-r ${universe.gradient}
+                            transition-all duration-700 ease-out
+                          `} />
+                        </div>
+                      </div>
                     </div>
-
-                    {/* Description with Hover Effect */}
-                    <p className="text-gray-300 text-lg max-w-xl transform group-hover:translate-x-2 transition-transform delay-100">
-                      {universe.description}
-                    </p>
-
-                    {/* Animated Line */}
-                    <div className="mt-6 h-0.5 w-12 bg-accent-blue transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform" />
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
+
+          {/* Section Stats et CTA fusionnée */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-20"
+          >
+            {/* Statistiques */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-accent-blue mb-2">250+</div>
+                <div className="text-gray-400">Articles publiés</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-accent-turquoise mb-2">50k+</div>
+                <div className="text-gray-400">Lecteurs mensuels</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-accent-violet mb-2">15h+</div>
+                <div className="text-gray-400">De lecture</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-accent-cyan mb-2">98%</div>
+                <div className="text-gray-400">Satisfaction</div>
+              </div>
+            </div>
+
+            {/* CTA centré */}
+            <div className="text-center">
+              <Link 
+                to="/articles" 
+                className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-full text-white font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:shadow-accent-blue/25 hover:scale-105"
+              >
+                <BookOpenCheck size={20} />
+                <span>Explorer tous les articles</span>
+                <ArrowRight size={20} className="transform group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
     </ErrorBoundary>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Quote, Calendar, Clock, User } from 'lucide-react';
+import { ArrowRight, Quote, Calendar, Clock, User, Sparkles } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
 import { getAllArticles, getLatestQuote } from '../../utils/sanityAPI';
@@ -304,8 +304,6 @@ export const HeroSection = () => {
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         fallbackText={article.title}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-                      <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
                     </div>
                     
                     <div className="p-6">
@@ -333,6 +331,27 @@ export const HeroSection = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* CTA vers tous les articles - NOUVEAU */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="mt-16 text-center"
+          >
+            <Link 
+              to="/articles" 
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-full text-white font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:shadow-accent-blue/25 hover:scale-105"
+            >
+              <Sparkles size={20} className="animate-pulse" />
+              <span>Découvrir tous les articles</span>
+              <ArrowRight size={20} className="transform group-hover:translate-x-1 transition-transform" />
+            </Link>
+            
+            <p className="mt-4 text-gray-400">
+              Explorez notre collection complète d'articles inspirants
+            </p>
+          </motion.div>
         </div>
       </section>
     </ErrorBoundary>

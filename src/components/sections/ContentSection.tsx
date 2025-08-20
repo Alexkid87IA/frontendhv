@@ -1,46 +1,182 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ArrowRight, PlayCircle, TrendingUp, Users, Clock, Eye, Calendar } from 'lucide-react';
+import { getAllArticles } from '../../utils/sanityAPI';
+import { SanityArticle } from '../../types/sanity';
+import { LoadingSpinner } from '../common/LoadingSpinner';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
-import { getContentItems } from '../../utils/sanityAPI';
-import { LoadingSpinner } from '../common/LoadingSpinner';
 
 interface ContentSectionProps {
-  title: string;
-  description: string;
-  sectionType: 'emission' | 'business-idea' | 'success-story';
+  title?: string;
+  description?: string;
+  sectionType?: 'emission' | 'business-idea' | 'success-story';
 }
 
-const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sectionType }) => {
-  const [items, setItems] = useState<any[]>([]);
+// Données mockées pour fallback
+const mockItems = {
+  emission: [
+    {
+      _id: '1',
+      title: 'Roger Ormières - Créer un empire média moderne',
+      slug: { current: 'roger-ormieres-empire-media' },
+      excerpt: 'Comment construire une audience engagée et monétiser sa passion à l\'ère digitale',
+      mainImage: {
+        asset: { _ref: 'https://picsum.photos/600/400?random=10' }
+      },
+      publishedAt: '2024-03-20',
+      categories: [{ title: 'Podcast' }]
+    },
+    {
+      _id: '2',
+      title: 'Sarah Chen - L\'IA au service de l\'impact social',
+      slug: { current: 'sarah-chen-ia-humain' },
+      excerpt: 'Utiliser l\'intelligence artificielle pour résoudre des problèmes sociétaux majeurs',
+      mainImage: {
+        asset: { _ref: 'https://picsum.photos/600/400?random=11' }
+      },
+      publishedAt: '2024-03-19',
+      categories: [{ title: 'Podcast' }]
+    },
+    {
+      _id: '3',
+      title: 'Marc Dubois - Web3 et créateurs de contenu',
+      slug: { current: 'marc-dubois-web3' },
+      excerpt: 'Les nouvelles opportunités de monétisation pour les créateurs',
+      mainImage: {
+        asset: { _ref: 'https://picsum.photos/600/400?random=12' }
+      },
+      publishedAt: '2024-03-18',
+      categories: [{ title: 'Podcast' }]
+    }
+  ],
+  'business-idea': [
+    {
+      _id: '1',
+      title: 'Spotify : La disruption de l\'industrie musicale',
+      slug: { current: 'spotify-startup-geant' },
+      excerpt: 'Comment Daniel Ek a transformé notre façon de consommer la musique et créé un empire de 70 milliards',
+      mainImage: {
+        asset: { _ref: 'https://picsum.photos/600/400?random=13' }
+      },
+      publishedAt: '2024-03-20',
+      categories: [{ title: 'Business' }]
+    },
+    {
+      _id: '2',
+      title: 'Airbnb : Réinventer le voyage post-pandémie',
+      slug: { current: 'airbnb-crise-opportunite' },
+      excerpt: 'La stratégie audacieuse qui a permis à Airbnb de rebondir et atteindre des sommets historiques',
+      mainImage: {
+        asset: { _ref: 'https://picsum.photos/600/400?random=14' }
+      },
+      publishedAt: '2024-03-19',
+      categories: [{ title: 'Business' }]
+    },
+    {
+      _id: '3',
+      title: 'Notion : De side-project à licorne SaaS',
+      slug: { current: 'notion-licorne-saas' },
+      excerpt: 'Comment une petite équipe a créé l\'outil de productivité valorisé 10 milliards',
+      mainImage: {
+        asset: { _ref: 'https://picsum.photos/600/400?random=15' }
+      },
+      publishedAt: '2024-03-18',
+      categories: [{ title: 'Business' }]
+    }
+  ],
+  'success-story': [
+    {
+      _id: '1',
+      title: 'Chris Gardner : De SDF à millionnaire de Wall Street',
+      slug: { current: 'chris-gardner-story' },
+      excerpt: 'Le parcours extraordinaire qui a inspiré "À la recherche du bonheur" - Une leçon de résilience absolue',
+      mainImage: {
+        asset: { _ref: 'https://picsum.photos/600/400?random=16' }
+      },
+      publishedAt: '2024-03-20',
+      categories: [{ title: 'Parcours' }]
+    },
+    {
+      _id: '2',
+      title: 'Sara Blakely : Spanx et le pouvoir de l\'autodétermination',
+      slug: { current: 'sara-blakely-spanx' },
+      excerpt: 'De vendeuse porte-à-porte à plus jeune milliardaire self-made avec 5000$ de capital',
+      mainImage: {
+        asset: { _ref: 'https://picsum.photos/600/400?random=17' }
+      },
+      publishedAt: '2024-03-19',
+      categories: [{ title: 'Parcours' }]
+    },
+    {
+      _id: '3',
+      title: 'Patrick Bet-David : De réfugié à titan des médias',
+      slug: { current: 'patrick-bet-david-valuetainment' },
+      excerpt: 'Comment un immigrant iranien a bâti un empire médiatique de 100M$ en partant de zéro',
+      mainImage: {
+        asset: { _ref: 'https://picsum.photos/600/400?random=18' }
+      },
+      publishedAt: '2024-03-18',
+      categories: [{ title: 'Parcours' }]
+    }
+  ]
+};
+
+const ContentSection: React.FC<ContentSectionProps> = ({
+  title = "Découvrez nos contenus",
+  description = "Explorer notre sélection de contenus exclusifs",
+  sectionType = 'emission'
+}) => {
+  const [items, setItems] = useState<SanityArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
         setIsLoading(true);
-        setError(null);
+        const sanityArticles = await getAllArticles();
         
-        const result = await getContentItems(sectionType, 5);
-        
-        if (result && result.length > 0) {
-          setItems(result);
-          setDataSource('cms');
-          console.log(`Contenu ${sectionType} récupéré depuis Sanity CMS`);
+        // Si on a des articles depuis Sanity
+        if (sanityArticles && sanityArticles.length > 0) {
+          // TODO: Filtrer par catégorie/type quand les métadonnées seront disponibles dans Sanity
+          // Pour l'instant, on divise les articles disponibles entre les sections
+          let filteredItems: SanityArticle[] = [];
+          
+          // Distribution temporaire des articles entre les sections
+          // pour éviter d'avoir les mêmes partout
+          if (sectionType === 'emission') {
+            // Prendre les articles 0, 3, 6, 9... (tous les 3 en partant de 0)
+            filteredItems = sanityArticles.filter((_, index) => index % 3 === 0).slice(0, 3);
+          } else if (sectionType === 'business-idea') {
+            // Prendre les articles 1, 4, 7, 10... (tous les 3 en partant de 1)
+            filteredItems = sanityArticles.filter((_, index) => index % 3 === 1).slice(0, 3);
+          } else if (sectionType === 'success-story') {
+            // Prendre les articles 2, 5, 8, 11... (tous les 3 en partant de 2)
+            filteredItems = sanityArticles.filter((_, index) => index % 3 === 2).slice(0, 3);
+          }
+          
+          // Si on a trouvé des articles après filtrage, les utiliser
+          if (filteredItems.length > 0) {
+            setItems(filteredItems);
+            setDataSource('cms');
+            console.log(`${filteredItems.length} articles récupérés depuis Sanity pour ${sectionType}`);
+          } else {
+            // Sinon utiliser les données mockées
+            setItems(mockItems[sectionType] || []);
+            setDataSource('mock');
+            console.log(`Pas d'articles Sanity pour ${sectionType}, utilisation des données mockées`);
+          }
         } else {
+          // Pas d'articles du tout, utiliser les données mockées
+          setItems(mockItems[sectionType] || []);
           setDataSource('mock');
-          console.log(`Aucun contenu trouvé dans Sanity pour ${sectionType}`);
+          console.log(`Utilisation des données mockées pour ${sectionType}`);
         }
-      } catch (err) {
-        console.error(`Erreur lors de la récupération du contenu ${sectionType}:`, err);
-        setError(`Impossible de charger le contenu ${sectionType}`);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des articles:', error);
+        setItems(mockItems[sectionType] || []);
         setDataSource('mock');
       } finally {
         setIsLoading(false);
@@ -50,186 +186,169 @@ const ContentSection: React.FC<ContentSectionProps> = ({ title, description, sec
     fetchContent();
   }, [sectionType]);
 
-  const checkScrollButtons = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 5);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
-    }
-  };
-
-  useEffect(() => {
-    const scrollContainer = scrollRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener("scroll", checkScrollButtons);
-      const timeoutId = setTimeout(checkScrollButtons, 500);
-      return () => {
-        scrollContainer.removeEventListener("scroll", checkScrollButtons);
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [items]);
-
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const { clientWidth } = scrollRef.current;
-      const scrollAmount = clientWidth * 0.8;
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
   if (isLoading) {
     return (
-      <section className="py-20 relative overflow-hidden">
-        <div className="container relative flex justify-center items-center">
-          <LoadingSpinner />
-        </div>
+      <section className="relative py-20 flex items-center justify-center">
+        <LoadingSpinner />
       </section>
     );
   }
 
-  if (error && !items.length) {
-    return (
-      <section className="py-20">
-        <div className="container">
-          <div className="text-center text-red-500">
-            <p>{error}</p>
-            <p className="mt-2">Veuillez réessayer ultérieurement.</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Configuration selon le type
+  const getTypeConfig = () => {
+    switch (sectionType) {
+      case 'emission':
+        return {
+          icon: PlayCircle,
+          color: 'violet',
+          gradient: 'from-violet-500 to-purple-500',
+          link: '/emissions',
+          label: 'Podcast'
+        };
+      case 'business-idea':
+        return {
+          icon: TrendingUp,
+          color: 'blue',
+          gradient: 'from-blue-500 to-cyan-500',
+          link: '/business-ideas',
+          label: 'Étude de cas'
+        };
+      case 'success-story':
+        return {
+          icon: Users,
+          color: 'emerald',
+          gradient: 'from-emerald-500 to-green-500',
+          link: '/success-stories',
+          label: 'Parcours'
+        };
+      default:
+        return {
+          icon: PlayCircle,
+          color: 'blue',
+          gradient: 'from-blue-500 to-cyan-500',
+          link: '/articles',
+          label: 'Article'
+        };
+    }
+  };
 
-  if (!items.length) return null;
+  const config = getTypeConfig();
+  const Icon = config.icon;
 
   return (
     <ErrorBoundary>
-      <section className="py-20 relative overflow-hidden">
-        {/* Enhanced Background Effects */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black/90" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 backdrop-blur-sm" />
-        </div>
+      <section className="relative py-20 overflow-hidden">
+        {/* Background subtil */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-900/50 to-black" />
         
         <div className="container relative">
+          {/* Header de section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="mb-12"
           >
-            <div className="inline-block relative mb-6">
-              <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue via-accent-turquoise to-accent-blue rounded-full blur opacity-75"></div>
-              <span className="relative inline-block px-6 py-3 bg-black rounded-full text-accent-blue font-medium">
-                {title}
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`p-2 rounded-lg bg-gradient-to-r ${config.gradient}`}>
+                <Icon className="w-5 h-5 text-white" />
+              </div>
+              <span className={`text-sm font-medium text-${config.color}-400 uppercase tracking-wider`}>
+                {config.label}
               </span>
             </div>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              {description}
-            </p>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{title}</h2>
+            <p className="text-lg text-gray-400 max-w-2xl">{description}</p>
           </motion.div>
 
-          <div className="relative">
-            {/* Navigation Buttons */}
-            <div className="absolute -top-20 right-0 flex gap-2">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => scroll("left")}
-                disabled={!canScrollLeft}
-                className="relative group"
+          {/* Grille de contenu */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {items.map((item, index) => (
+              <motion.article
+                key={item._id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="group"
               >
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-full blur opacity-50 group-hover:opacity-75 transition-all duration-300"></div>
-                <div className="relative p-3 bg-black rounded-full text-white hover:text-accent-blue disabled:opacity-40 disabled:cursor-not-allowed transition-all">
-                  <ChevronLeft className="w-5 h-5" />
-                </div>
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => scroll("right")}
-                disabled={!canScrollRight}
-                className="relative group"
-              >
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-blue to-accent-turquoise rounded-full blur opacity-50 group-hover:opacity-75 transition-all duration-300"></div>
-                <div className="relative p-3 bg-black rounded-full text-white hover:text-accent-blue disabled:opacity-40 disabled:cursor-not-allowed transition-all">
-                  <ChevronRight className="w-5 h-5" />
-                </div>
-              </motion.button>
-            </div>
-
-            {/* Content Grid */}
-            <div
-              ref={scrollRef}
-              className="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth"
-              role="region"
-              aria-label={`Carrousel de ${sectionType === 'emission' ? 'émissions' : sectionType === 'business-idea' ? 'études de cas' : 'success stories'}`}
-            >
-              {items.map((item, index) => (
-                <motion.div
-                  key={item._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex-none w-[400px]"
+                <Link 
+                  to={`/${sectionType}/${item.slug?.current}`}
+                  className="block h-full"
                 >
-                  <Link 
-                    to={`/${sectionType}/${item.slug?.current}`} 
-                    className="block group"
-                  >
-                    <div className="relative bg-black/20 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden transition-all duration-300 hover:border-accent-blue/30">
-                      {/* Image Container */}
-                      <div className="relative aspect-[16/9] overflow-hidden">
-                        <SafeImage
-                          source={item.mainImage}
-                          alt={item.title}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          fallbackText={item.title}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
-                        <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />
-                      </div>
+                  <div className="relative h-full bg-neutral-900 rounded-xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-[1.02]">
+                    {/* Image */}
+                    <div className="relative aspect-[16/9] overflow-hidden">
+                      <SafeImage
+                        source={item.mainImage}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
                       
-                      {/* Content */}
-                      <div className="p-6">
-                        <h3 className="text-xl font-bold mb-3 group-hover:text-accent-blue transition-colors line-clamp-2">
-                          {item.title}
-                        </h3>
-                        
-                        <p className="text-gray-300 text-sm mb-4 line-clamp-2">
-                          {item.excerpt}
-                        </p>
+                      {/* Badge type */}
+                      {sectionType === 'emission' && (
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="p-4 rounded-full bg-black/60 backdrop-blur-sm">
+                            <PlayCircle className="w-12 h-12 text-white" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
-                        {/* Footer */}
-                        <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                          <time className="text-sm text-gray-400" dateTime={item.publishedAt}>
+                    {/* Contenu */}
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-accent-cyan transition-colors">
+                        {item.title}
+                      </h3>
+                      
+                      <p className="text-gray-400 text-sm line-clamp-2 mb-4">
+                        {item.excerpt}
+                      </p>
+
+                      {/* Meta info */}
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-3 h-3" />
+                          <time>
                             {new Date(item.publishedAt || '').toLocaleDateString('fr-FR', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric'
                             })}
                           </time>
-                          
-                          <span className="inline-flex items-center gap-2 text-accent-blue group-hover:text-accent-turquoise transition-colors">
-                            <span>Lire</span>
-                            <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
-                          </span>
                         </div>
+                        <span className="flex items-center gap-1">
+                          Lire plus
+                          <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
+                        </span>
                       </div>
                     </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+
+                    {/* Ligne colorée au hover */}
+                    <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${config.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
+                  </div>
+                </Link>
+              </motion.article>
+            ))}
           </div>
+
+          {/* CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <Link
+              to={config.link}
+              className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white font-medium transition-all duration-300"
+            >
+              <span>Voir tous les {config.label.toLowerCase()}s</span>
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </motion.div>
         </div>
       </section>
     </ErrorBoundary>
