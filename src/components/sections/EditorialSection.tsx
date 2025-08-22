@@ -266,12 +266,9 @@ export const EditorialSection = () => {
                   `}
                 >
                   <div>
-                    <h4 className="text-white font-bold text-[11px] lg:text-[13px] mb-1 leading-tight">
+                    <h4 className="text-white font-bold text-[11px] lg:text-[13px] leading-tight">
                       {subcat.title}
                     </h4>
-                    <p className={`text-[10px] lg:text-xs ${colors.text}`}>
-                      {subcat.articleCount} articles
-                    </p>
                   </div>
                   
                   <div className="flex justify-end">
@@ -300,13 +297,10 @@ export const EditorialSection = () => {
                       min-h-[60px] lg:min-h-[70px]
                     `}
                   >
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-between">
                       <h4 className="text-white font-bold text-base lg:text-lg">
                         {subcats[2].title}
                       </h4>
-                      <p className={`text-sm ${colors.text}`}>
-                        {subcats[2].articleCount} articles
-                      </p>
                     </div>
                     
                     <ArrowRight className="w-4 h-4 text-white/40 group-hover:text-white/80 group-hover:translate-x-1 transition-all" />
@@ -333,12 +327,9 @@ export const EditorialSection = () => {
                       `}
                     >
                       <div>
-                        <h4 className="text-white font-bold text-[11px] lg:text-[13px] mb-1 leading-tight">
+                        <h4 className="text-white font-bold text-[11px] lg:text-[13px] leading-tight">
                           {subcat.title}
                         </h4>
-                        <p className={`text-[10px] lg:text-xs ${colors.text}`}>
-                          {subcat.articleCount} articles
-                        </p>
                       </div>
                       
                       <div className="flex justify-end">
