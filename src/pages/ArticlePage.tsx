@@ -55,7 +55,7 @@ interface SanityArticle {
   keyPoints?: string[];
 }
 
-const ArticlePage: React.FC = () => {
+const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false }) => {
   const { slug } = useParams<{ slug: string }>();
   const [article, setArticle] = useState<SanityArticle | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<SanityArticle[]>([]);
@@ -107,10 +107,16 @@ const ArticlePage: React.FC = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const isPreview = urlParams.get('preview') === 'true';
         
+        // Détection automatique si c'est une émission
+        const isEmissionPath = window.location.pathname.includes('/emission/') || isEmission;
+        
         let fetchedArticle = null;
         
         try {
-          fetchedArticle = await getArticleBySlug(slug, isPreview);
+          // Utiliser la bonne fonction selon le type de contenu
+         fetchedArticle = await getArticleBySlug(slug, isPreview);
+
+            
           if (fetchedArticle) {
             setDataSource('sanity');
           }
@@ -756,6 +762,26 @@ const ArticlePage: React.FC = () => {
             
             {/* Contenu principal */}
             <article className="lg:col-span-8">
+              {/* Player YouTube si c'est une émission avec videoUrl */}
+              {isEmission && article.videoUrl && (
+                <div className="mb-12">
+                  <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${article.videoUrl.split('v=')[1]?.split('&')[0] || article.videoUrl.split('/').pop()}`}
+                      title={article.title}
+                      className="absolute inset-0 w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                  <div className="mt-4 p-4 bg-white/5 rounded-lg border border-white/10">
+                    <p className="text-sm text-gray-400">
+                      📺 Émission complète • {estimatedReadingTime} min
+                    </p>
+                  </div>
+                </div>
+              )}
+              
               <div className="prose prose-invert prose-lg max-w-none">
                 {(article.body || article.content) && (
                   <PortableText 

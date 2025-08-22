@@ -655,38 +655,33 @@ export const getSubcategoryBySlug = async (slug: string) => {
   });
 };
 
-// ============= NOUVELLES FONCTIONS POUR LES ÉMISSIONS - CORRIGÉES =============
+// ============= FONCTIONS POUR LES ÉMISSIONS (QUI SONT DES ARTICLES) =============
 
-// Récupérer toutes les émissions
+// Récupérer toutes les émissions (articles de type émission)
 export const getAllEmissions = async (): Promise<any[]> => {
   return getWithCache('allEmissions', async () => {
     try {
-      const query = `*[_type == "emission"] | order(publishedAt desc) {
+      // Chercher les ARTICLES avec contentType = 'emission'
+      const query = `*[_type == "article" && contentType == "emission"] | order(publishedAt desc) {
         _id,
         title,
-        description,
-        "thumbnail": coverImage.asset->url,
-        slug,
-        duration,
+        "description": excerpt,
+        "thumbnail": mainImage.asset->url,
+        "slug": slug.current,
+        "duration": duration,
         publishedAt,
-        featured,
-        "listens": coalesce(listens, 0),
-        "likes": coalesce(likes, 0),
-        videoUrlExternal,
-        "category": coalesce(category, "general"),
-        guest
+        "featured": isFeatured,
+        "listens": coalesce(stats.views, 0),
+        "likes": coalesce(stats.likes, 0),
+        "videoUrlExternal": videoUrl,
+        "category": categories[0]->title,
+        "guest": guest
       }`;
       
       const emissions = await sanityClient.fetch(query);
       console.log(`Émissions récupérées: ${emissions?.length || 0}`);
       
-      // Valider que nous avons des données valides
-      if (!emissions || !Array.isArray(emissions)) {
-        console.warn("Aucune émission trouvée ou format invalide");
-        return [];
-      }
-      
-      return emissions;
+      return emissions || [];
     } catch (error) {
       console.error("Erreur lors de la récupération des émissions:", error);
       return [];
@@ -698,40 +693,40 @@ export const getAllEmissions = async (): Promise<any[]> => {
 export const getFeaturedEmission = async (): Promise<any | null> => {
   return getWithCache('featuredEmission', async () => {
     try {
-      const query = `*[_type == "emission" && featured == true][0] {
+      const query = `*[_type == "article" && contentType == "emission" && isFeatured == true][0] {
         _id,
         title,
-        description,
-        "thumbnail": coverImage.asset->url,
-        slug,
-        duration,
+        "description": excerpt,
+        "thumbnail": mainImage.asset->url,
+        "slug": slug.current,
+        "duration": duration,
         publishedAt,
-        featured,
-        "listens": coalesce(listens, 0),
-        "likes": coalesce(likes, 0),
-        videoUrlExternal,
-        "category": coalesce(category, "general"),
-        guest
+        "featured": isFeatured,
+        "listens": coalesce(stats.views, 0),
+        "likes": coalesce(stats.likes, 0),
+        "videoUrlExternal": videoUrl,
+        "category": categories[0]->title,
+        "guest": guest
       }`;
       
       const emission = await sanityClient.fetch(query);
       
       // Si pas d'émission featured, prendre la plus récente
       if (!emission) {
-        const fallbackQuery = `*[_type == "emission"] | order(publishedAt desc)[0] {
+        const fallbackQuery = `*[_type == "article" && contentType == "emission"] | order(publishedAt desc)[0] {
           _id,
           title,
-          description,
-          "thumbnail": coverImage.asset->url,
-          slug,
-          duration,
+          "description": excerpt,
+          "thumbnail": mainImage.asset->url,
+          "slug": slug.current,
+          "duration": duration,
           publishedAt,
-          featured,
-          "listens": coalesce(listens, 0),
-          "likes": coalesce(likes, 0),
-          videoUrlExternal,
-          "category": coalesce(category, "general"),
-          guest
+          "featured": isFeatured,
+          "listens": coalesce(stats.views, 0),
+          "likes": coalesce(stats.likes, 0),
+          "videoUrlExternal": videoUrl,
+          "category": categories[0]->title,
+          "guest": guest
         }`;
         
         return await sanityClient.fetch(fallbackQuery);
@@ -745,53 +740,24 @@ export const getFeaturedEmission = async (): Promise<any | null> => {
   });
 };
 
-// Récupérer une émission par son slug
-export const getEmissionBySlug = async (slug: string): Promise<any | null> => {
-  return getWithCache(`emission_${slug}`, async () => {
-    try {
-      const query = `*[_type == "emission" && slug.current == $slug][0] {
-        _id,
-        title,
-        description,
-        "thumbnail": coverImage.asset->url,
-        slug,
-        duration,
-        publishedAt,
-        featured,
-        "listens": coalesce(listens, 0),
-        "likes": coalesce(likes, 0),
-        videoUrlExternal,
-        "category": coalesce(category, "general"),
-        guest,
-        detailedContent
-      }`;
-      
-      return await sanityClient.fetch(query, { slug });
-    } catch (error) {
-      console.error(`Erreur lors de la récupération de l'émission ${slug}:`, error);
-      return null;
-    }
-  });
-};
-
 // Récupérer les émissions par catégorie
 export const getEmissionsByCategory = async (category: string): Promise<any[]> => {
   return getWithCache(`emissions_category_${category}`, async () => {
     try {
-      const query = `*[_type == "emission" && category == $category] | order(publishedAt desc) {
+      const query = `*[_type == "article" && contentType == "emission" && categories[]->title match $category] | order(publishedAt desc) {
         _id,
         title,
-        description,
-        "thumbnail": coverImage.asset->url,
-        slug,
-        duration,
+        "description": excerpt,
+        "thumbnail": mainImage.asset->url,
+        "slug": slug.current,
+        "duration": duration,
         publishedAt,
-        featured,
-        "listens": coalesce(listens, 0),
-        "likes": coalesce(likes, 0),
-        videoUrlExternal,
-        category,
-        guest
+        "featured": isFeatured,
+        "listens": coalesce(stats.views, 0),
+        "likes": coalesce(stats.likes, 0),
+        "videoUrlExternal": videoUrl,
+        "category": categories[0]->title,
+        "guest": guest
       }`;
       
       const emissions = await sanityClient.fetch(query, { category });

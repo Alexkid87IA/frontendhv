@@ -217,7 +217,7 @@ export const EmissionsPage = () => {
           const formattedEpisodes = emissions.map((emission: any, index: number) => {
             const formatted = {
               id: emission._id,
-              slug: emission.slug?.current || emission._id,
+slug: emission.slug || emission._id,
               title: emission.title || 'Sans titre',
               description: emission.description || '',
               thumbnail: emission.thumbnail || `https://picsum.photos/800/600?random=${index}`,
