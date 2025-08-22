@@ -183,8 +183,8 @@ export const ResponsiveNavbar = () => {
               
               {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center flex-1 justify-center px-8">
-                <div className="flex items-center space-x-1">
-                  {menuItems.map((item) => {
+                <div className="flex items-center space-x-1 relative">
+                  {menuItems.map((item, index) => {
                     const isActive = location.pathname.includes(item.slug);
                     const gradient = getGradientByColor(item.color);
                     
@@ -216,96 +216,136 @@ export const ResponsiveNavbar = () => {
                             />
                           )}
                         </Link>
+                      </div>
+                    );
+                  })}
 
-                        {/* Dropdown */}
-                        <AnimatePresence>
-                          {activeDropdown === item.slug && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                              animate={{ opacity: 1, y: 0, scale: 1 }}
-                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                              transition={{ duration: 0.2, ease: "easeOut" }}
-                              className="absolute top-full left-1/2 -translate-x-1/2 mt-6 w-[600px]"
-                            >
-                              <div className="relative">
-                                {/* Flèche avec gradient */}
-                                <div className={`absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-gradient-to-br ${gradient} rotate-45 rounded-sm`} />
-                                
-                                {/* Container principal avec gradient border */}
-                                <div className="relative rounded-3xl p-[1px] bg-gradient-to-br from-white/20 to-white/5">
-                                  <div className="bg-black/95 backdrop-blur-2xl rounded-3xl p-8">
-                                    {/* Header de la catégorie */}
-                                    <div className="mb-6">
-                                      <div className={`text-xs font-bold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r ${gradient} mb-2`}>
-                                        Explorer {item.label}
-                                      </div>
-                                      <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                  {/* Dropdown - POSITION FIXE EN DEHORS DE LA BOUCLE */}
+                  <AnimatePresence>
+                    {activeDropdown && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute top-full mt-8 w-[480px]"
+                        style={{
+                          left: activeDropdown === 'story' ? '0px' :
+                                activeDropdown === 'business' ? '90px' :
+                                activeDropdown === 'mental' ? '200px' :
+                                activeDropdown === 'society' ? '300px' : '0px'
+                        }}
+                      >
+                        {(() => {
+                          const item = menuItems.find(m => m.slug === activeDropdown);
+                          if (!item) return null;
+                          const gradient = getGradientByColor(item.color);
+                          
+                          return (
+                            <div className="relative">
+                              {/* Flèche avec gradient */}
+                              <div className={`absolute -top-2 left-12 w-4 h-4 bg-gradient-to-br ${gradient} rotate-45 rounded-sm`} />
+                              
+                              {/* Container principal avec gradient border */}
+                              <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-white/20 to-white/5">
+                                <div className="bg-black/95 backdrop-blur-2xl rounded-2xl p-6">
+                                  {/* Header de la catégorie */}
+                                  <div className="mb-5">
+                                    <div className={`text-xs font-bold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r ${gradient} mb-2`}>
+                                      Explorer {item.label}
                                     </div>
-                                    
-                                    {/* Grid des sous-catégories */}
-                                    <div className="grid grid-cols-2 gap-3">
-                                      {item.subcategories.map((sub, idx) => (
-                                        <Link
-                                          key={sub.path}
-                                          to={sub.path}
-                                          className="group relative"
+                                    <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                  </div>
+                                  
+                                  {/* Grid des sous-catégories */}
+                                  <div className="grid grid-cols-2 gap-2">
+                                    {item.subcategories.slice(0, 4).map((sub, idx) => (
+                                      <Link
+                                        key={sub.path}
+                                        to={sub.path}
+                                        className="group relative"
+                                      >
+                                        <motion.div
+                                          whileHover={{ scale: 1.02, x: 3 }}
+                                          className="relative p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300"
                                         >
-                                          <motion.div
-                                            whileHover={{ scale: 1.02, x: 5 }}
-                                            className="relative p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300"
-                                          >
-                                            {/* Numéro stylisé */}
-                                            <div className={`absolute top-4 right-4 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-br ${gradient} opacity-20 group-hover:opacity-40 transition-opacity`}>
-                                              0{idx + 1}
-                                            </div>
-                                            
-                                            {/* Contenu */}
-                                            <div className="relative z-10">
-                                              <h4 className="text-white font-medium mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:${gradient} transition-all">
-                                                {sub.label}
-                                              </h4>
-                                              <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
-                                                Découvrir les articles →
-                                              </p>
-                                            </div>
-                                            
-                                            {/* Hover effect gradient */}
-                                            <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity`} />
-                                          </motion.div>
-                                        </Link>
-                                      ))}
-                                    </div>
+                                          {/* Numéro stylisé */}
+                                          <div className={`absolute top-3 right-3 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br ${gradient} opacity-20 group-hover:opacity-40 transition-opacity`}>
+                                            0{idx + 1}
+                                          </div>
+                                          
+                                          {/* Contenu */}
+                                          <div className="relative z-10">
+                                            <h4 className="text-white font-medium text-sm mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:${gradient} transition-all">
+                                              {sub.label}
+                                            </h4>
+                                            <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
+                                              Découvrir les articles →
+                                            </p>
+                                          </div>
+                                          
+                                          {/* Hover effect gradient */}
+                                          <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 rounded-xl transition-opacity`} />
+                                        </motion.div>
+                                      </Link>
+                                    ))}
                                     
-                                    {/* Footer avec stats */}
-                                    <div className="mt-6 pt-6 border-t border-white/5">
-                                      <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-6">
-                                          <div className="text-sm">
-                                            <span className="text-gray-500">Articles</span>
-                                            <span className="ml-2 font-bold text-white">247</span>
+                                    {/* 5ème élément pour Business (Finance) */}
+                                    {item.subcategories.length === 5 && (
+                                      <Link
+                                        to={item.subcategories[4].path}
+                                        className="group relative col-span-2"
+                                      >
+                                        <motion.div
+                                          whileHover={{ scale: 1.02, x: 3 }}
+                                          className="relative p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300"
+                                        >
+                                          <div className={`absolute top-3 right-3 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br ${gradient} opacity-20 group-hover:opacity-40 transition-opacity`}>
+                                            05
                                           </div>
-                                          <div className="text-sm">
-                                            <span className="text-gray-500">Auteurs</span>
-                                            <span className="ml-2 font-bold text-white">18</span>
+                                          <div className="relative z-10">
+                                            <h4 className="text-white font-medium text-sm mb-1">
+                                              {item.subcategories[4].label}
+                                            </h4>
+                                            <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
+                                              Découvrir les articles →
+                                            </p>
                                           </div>
+                                          <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 rounded-xl transition-opacity`} />
+                                        </motion.div>
+                                      </Link>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Footer avec stats */}
+                                  <div className="mt-5 pt-5 border-t border-white/5">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-6">
+                                        <div className="text-xs">
+                                          <span className="text-gray-500">Articles</span>
+                                          <span className="ml-2 font-bold text-white">247</span>
                                         </div>
-                                        <Link
-                                          to={item.path}
-                                          className={`text-sm font-medium text-transparent bg-clip-text bg-gradient-to-r ${gradient} hover:opacity-80 transition-opacity`}
-                                        >
-                                          Voir tout →
-                                        </Link>
+                                        <div className="text-xs">
+                                          <span className="text-gray-500">Auteurs</span>
+                                          <span className="ml-2 font-bold text-white">18</span>
+                                        </div>
                                       </div>
+                                      <Link
+                                        to={item.path}
+                                        className={`text-xs font-medium text-transparent bg-clip-text bg-gradient-to-r ${gradient} hover:opacity-80 transition-opacity`}
+                                      >
+                                        Voir tout →
+                                      </Link>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    );
-                  })}
+                            </div>
+                          );
+                        })()}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   {/* Séparateur */}
                   <div className="w-px h-6 bg-white/10 mx-2" />

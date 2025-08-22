@@ -29,27 +29,35 @@ export const EssentialArticlesSection = () => {
   useEffect(() => {
     const fetchEssentialArticles = async () => {
       try {
-        // Requête pour récupérer les articles marqués comme "essentiel"
-        const query = `*[_type == "essentiel"] | order(order asc, _createdAt desc)[0...5] {
+        // SOLUTION SIMPLE : Récupérer directement les articles marqués comme essentiels
+        const query = `*[_type == "article" && isEssential == true] | order(publishedAt desc)[0...5] {
           _id,
           title,
           slug,
           mainImage,
-          category->{
+          categories[0]->{
             title,
             slug
           },
           excerpt,
-          order
+          isEssential
         }`;
         
         const articles = await sanityClient.fetch(query);
         
         if (articles && articles.length > 0) {
-          setEssentialArticles(articles);
-          console.log('Articles essentiels récupérés:', articles.length);
+          // Mapper categories vers category pour uniformiser
+          const mappedArticles = articles.map((article: any) => ({
+            ...article,
+            category: article.categories
+          }));
+          
+          setEssentialArticles(mappedArticles);
+          console.log('Articles essentiels récupérés:', mappedArticles.length);
         } else {
-          // Si pas d'articles essentiels, récupérer les 5 articles les plus récents
+          // Si pas d'articles essentiels, récupérer les 5 articles les plus récents comme fallback
+          console.log('Aucun article essentiel trouvé, utilisation du fallback');
+          
           const fallbackQuery = `*[_type == "article"] | order(publishedAt desc)[0...5] {
             _id,
             title,
@@ -75,6 +83,7 @@ export const EssentialArticlesSection = () => {
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des articles essentiels:', error);
+        setEssentialArticles([]);
       } finally {
         setIsLoading(false);
       }
