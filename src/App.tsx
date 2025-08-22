@@ -9,7 +9,7 @@ import { ArticlePage } from './pages/ArticlePage';
 import { CategoryPage } from './pages/CategoryPage';
 import { SubcategoryPage } from './pages/SubcategoryPage'; // AJOUT
 import { PodcastPage } from './pages/PodcastPage';
-import { EmissionsPage } from './pages/EmissionsPage';
+import EmissionsPage from './pages/EmissionsPage'; // CORRECTION : import par défaut
 import { EmissionPage } from './pages/EmissionPage';
 import { CreateWithRogerPage } from './pages/CreateWithRogerPage';
 import { AboutPage } from './pages/AboutPage';

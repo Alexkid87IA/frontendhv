@@ -40,15 +40,48 @@ const categoryStyles = {
   all: { gradient: 'from-gray-400 to-gray-500', bg: 'bg-gray-500/10', text: 'text-gray-400' }
 };
 
-// Topics populaires
-const popularTopics = [
-  { name: 'Entrepreneuriat', count: 156, icon: TrendingUp },
-  { name: 'Leadership', count: 89, icon: Users },
-  { name: 'Innovation', count: 124, icon: Sparkles },
-  { name: 'Mindset', count: 78, icon: Hash },
-  { name: 'Stratégie', count: 92, icon: BarChart3 },
-  { name: 'Growth', count: 67, icon: TrendingUp }
-];
+// Topics populaires - Extraits automatiquement des titres et contenus
+const generateTopicsFromArticles = (articles: SanityArticle[]) => {
+  // Mots-clés à rechercher dans les articles
+  const topicKeywords = {
+    'Entrepreneuriat': ['entrepreneur', 'startup', 'créer', 'fonder', 'business', 'entreprise'],
+    'Leadership': ['leader', 'diriger', 'management', 'équipe', 'manager', 'CEO'],
+    'Innovation': ['innov', 'tech', 'IA', 'digital', 'transform', 'futur'],
+    'Mindset': ['mindset', 'mental', 'pensée', 'motivation', 'confiance', 'développement personnel'],
+    'Stratégie': ['stratég', 'plan', 'méthode', 'tactique', 'approche', 'process'],
+    'Growth': ['growth', 'croissance', 'scale', 'développ', 'expansion', 'lever']
+  };
+
+  const topicCounts: Record<string, number> = {};
+
+  // Compter les occurrences de chaque topic dans les articles
+  Object.entries(topicKeywords).forEach(([topic, keywords]) => {
+    let count = 0;
+    articles.forEach(article => {
+      const searchText = `${article.title} ${article.excerpt || ''}`.toLowerCase();
+      const hasKeyword = keywords.some(keyword => searchText.includes(keyword.toLowerCase()));
+      if (hasKeyword) count++;
+    });
+    topicCounts[topic] = count;
+  });
+
+  // Convertir en array et trier par popularité
+  return Object.entries(topicCounts)
+    .map(([name, count]) => ({
+      name,
+      count,
+      icon: {
+        'Entrepreneuriat': TrendingUp,
+        'Leadership': Users,
+        'Innovation': Sparkles,
+        'Mindset': Hash,
+        'Stratégie': BarChart3,
+        'Growth': TrendingUp
+      }[name] || Hash
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 6); // Garder les 6 plus populaires
+};
 
 export const AllArticlesPage = () => {
   const [articles, setArticles] = useState<SanityArticle[]>([]);
@@ -61,6 +94,7 @@ export const AllArticlesPage = () => {
   const [bookmarkedArticles, setBookmarkedArticles] = useState<string[]>([]);
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [popularTopics, setPopularTopics] = useState<Array<{name: string, count: number, icon: any}>>([]);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -72,9 +106,14 @@ export const AllArticlesPage = () => {
         
         if (sanityArticles && sanityArticles.length > 0) {
           setArticles(sanityArticles);
+          // Générer les topics à partir des articles récupérés
+          setPopularTopics(generateTopicsFromArticles(sanityArticles));
         } else {
           // Articles de démonstration
-          setArticles(generateMockArticles());
+          const mockArticles = generateMockArticles();
+          setArticles(mockArticles);
+          // Générer les topics à partir des articles mock
+          setPopularTopics(generateTopicsFromArticles(mockArticles));
         }
       } catch (err) {
         setError('Une erreur est survenue lors du chargement des articles.');
@@ -173,9 +212,21 @@ export const AllArticlesPage = () => {
 
     // Filtrer par topic
     if (selectedTopic) {
-      filtered = filtered.filter(article =>
-        article.title.toLowerCase().includes(selectedTopic.toLowerCase())
-      );
+      // Chercher le topic dans le titre ET l'excerpt avec les mots-clés associés
+      const topicKeywords = {
+        'Entrepreneuriat': ['entrepreneur', 'startup', 'créer', 'fonder', 'business', 'entreprise'],
+        'Leadership': ['leader', 'diriger', 'management', 'équipe', 'manager', 'CEO'],
+        'Innovation': ['innov', 'tech', 'IA', 'digital', 'transform', 'futur'],
+        'Mindset': ['mindset', 'mental', 'pensée', 'motivation', 'confiance', 'développement personnel'],
+        'Stratégie': ['stratég', 'plan', 'méthode', 'tactique', 'approche', 'process'],
+        'Growth': ['growth', 'croissance', 'scale', 'développ', 'expansion', 'lever']
+      };
+      
+      const keywords = topicKeywords[selectedTopic as keyof typeof topicKeywords] || [selectedTopic.toLowerCase()];
+      filtered = filtered.filter(article => {
+        const searchText = `${article.title} ${article.excerpt || ''}`.toLowerCase();
+        return keywords.some(keyword => searchText.includes(keyword.toLowerCase()));
+      });
     }
 
     // Trier

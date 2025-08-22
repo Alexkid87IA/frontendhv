@@ -102,7 +102,7 @@ export const ResponsiveNavbar = () => {
     },
     { 
       label: 'Podcasts', 
-      path: '/podcasts'
+      path: '/emissions'
     }
   ];
 
