@@ -222,7 +222,8 @@ export const HeroSection = () => {
           excerpt,
           publishedAt,
           readingTime,
-          categories[0]->{
+          categories[]->{
+            _id,
             title,
             slug
           },
@@ -279,7 +280,8 @@ export const HeroSection = () => {
             excerpt,
             publishedAt,
             readingTime,
-            categories[0]->{
+            categories[]->{
+              _id,
               title,
               slug
             }
@@ -322,12 +324,7 @@ export const HeroSection = () => {
     'Story': 'from-amber-500 to-orange-500',
     'Business': 'from-blue-500 to-cyan-500',
     'Mental': 'from-purple-500 to-violet-500',
-    'Society': 'from-emerald-500 to-teal-500',
-    'Mindset': 'from-purple-500 to-violet-500',
-    'Leadership': 'from-pink-500 to-rose-500',
-    'Skills': 'from-amber-500 to-orange-500',
-    'Marketing': 'from-blue-500 to-cyan-500',
-    'Productivité': 'from-amber-500 to-orange-500'
+    'Society': 'from-emerald-500 to-teal-500'
   };
 
   return (
@@ -757,19 +754,20 @@ export const HeroSection = () => {
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       
-                      {/* Badge catégorie */}
-                      {article.categories?.[0] && (
-                        <div className="absolute top-4 left-4">
-                          <span className={`inline-flex items-center gap-1 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full`}>
-                            <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${categoryColors[article.categories[0].title] || 'from-gray-400 to-gray-500'}`} />
-                            <span className="text-xs font-medium text-white">
+                      {/* Badge catégorie - AVEC COULEURS */}
+                      {article.categories && article.categories.length > 0 && (
+                        <div className="absolute top-4 left-4 z-10">
+                          <div className={`px-3 py-1.5 bg-gradient-to-r ${
+                            categoryColors[article.categories[0].title] || 'from-gray-500 to-gray-600'
+                          } rounded-full shadow-lg`}>
+                            <span className="text-xs font-bold text-white uppercase tracking-wider">
                               {article.categories[0].title}
                             </span>
-                          </span>
+                          </div>
                         </div>
                       )}
 
-                      {/* Reading time overlay */}
+                      {/* Temps de lecture en bas à droite */}
                       <div className="absolute bottom-4 right-4">
                         <span className="inline-flex items-center gap-1 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full">
                           <Clock className="w-3 h-3 text-white" />
