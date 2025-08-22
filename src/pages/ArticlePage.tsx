@@ -861,15 +861,18 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
 
       <div className="min-h-screen bg-black text-white">
         {/* Hero Section avec image visible */}
-        <section className="relative min-h-[70vh] flex items-end overflow-hidden bg-gradient-to-br from-gray-900 to-black">
+        <section className="relative min-h-[50vh] md:min-h-[70vh] flex items-end overflow-hidden bg-gradient-to-br from-gray-900 to-black">
           {/* Image de fond */}
           <div className="absolute inset-0">
             {article.mainImage && article.mainImage.asset && article.mainImage.asset._ref ? (
               <img 
                 src={buildSanityImageUrl(article.mainImage.asset._ref)}
                 alt={article.title}
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ opacity: 0.85 }}
+                className="absolute inset-0 w-full h-full object-cover object-top md:object-center"
+                style={{ 
+                  opacity: 0.85,
+                  objectPosition: 'center 25%'  // Garde le haut de l'image visible (visages)
+                }}
                 onError={(e) => {
                   console.error("Erreur chargement image:", e);
                   (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80";
@@ -879,8 +882,11 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
               <img 
                 src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80"
                 alt="Article background"
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ opacity: 0.85 }}
+                className="absolute inset-0 w-full h-full object-cover object-top md:object-center"
+                style={{ 
+                  opacity: 0.85,
+                  objectPosition: 'center 25%'
+                }}
               />
             )}
             {/* Gradient minimal juste pour assurer la lisibilité du texte */}

@@ -7,9 +7,9 @@ import { ChatWidget } from './components/chat/ChatWidget';
 import { HomePage } from './pages/HomePage';
 import { ArticlePage } from './pages/ArticlePage';
 import { CategoryPage } from './pages/CategoryPage';
-import { SubcategoryPage } from './pages/SubcategoryPage'; // AJOUT
+import { SubcategoryPage } from './pages/SubcategoryPage';
 import { PodcastPage } from './pages/PodcastPage';
-import EmissionsPage from './pages/EmissionsPage'; // CORRECTION : import par défaut
+import EmissionsPage from './pages/EmissionsPage';
 import { EmissionPage } from './pages/EmissionPage';
 import { CreateWithRogerPage } from './pages/CreateWithRogerPage';
 import { AboutPage } from './pages/AboutPage';
@@ -19,6 +19,7 @@ import { CoachingPage } from './pages/CoachingPage';
 import { BusinessIdeasPage } from './pages/BusinessIdeasPage';
 import { BusinessIdeaPage } from './pages/BusinessIdeaPage';
 import { SuccessStoryPage } from './pages/SuccessStoryPage';
+import { ClubPage } from './pages/ClubPage';
 import { NotFound } from './pages/NotFound';
 
 function App() {
@@ -37,9 +38,10 @@ function App() {
               <Route path="/success-story/:slug" element={<SuccessStoryPage />} />
               <Route path="/emission/:slug" element={<EmissionPage />} />
               <Route path="/rubrique/:categorySlug" element={<CategoryPage />} />
-              <Route path="/rubrique/:categorySlug/:subcategorySlug" element={<SubcategoryPage />} /> {/* AJOUT */}
+              <Route path="/rubrique/:categorySlug/:subcategorySlug" element={<SubcategoryPage />} />
               <Route path="/podcasts" element={<PodcastPage />} />
               <Route path="/emissions" element={<EmissionsPage />} />
+              <Route path="/club" element={<ClubPage />} />
               <Route path="/create-with-roger" element={<CreateWithRogerPage />} />
               <Route path="/coaching" element={<CoachingPage />} />
               <Route path="/about" element={<AboutPage />} />

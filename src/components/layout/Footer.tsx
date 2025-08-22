@@ -20,11 +20,13 @@ import {
   ChevronRight,
   Globe,
   Users,
+  User,
   Award,
   BookOpen,
   Headphones,
   MessageCircle,
-  CheckCircle
+  CheckCircle,
+  Code2
 } from 'lucide-react';
 
 // Import de tous les logos
@@ -62,6 +64,7 @@ export const Footer = () => {
       description: 'Parcours & réussites',
       gradient: 'from-amber-400 to-orange-500',
       bgGradient: 'from-amber-500/10 to-orange-500/10',
+      borderGradient: 'from-amber-500/50 to-orange-500/50',
       stats: { articles: '267', trending: '+12%' },
       featured: 'Nouveau : Success Stories'
     },
@@ -72,6 +75,7 @@ export const Footer = () => {
       description: 'Stratégies & croissance',
       gradient: 'from-blue-400 to-cyan-500',
       bgGradient: 'from-blue-500/10 to-cyan-500/10',
+      borderGradient: 'from-blue-500/50 to-cyan-500/50',
       stats: { articles: '189', trending: '+8%' },
       featured: 'Dossier : Scale-ups 2025'
     },
@@ -82,6 +86,7 @@ export const Footer = () => {
       description: 'Mindset & performance',
       gradient: 'from-purple-400 to-violet-500',
       bgGradient: 'from-purple-500/10 to-violet-500/10',
+      borderGradient: 'from-purple-500/50 to-violet-500/50',
       stats: { articles: '156', trending: '+15%' },
       featured: 'Guide : Focus Extrême'
     },
@@ -92,6 +97,7 @@ export const Footer = () => {
       description: 'Futur & innovations',
       gradient: 'from-emerald-400 to-teal-500',
       bgGradient: 'from-emerald-500/10 to-teal-500/10',
+      borderGradient: 'from-emerald-500/50 to-teal-500/50',
       stats: { articles: '134', trending: '+10%' },
       featured: 'Spécial : IA & Société'
     }
@@ -104,28 +110,32 @@ export const Footer = () => {
       url: 'https://twitter.com/highvalue',
       label: 'Twitter',
       handle: '@highvalue',
-      gradient: 'from-blue-400 to-blue-600'
+      gradient: 'from-blue-400 to-blue-600',
+      followers: '24.5K'
     },
     { 
       icon: Instagram, 
       url: 'https://instagram.com/highvalue',
       label: 'Instagram',
       handle: '@highvalue',
-      gradient: 'from-pink-500 to-purple-600'
+      gradient: 'from-pink-500 to-purple-600',
+      followers: '48.2K'
     },
     { 
       icon: Youtube, 
       url: 'https://youtube.com/highvalue',
       label: 'Youtube',
       handle: 'High Value',
-      gradient: 'from-red-500 to-red-700'
+      gradient: 'from-red-500 to-red-700',
+      followers: '156K'
     },
     { 
       icon: Linkedin, 
       url: 'https://linkedin.com/company/highvalue',
       label: 'LinkedIn',
       handle: 'High Value Media',
-      gradient: 'from-blue-600 to-blue-800'
+      gradient: 'from-blue-600 to-blue-800',
+      followers: '12.8K'
     }
   ];
 
@@ -168,53 +178,53 @@ export const Footer = () => {
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-neutral-950 via-black to-neutral-950" />
         
-        {/* Mesh gradient animé */}
+        {/* Mesh gradient animé plus subtil */}
         <motion.div
-          className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/20 rounded-full blur-[150px]"
+          className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-[180px]"
           animate={{
             x: [0, 100, 0],
             y: [0, -50, 0],
           }}
           transition={{
-            duration: 20,
+            duration: 30,
             repeat: Infinity,
             ease: "easeInOut"
           }}
         />
         <motion.div
-          className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/20 rounded-full blur-[150px]"
+          className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-[180px]"
           animate={{
             x: [0, -100, 0],
             y: [0, 50, 0],
           }}
           transition={{
-            duration: 25,
+            duration: 35,
             repeat: Infinity,
             ease: "easeInOut"
           }}
         />
         
-        {/* Grille de points lumineux */}
+        {/* Grille de points lumineux plus subtile */}
         <div 
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute inset-0 opacity-[0.015]"
           style={{
             backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
-            backgroundSize: '50px 50px'
+            backgroundSize: '40px 40px'
           }}
         />
         
-        {/* Lignes animées */}
+        {/* Lignes animées plus fines */}
         <div className="absolute inset-0">
-          {[...Array(3)].map((_, i) => (
+          {[...Array(2)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"
-              style={{ top: `${30 + i * 30}%` }}
+              className="absolute h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"
+              style={{ top: `${40 + i * 20}%` }}
               animate={{
                 x: [-1000, 1000],
               }}
               transition={{
-                duration: 20 + i * 5,
+                duration: 30 + i * 10,
                 repeat: Infinity,
                 ease: "linear"
               }}
@@ -236,18 +246,18 @@ export const Footer = () => {
               whileHover={{ scale: 1.05 }}
               className="relative"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-700" />
               <img 
                 src={getCurrentLogo()}
                 alt="High Value Media"
-                className="h-16 w-auto mx-auto relative z-10"
+                className="h-16 w-auto mx-auto relative z-10 opacity-90 group-hover:opacity-100 transition-opacity"
               />
             </motion.div>
           </Link>
           
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="text-white">L'excellence </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-gradient">
               comme standard
             </span>
           </h2>
@@ -265,14 +275,14 @@ export const Footer = () => {
           className="mb-20 px-6"
         >
           <div className="relative">
-            {/* Glow effect */}
-            <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-3xl opacity-50" />
+            {/* Glow effect plus subtil */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl blur-3xl" />
             
-            <div className="relative bg-gradient-to-br from-neutral-900/90 to-black/90 backdrop-blur-2xl rounded-3xl border border-white/10 p-12">
+            <div className="relative bg-gradient-to-br from-neutral-900/80 to-black/80 backdrop-blur-xl rounded-3xl border border-white/5 p-12">
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div>
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl">
+                    <div className="p-2 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-xl border border-white/10">
                       <Mail className="w-5 h-5 text-white" />
                     </div>
                     <span className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 uppercase tracking-wider">
@@ -285,23 +295,34 @@ export const Footer = () => {
                   </h3>
                   
                   <ul className="space-y-3 mb-6">
-                    {['Analyses exclusives', 'Cas pratiques détaillés', 'Accès anticipé aux contenus'].map((item) => (
-                      <li key={item} className="flex items-center gap-2 text-gray-300">
-                        <CheckCircle className="w-4 h-4 text-green-400" />
+                    {['Analyses exclusives', 'Cas pratiques détaillés', 'Accès anticipé aux contenus'].map((item, i) => (
+                      <motion.li 
+                        key={item} 
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="flex items-center gap-2 text-gray-300"
+                      >
+                        <div className="p-1 bg-green-400/10 rounded-full">
+                          <CheckCircle className="w-3 h-3 text-green-400" />
+                        </div>
                         <span>{item}</span>
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
                   
                   <div className="flex items-center gap-4">
                     <div className="flex -space-x-3">
                       {[...Array(4)].map((_, i) => (
-                        <div
+                        <motion.div
                           key={i}
-                          className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 border-2 border-black flex items-center justify-center"
+                          initial={{ scale: 0 }}
+                          whileInView={{ scale: 1 }}
+                          transition={{ delay: i * 0.1 }}
+                          className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-400/20 backdrop-blur-sm border border-white/10 flex items-center justify-center"
                         >
-                          <span className="text-xs font-bold text-white">{i + 1}</span>
-                        </div>
+                          <User className="w-4 h-4 text-white/70" />
+                        </motion.div>
                       ))}
                     </div>
                     <p className="text-sm text-gray-400">
@@ -318,15 +339,15 @@ export const Footer = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Votre meilleur email"
                       required
-                      className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-400 focus:bg-white/10 transition-all group-hover:border-white/20"
+                      className="w-full px-6 py-4 bg-white/[0.02] backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-400/50 focus:bg-white/[0.05] transition-all group-hover:border-white/20"
                     />
                     
                     <AnimatePresence>
                       {isSubscribed ? (
                         <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          exit={{ scale: 0 }}
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          exit={{ scale: 0, rotate: 180 }}
                           className="absolute right-4 top-1/2 -translate-y-1/2"
                         >
                           <CheckCircle className="w-6 h-6 text-green-400" />
@@ -350,7 +371,8 @@ export const Footer = () => {
                     disabled={isSubscribed}
                     className="relative w-full group overflow-hidden rounded-2xl"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-100 group-hover:opacity-90 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-90 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     
                     <div className="relative px-6 py-4 flex items-center justify-center gap-2 text-white font-bold">
                       {isSubscribed ? (
@@ -400,11 +422,14 @@ export const Footer = () => {
                     whileHover={{ y: -8, scale: 1.02 }}
                     className="relative h-full group"
                   >
+                    {/* Bordure gradient au hover */}
+                    <div className={`absolute -inset-[1px] bg-gradient-to-br ${item.borderGradient} rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                    
                     {/* Card avec effet de profondeur */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] to-white/[0.02] rounded-3xl" />
-                    <div className="relative h-full p-8 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/[0.06] to-white/[0.02] rounded-3xl" />
+                    <div className="relative h-full p-8 backdrop-blur-xl rounded-3xl border border-white/5 overflow-hidden bg-black/50">
                       {/* Background gradient animé */}
-                      <div className={`absolute inset-0 bg-gradient-to-br ${item.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                      <div className={`absolute inset-0 bg-gradient-to-br ${item.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
                       
                       {/* Particules flottantes au hover */}
                       <AnimatePresence>
@@ -438,36 +463,39 @@ export const Footer = () => {
                       <div className="relative z-10">
                         {/* Icon avec effet de glow */}
                         <div className="relative inline-block mb-6">
-                          <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} blur-xl opacity-50 group-hover:opacity-100 transition-opacity`} />
-                          <div className={`relative p-3 bg-gradient-to-br ${item.gradient} rounded-2xl`}>
+                          <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-500`} />
+                          <div className={`relative p-3 bg-gradient-to-br ${item.gradient} rounded-2xl shadow-lg`}>
                             <Icon className="w-6 h-6 text-white" />
                           </div>
                         </div>
                         
-                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all">
+                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-200 transition-all duration-300">
                           {item.label}
                         </h3>
                         
-                        <p className="text-gray-400 mb-4">
+                        <p className="text-gray-400 mb-4 group-hover:text-gray-300 transition-colors">
                           {item.description}
                         </p>
                         
                         {/* Stats avec animation */}
                         <div className="flex items-center gap-4 mb-4">
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1.5">
                             <BookOpen className="w-3 h-3 text-gray-500" />
                             <span className="text-sm text-gray-300 font-medium">{item.stats.articles}</span>
                           </div>
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1.5">
                             <TrendingUp className="w-3 h-3 text-green-400" />
                             <span className="text-sm text-green-400 font-medium">{item.stats.trending}</span>
                           </div>
                         </div>
                         
                         {/* Featured content */}
-                        <div className="pt-4 border-t border-white/10">
-                          <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
-                            <span className="inline-block w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
+                        <div className="pt-4 border-t border-white/5">
+                          <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors flex items-center gap-2">
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+                            </span>
                             {item.featured}
                           </p>
                         </div>
@@ -489,45 +517,57 @@ export const Footer = () => {
         >
           {/* Company Info - Centré */}
           <div className="text-center">
-            <h4 className="text-white font-bold mb-6">High Value Media</h4>
-            <p className="text-gray-400 text-sm mb-6">
+            <h4 className="text-white font-bold mb-6 text-lg">High Value Media</h4>
+            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
               L'écosystème média de référence pour les entrepreneurs ambitieux.
             </p>
             
             <div className="space-y-3 flex flex-col items-center">
-              <div className="flex items-center gap-2 text-sm text-gray-400">
+              <motion.div 
+                whileHover={{ x: 5 }}
+                className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors cursor-default"
+              >
                 <MapPin className="w-4 h-4" />
                 <span>Paris, France</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-400">
+              </motion.div>
+              <motion.div 
+                whileHover={{ x: 5 }}
+                className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors cursor-default"
+              >
                 <Globe className="w-4 h-4" />
                 <span>Disponible mondialement</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-400">
+              </motion.div>
+              <motion.div 
+                whileHover={{ x: 5 }}
+                className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors cursor-default"
+              >
                 <Users className="w-4 h-4" />
                 <span>50K+ membres actifs</span>
-              </div>
+              </motion.div>
             </div>
           </div>
 
           {/* Quick Links - Centrés */}
           {Object.entries(quickLinks).map(([category, links]) => (
             <div key={category} className="text-center">
-              <h4 className="text-white font-bold mb-6">{category}</h4>
+              <h4 className="text-white font-bold mb-6 text-lg">{category}</h4>
               <ul className="space-y-3 flex flex-col items-center">
                 {links.map((link) => (
                   <li key={link.path}>
                     <Link
                       to={link.path}
-                      className="group inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+                      className="group inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-all duration-300"
                     >
-                      <span>{link.label}</span>
+                      <span className="relative">
+                        {link.label}
+                        <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300" />
+                      </span>
                       {link.isNew && (
-                        <span className="px-2 py-0.5 text-[10px] font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full">
+                        <span className="px-2 py-0.5 text-[10px] font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full animate-pulse">
                           NEW
                         </span>
                       )}
-                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all" />
+                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-y-1 translate-x-1 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-300" />
                     </Link>
                   </li>
                 ))}
@@ -544,18 +584,21 @@ export const Footer = () => {
           className="mb-12"
         >
           <div className="flex flex-wrap items-center justify-center gap-4">
-            {socialLinks.map((social) => (
+            {socialLinks.map((social, index) => (
               <motion.a
                 key={social.label}
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ y: -5 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -5, scale: 1.05 }}
                 onMouseEnter={() => setHoveredSocial(social.label)}
                 onMouseLeave={() => setHoveredSocial(null)}
                 className="relative group"
               >
-                <div className="relative px-6 py-3 bg-white/[0.02] backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/[0.05] transition-all">
+                <div className="relative px-6 py-3 bg-white/[0.01] backdrop-blur-sm border border-white/5 rounded-2xl hover:bg-white/[0.03] transition-all duration-500">
                   {/* Glow effect on hover */}
                   <AnimatePresence>
                     {hoveredSocial === social.label && (
@@ -563,16 +606,21 @@ export const Footer = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className={`absolute inset-0 bg-gradient-to-r ${social.gradient} opacity-10 rounded-2xl`}
+                        className={`absolute inset-0 bg-gradient-to-r ${social.gradient} opacity-5 rounded-2xl blur-xl`}
                       />
                     )}
                   </AnimatePresence>
                   
                   <div className="relative z-10 flex items-center gap-3">
-                    <social.icon className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                    <div className={`p-2 bg-gradient-to-br ${social.gradient} rounded-xl opacity-80 group-hover:opacity-100 transition-opacity`}>
+                      <social.icon className="w-4 h-4 text-white" />
+                    </div>
                     <div className="text-left">
-                      <p className="text-xs text-gray-500">{social.label}</p>
-                      <p className="text-sm text-white font-medium">{social.handle}</p>
+                      <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">{social.label}</p>
+                      <p className="text-sm text-white font-medium flex items-center gap-2">
+                        {social.handle}
+                        <span className="text-xs text-gray-500">{social.followers}</span>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -586,38 +634,68 @@ export const Footer = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="pt-8 border-t border-white/10"
+          className="pt-8 border-t border-white/5"
         >
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <span>© {new Date().getFullYear()} High Value Media</span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                Crafted with
+              <span className="text-gray-600">•</span>
+              <span className="flex items-center gap-1.5">
+                Built with
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="relative"
                 >
-                  <Heart className="w-3 h-3 text-red-500 fill-red-500" />
+                  <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
                 </motion.div>
-                in Paris
+                by
+                <motion.a
+                  href="https://www.instagram.com/alex______kid/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-300 hover:to-pink-300 transition-all font-medium"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <Code2 className="w-3.5 h-3.5 text-purple-400" />
+                  @alexkid
+                </motion.a>
               </span>
             </div>
 
             <div className="flex items-center gap-6">
-              {['Mentions légales', 'Confidentialité', 'CGV', 'Cookies'].map((item) => (
-                <Link
+              {['Mentions légales', 'Confidentialité', 'CGV', 'Cookies'].map((item, index) => (
+                <motion.div
                   key={item}
-                  to={`/${item.toLowerCase().replace(' ', '-')}`}
-                  className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: index * 0.05 }}
                 >
-                  {item}
-                </Link>
+                  <Link
+                    to={`/${item.toLowerCase().replace(' ', '-')}`}
+                    className="relative text-sm text-gray-500 hover:text-gray-300 transition-colors group"
+                  >
+                    {item}
+                    <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gray-400 group-hover:w-full transition-all duration-300" />
+                  </Link>
+                </motion.div>
               ))}
             </div>
           </div>
         </motion.div>
       </div>
+
+      {/* Gradient animation keyframes */}
+      <style>{`
+        @keyframes gradient {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradient 3s ease infinite;
+        }
+      `}</style>
     </footer>
   );
 };
