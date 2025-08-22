@@ -598,7 +598,7 @@ const ArticlePage: React.FC = () => {
                 src={buildSanityImageUrl(article.mainImage.asset._ref)}
                 alt={article.title}
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ opacity: 0.6 }}
+                style={{ opacity: 0.85 }}
                 onError={(e) => {
                   console.error("Erreur chargement image:", e);
                   (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80";
@@ -609,12 +609,12 @@ const ArticlePage: React.FC = () => {
                 src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80"
                 alt="Article background"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ opacity: 0.6 }}
+                style={{ opacity: 0.85 }}
               />
             )}
-            {/* Gradients plus légers pour la lisibilité */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+            {/* Gradient minimal juste pour assurer la lisibilité du texte */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent" />
           </div>
 
           {/* Contenu Hero */}
