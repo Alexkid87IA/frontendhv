@@ -7,6 +7,7 @@ import { ChatWidget } from './components/chat/ChatWidget';
 import { HomePage } from './pages/HomePage';
 import { ArticlePage } from './pages/ArticlePage';
 import { CategoryPage } from './pages/CategoryPage';
+import { SubcategoryPage } from './pages/SubcategoryPage'; // AJOUT
 import { PodcastPage } from './pages/PodcastPage';
 import { EmissionsPage } from './pages/EmissionsPage';
 import { EmissionPage } from './pages/EmissionPage';
@@ -36,6 +37,7 @@ function App() {
               <Route path="/success-story/:slug" element={<SuccessStoryPage />} />
               <Route path="/emission/:slug" element={<EmissionPage />} />
               <Route path="/rubrique/:categorySlug" element={<CategoryPage />} />
+              <Route path="/rubrique/:categorySlug/:subcategorySlug" element={<SubcategoryPage />} /> {/* AJOUT */}
               <Route path="/podcasts" element={<PodcastPage />} />
               <Route path="/emissions" element={<EmissionsPage />} />
               <Route path="/create-with-roger" element={<CreateWithRogerPage />} />

@@ -62,6 +62,16 @@ export const getAllArticles = async (): Promise<SanityArticle[]> => {
           _id,
           title,
           slug
+        },
+        subcategories[]->{
+          _id,
+          title,
+          slug,
+          parentCategory->{
+            _id,
+            title,
+            slug
+          }
         }
       }`;
       
@@ -82,7 +92,7 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
   if (preview) {
     try {
       // Log pour vérifier le client utilisé
-      console.log("🔐 Utilisation du previewClient");
+      console.log("🔍 Utilisation du previewClient");
       console.log("📊 Configuration du previewClient:", {
         dataset: previewClient.config().dataset,
         perspective: previewClient.config().perspective,
@@ -106,6 +116,16 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
           title,
           slug
         },
+        subcategories[]->{
+          _id,
+          title,
+          slug,
+          parentCategory->{
+            _id,
+            title,
+            slug
+          }
+        },
         author->{
           _id,
           name,
@@ -114,7 +134,7 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         }
       }`;
       
-      console.log("📝 Exécution de la requête preview pour slug:", slug);
+      console.log("🔍 Exécution de la requête preview pour slug:", slug);
       console.log("🔎 Requête GROQ:", query);
       
       const result = await previewClient.fetch(query, { slug });
@@ -146,6 +166,16 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
             _id,
             title,
             slug
+          },
+          subcategories[]->{
+            _id,
+            title,
+            slug,
+            parentCategory->{
+              _id,
+              title,
+              slug
+            }
           },
           author->{
             _id,
@@ -193,6 +223,16 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
           title,
           slug
         },
+        subcategories[]->{
+          _id,
+          title,
+          slug,
+          parentCategory->{
+            _id,
+            title,
+            slug
+          }
+        },
         author->{
           _id,
           name,
@@ -237,6 +277,16 @@ export const getArticlesByCategory = async (categorySlug: string): Promise<Sanit
           _id,
           title,
           slug
+        },
+        subcategories[]->{
+          _id,
+          title,
+          slug,
+          parentCategory->{
+            _id,
+            title,
+            slug
+          }
         }
       }`;
       
@@ -495,6 +545,112 @@ export const getContentItems = async (contentType: string, limit = 5): Promise<a
     } catch (error) {
       console.error(`Erreur lors de la récupération des contenus de type ${contentType}:`, error);
       return [];
+    }
+  });
+};
+
+// ============= NOUVELLES FONCTIONS POUR LES SOUS-CATÉGORIES =============
+
+// Récupérer les articles par sous-catégorie
+export const getArticlesBySubcategory = async (subcategorySlug: string): Promise<SanityArticle[]> => {
+  return getWithCache(`articles_subcategory_${subcategorySlug}`, async () => {
+    try {
+      // D'abord, on trouve la sous-catégorie pour avoir son _id
+      const subcategoryQuery = `*[_type == "subcategory" && slug.current == $subcategorySlug][0]._id`;
+      const subcategoryId = await sanityClient.fetch(subcategoryQuery, { subcategorySlug });
+      
+      if (!subcategoryId) {
+        console.log(`Sous-catégorie non trouvée pour le slug: ${subcategorySlug}`);
+        return [];
+      }
+      
+      // Ensuite, on cherche les articles qui référencent cette sous-catégorie
+      const query = `*[_type == "article" && references($subcategoryId)] | order(publishedAt desc) {
+        _id,
+        title,
+        slug,
+        mainImage,
+        excerpt,
+        publishedAt,
+        keyPoints,
+        readingTime,
+        isTrending,
+        isFeatured,
+        isEssential,
+        categories[]->{
+          _id,
+          title,
+          slug
+        },
+        subcategories[]->{
+          _id,
+          title,
+          slug,
+          parentCategory->{
+            _id,
+            title,
+            slug
+          }
+        }
+      }`;
+      
+      const articles = await sanityClient.fetch(query, { subcategoryId });
+      console.log(`Articles trouvés pour ${subcategorySlug}: ${articles.length}`);
+      
+      return articles;
+    } catch (error) {
+      console.error(`Erreur lors de la récupération des articles de la sous-catégorie ${subcategorySlug}:`, error);
+      return [];
+    }
+  });
+};
+
+// Récupérer les sous-catégories groupées par catégorie parente
+export const getSubcategoriesGrouped = async (): Promise<any> => {
+  return getWithCache('subcategoriesGrouped', async () => {
+    try {
+      const query = `*[_type == "category"] | order(order asc) {
+        _id,
+        title,
+        slug,
+        "subcategories": *[_type == "subcategory" && references(^._id)] | order(order asc) {
+          _id,
+          title,
+          slug,
+          description,
+          articleCount,
+          isActive
+        }
+      }`;
+      
+      return await sanityClient.fetch(query);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des sous-catégories groupées:", error);
+      return [];
+    }
+  });
+};
+
+// Récupérer une sous-catégorie par son slug
+export const getSubcategoryBySlug = async (slug: string) => {
+  return getWithCache(`subcategory_${slug}`, async () => {
+    try {
+      const query = `*[_type == "subcategory" && slug.current == $slug][0] {
+        _id,
+        title,
+        slug,
+        description,
+        parentCategory->{
+          _id,
+          title,
+          slug
+        }
+      }`;
+      
+      return await sanityClient.fetch(query, { slug });
+    } catch (error) {
+      console.error(`Erreur lors de la récupération de la sous-catégorie ${slug}:`, error);
+      return null;
     }
   });
 };
