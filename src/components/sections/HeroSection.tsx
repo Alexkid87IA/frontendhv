@@ -4,7 +4,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-mo
 import { ArrowRight, Quote, Calendar, Clock, User, Sparkles, TrendingUp, Star, Play, Pause, Volume2, VolumeX, Share2, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
-import { getAllArticles } from '../../utils/sanityAPI';
+import { sanityClient } from '../../utils/sanityClient';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { SanityArticle } from '../../types/sanity';
 
@@ -192,20 +192,110 @@ export const HeroSection = () => {
     mouseY.set(0);
   };
 
+  // MODIFICATION ICI : Utilisation des champs isFeatured et isTrending
   useEffect(() => {
     const fetchArticles = async () => {
       try {
         setIsLoading(true);
-        const sanityArticles = await getAllArticles();
         
-        if (sanityArticles && sanityArticles.length > 0) {
-          setFeaturedArticle(sanityArticles[0]);
-          setRecentArticles(sanityArticles.slice(1, 7));
+        // Récupérer l'article à la une (featured)
+        const featuredQuery = `*[_type == "article" && isFeatured == true][0] {
+          _id,
+          title,
+          slug,
+          mainImage,
+          excerpt,
+          publishedAt,
+          readingTime,
+          categories[0]->{
+            title,
+            slug
+          }
+        }`;
+        
+        // Récupérer les articles tendances
+        const trendingQuery = `*[_type == "article" && isTrending == true] | order(trendingOrder asc, publishedAt desc)[0...6] {
+          _id,
+          title,
+          slug,
+          mainImage,
+          excerpt,
+          publishedAt,
+          readingTime,
+          categories[0]->{
+            title,
+            slug
+          },
+          trendingOrder
+        }`;
+        
+        // Exécuter les deux requêtes en parallèle
+        const [featuredResult, trendingResult] = await Promise.all([
+          sanityClient.fetch(featuredQuery),
+          sanityClient.fetch(trendingQuery)
+        ]);
+        
+        // Gérer l'article à la une
+        if (featuredResult) {
+          setFeaturedArticle(featuredResult);
+          console.log('Article à la une récupéré depuis Sanity');
+        } else {
+          // Fallback : prendre le premier article récent si pas d'article featured
+          console.log('Pas d\'article featured, utilisation du fallback');
+          const fallbackFeaturedQuery = `*[_type == "article"] | order(publishedAt desc)[0] {
+            _id,
+            title,
+            slug,
+            mainImage,
+            excerpt,
+            publishedAt,
+            readingTime,
+            categories[0]->{
+              title,
+              slug
+            }
+          }`;
+          const fallbackFeatured = await sanityClient.fetch(fallbackFeaturedQuery);
+          if (fallbackFeatured) {
+            setFeaturedArticle(fallbackFeatured);
+          } else {
+            setFeaturedArticle(mockFeaturedArticle);
+          }
+        }
+        
+        // Gérer les articles tendances
+        if (trendingResult && trendingResult.length > 0) {
+          setRecentArticles(trendingResult);
+          console.log(`${trendingResult.length} articles tendances récupérés depuis Sanity`);
           setDataSource('cms');
         } else {
-          setFeaturedArticle(mockFeaturedArticle);
-          setRecentArticles(mockRecentArticles);
-          setDataSource('mock');
+          // Fallback : prendre les 6 articles les plus récents
+          console.log('Pas d\'articles tendances, utilisation du fallback');
+          const fallbackQuery = `*[_type == "article"] | order(publishedAt desc)[0...6] {
+            _id,
+            title,
+            slug,
+            mainImage,
+            excerpt,
+            publishedAt,
+            readingTime,
+            categories[0]->{
+              title,
+              slug
+            }
+          }`;
+          
+          const fallbackArticles = await sanityClient.fetch(fallbackQuery);
+          
+          if (fallbackArticles && fallbackArticles.length > 0) {
+            setRecentArticles(fallbackArticles);
+            console.log('Utilisation du fallback : articles récents');
+            setDataSource('cms');
+          } else {
+            setRecentArticles(mockRecentArticles);
+            setDataSource('mock');
+            console.log('Utilisation des articles mockés');
+          }
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des articles:', error);
