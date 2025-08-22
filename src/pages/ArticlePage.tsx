@@ -1,12 +1,12 @@
-// src/pages/ArticlePage.tsx - Version finale avec design amélioré
-import React, { useState, useEffect } from "react";
+// src/pages/ArticlePage.tsx - Version finale avec Instagram amélioré et corrections Portable Text
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, Share2, Bookmark, MessageSquare, Calendar, Clock, 
-  User, Heart, Eye, ChevronRight, Copy, Check, Twitter, 
+  User, Heart, Eye, ChevronRight, ChevronDown, Copy, Check, Twitter, 
   Linkedin, Facebook, BookOpen, TrendingUp, ArrowRight, X,
-  Mail, Send, MessageCircle
+  Mail, Send, MessageCircle, Instagram, Loader2, AlertCircle
 } from "lucide-react";
 import { PortableText } from "@portabletext/react";
 
@@ -24,6 +24,17 @@ import { Footer } from "../components/layout/Footer";
 import { LocalDataAPI, Article } from "../utils/localDataSystem";
 import { getArticleBySlug, getAllArticles } from "../utils/sanityAPI";
 import { urlFor } from "../utils/sanityClient";
+
+// Déclaration pour Instagram API
+declare global {
+  interface Window {
+    instgrm?: {
+      Embeds: {
+        process: () => void;
+      };
+    };
+  }
+}
 
 // Types pour les données Sanity
 interface SanityArticle {
@@ -53,7 +64,209 @@ interface SanityArticle {
   views?: number;
   likes?: number;
   keyPoints?: string[];
+  videoUrl?: string;
 }
+
+// Fonction utilitaire pour nettoyer les champs Portable Text
+const cleanPortableText = (value: any): string => {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  
+  // Si c'est un objet Portable Text unique
+  if (value._type === 'block' && value.children) {
+    return value.children
+      .map((child: any) => child.text || '')
+      .join('');
+  }
+  
+  // Si c'est un tableau de blocs Portable Text
+  if (Array.isArray(value)) {
+    return value
+      .map(block => {
+        if (block._type === 'block' && block.children) {
+          return block.children
+            .map((child: any) => child.text || '')
+            .join('');
+        }
+        return '';
+      })
+      .join(' ');
+  }
+  
+  // Si c'est un objet avec une propriété text
+  if (value.text) return value.text;
+  
+  return '';
+};
+
+// Composant Instagram mémorisé pour éviter les re-renders
+const InstagramEmbedBase: React.FC<{ url: string; caption?: string }> = ({ url, caption }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  
+  // Fonction pour extraire l'ID du post
+  const getInstagramPostId = (url: string) => {
+    if (!url) return null;
+    
+    const patterns = [
+      /instagram\.com\/p\/([^\/\?]+)/,
+      /instagram\.com\/reel\/([^\/\?]+)/,
+      /instagram\.com\/tv\/([^\/\?]+)/,
+      /instagr\.am\/p\/([^\/\?]+)/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    
+    return null;
+  };
+  
+  const postId = getInstagramPostId(url);
+  
+  // Empêcher le rechargement de l'iframe une fois chargé
+  useEffect(() => {
+    if (hasLoaded && iframeRef.current) {
+      // Forcer le navigateur à garder l'iframe en mémoire
+      iframeRef.current.style.willChange = 'contents';
+    }
+  }, [hasLoaded]);
+  
+  // Si pas d'ID valide
+  if (!postId) {
+    return (
+      <div className="my-12 flex justify-center">
+        <div className="w-full max-w-3xl">
+          <div className="bg-gray-900/50 rounded-xl border border-gray-700 p-8 text-center">
+            <Instagram className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+            <p className="text-gray-400 mb-2">Post Instagram non disponible</p>
+            <p className="text-sm text-gray-500">L'URL fournie n'est pas valide</p>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg transition-all"
+            >
+              <Instagram className="w-4 h-4" />
+              Voir sur Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="my-12 flex justify-center">
+      <div className="w-full max-w-3xl">
+        {/* Container avec isolation et optimisation pour éviter les reflows */}
+        <div 
+          className="bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-800"
+          style={{
+            contain: 'layout style paint',
+            willChange: 'contents',
+            isolation: 'isolate'
+          }}
+        >
+          {/* Header Instagram */}
+          <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-[2px]">
+            <div className="bg-black p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Instagram className="w-5 h-5 text-white" />
+                  <span className="text-white text-sm font-medium">Post Instagram</span>
+                </div>
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+                >
+                  Ouvrir dans Instagram
+                  <ArrowRight size={12} />
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          {/* Container de l'iframe avec hauteur fixe et isolation CSS */}
+          <div 
+            className="relative bg-black"
+            style={{ 
+              height: '1100px',
+              minHeight: '1100px',
+              maxHeight: '1100px',
+              contain: 'strict',
+              transform: 'translateZ(0)', // Force GPU acceleration
+              backfaceVisibility: 'hidden' // Optimisation rendering
+            }}
+          >
+            {/* Loading state */}
+            {isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center z-10 bg-black pointer-events-none">
+                <div className="text-center">
+                  <Loader2 className="w-8 h-8 text-white animate-spin mx-auto mb-4" />
+                  <p className="text-gray-400 text-sm">Chargement du post Instagram...</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Iframe Instagram optimisé sans lazy loading */}
+            <iframe
+              ref={iframeRef}
+              key={`instagram-${postId}`} // Clé unique stable
+              src={`https://www.instagram.com/p/${postId}/embed`}
+              className={`w-full transition-opacity duration-500 ${hasLoaded ? 'opacity-100' : 'opacity-0'}`}
+              style={{
+                border: 'none',
+                height: '1100px',
+                minHeight: '1100px',
+                backgroundColor: '#000',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                willChange: 'contents',
+                transform: 'translateZ(0)' // Force GPU layer
+              }}
+              frameBorder="0"
+              scrolling="no"
+              allowTransparency={true}
+              // Pas de lazy loading pour éviter le déchargement
+              // loading="lazy" SUPPRIMÉ
+              onLoad={() => {
+                setIsLoading(false);
+                setTimeout(() => setHasLoaded(true), 100); // Petit délai pour transition douce
+              }}
+              title={`Instagram post ${postId}`}
+              importance="high"
+              fetchpriority="high"
+              decoding="sync"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation"
+            />
+          </div>
+        </div>
+        
+        {/* Caption optionnelle */}
+        {caption && (
+          <div className="mt-4 p-4 bg-gray-900/30 rounded-lg border border-gray-800">
+            <p className="text-sm text-gray-400 italic">
+              {caption}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Mémorisation du composant pour éviter les re-renders inutiles
+const InstagramEmbed = React.memo(InstagramEmbedBase, (prevProps, nextProps) => {
+  // Re-render uniquement si l'URL ou la caption change
+  return prevProps.url === nextProps.url && prevProps.caption === nextProps.caption;
+});
 
 const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false }) => {
   const { slug } = useParams<{ slug: string }>();
@@ -69,6 +282,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
   const [activeSection, setActiveSection] = useState('intro');
   const [copied, setCopied] = useState(false);
   const [showSharePopup, setShowSharePopup] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({});
 
   // Gestion du scroll
   useEffect(() => {
@@ -114,11 +328,34 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
         
         try {
           // Utiliser la bonne fonction selon le type de contenu
-         fetchedArticle = await getArticleBySlug(slug, isPreview);
-
+          fetchedArticle = await getArticleBySlug(slug, isPreview);
             
           if (fetchedArticle) {
             setDataSource('sanity');
+            
+            // NETTOYAGE DES DONNÉES POUR ÉVITER LES ERREURS REACT
+            // Nettoyer excerpt
+            if (fetchedArticle.excerpt) {
+              fetchedArticle.excerpt = cleanPortableText(fetchedArticle.excerpt);
+            }
+            
+            // Nettoyer bio de l'auteur
+            if (fetchedArticle.author?.bio) {
+              fetchedArticle.author.bio = cleanPortableText(fetchedArticle.author.bio);
+            }
+            
+            // Nettoyer keyPoints s'ils ne sont pas un tableau de strings
+            if (fetchedArticle.keyPoints && !Array.isArray(fetchedArticle.keyPoints)) {
+              console.warn("⚠️ keyPoints n'est pas un tableau, on le supprime");
+              delete fetchedArticle.keyPoints;
+            } else if (fetchedArticle.keyPoints && Array.isArray(fetchedArticle.keyPoints)) {
+              // S'assurer que chaque élément est une string
+              fetchedArticle.keyPoints = fetchedArticle.keyPoints.map((point: any) => 
+                typeof point === 'string' ? point : cleanPortableText(point)
+              ).filter(Boolean);
+            }
+            
+            console.log("✅ Article nettoyé:", fetchedArticle);
           }
         } catch (sanityError) {
           console.error("Erreur Sanity:", sanityError);
@@ -142,11 +379,17 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
           try {
             const allArticles = await getAllArticles();
             
+            // Nettoyer les excerpts des articles liés
+            const cleanedArticles = allArticles.map((a: any) => ({
+              ...a,
+              excerpt: cleanPortableText(a.excerpt)
+            }));
+            
             // Filtrer les articles de la même catégorie
             let filtered;
             if (fetchedArticle.categories && fetchedArticle.categories.length > 0) {
               const categoryIds = fetchedArticle.categories.map((c: any) => c._id);
-              filtered = allArticles
+              filtered = cleanedArticles
                 .filter((a: any) => {
                   if (a._id === fetchedArticle._id) return false;
                   if (a.categories && a.categories.length > 0) {
@@ -158,7 +401,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
             
             // Si pas assez d'articles de la même catégorie, ajouter d'autres articles
             if (!filtered || filtered.length < 6) {
-              const otherArticles = allArticles
+              const otherArticles = cleanedArticles
                 .filter((a: any) => a._id !== fetchedArticle._id)
                 .filter((a: any) => !filtered?.some((f: any) => f._id === a._id));
               
@@ -179,7 +422,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
     };
 
     loadArticle();
-  }, [slug]);
+  }, [slug, isEmission]);
 
   // Scroll en haut quand on change d'article
   useEffect(() => {
@@ -462,6 +705,10 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
           </pre>
         </div>
       ),
+      // Utilisation du nouveau composant Instagram amélioré
+      instagram: ({value}: any) => (
+        <InstagramEmbed url={value?.url} caption={value?.caption} />
+      ),
     },
   };
 
@@ -504,6 +751,24 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
         publishedTime={article.publishedAt}
         image={article.mainImage}
       />
+
+      {/* Styles CSS pour scrollbar personnalisée */}
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+      `}</style>
 
       {/* Popup de partage */}
       <AnimatePresence>
@@ -691,7 +956,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
               {article.title}
             </motion.h1>
 
-            {/* Excerpt */}
+            {/* Excerpt - CORRIGÉ */}
             {article.excerpt && (
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
@@ -797,6 +1062,27 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                 )}
               </div>
 
+              {/* Points clés - CORRIGÉ */}
+              {article.keyPoints && Array.isArray(article.keyPoints) && article.keyPoints.length > 0 && (
+                <div className="mt-12 p-6 rounded-xl" style={{
+                  background: colors.bgLight,
+                  border: `1px solid ${colors.borderColor}`
+                }}>
+                  <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span className="text-2xl">💡</span>
+                    Points clés à retenir
+                  </h3>
+                  <ul className="space-y-2 text-gray-300">
+                    {article.keyPoints.map((point: string, index: number) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span style={{ color: colors.primary }}>▸</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               {/* Tags */}
               {article.tags && article.tags.length > 0 && (
                 <div className="mt-12 pt-8 border-t border-white/10">
@@ -840,7 +1126,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
             <aside className="lg:col-span-4">
               <div className="sticky top-24 space-y-8">
                 
-                {/* Encart Auteur - En premier */}
+                {/* Encart Auteur - COMPLÈTEMENT CORRIGÉ */}
                 {article.author && (
                   <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/50 backdrop-blur-md rounded-2xl border border-gray-700/50 p-6">
                     <div className="flex items-center gap-4 mb-4">
@@ -865,20 +1151,25 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                           {article.author.name}
                         </h3>
                         <div className="flex items-center gap-3 text-xs text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <Calendar size={12} />
-                            {article.publishedAt && new Date(article.publishedAt).toLocaleDateString('fr-FR', { 
-                              day: 'numeric', 
-                              month: 'short' 
-                            })}
-                          </span>
+                          {article.publishedAt && (
+                            <span className="flex items-center gap-1">
+                              <Calendar size={12} />
+                              <span>
+                                {new Date(article.publishedAt).toLocaleDateString('fr-FR', { 
+                                  day: 'numeric', 
+                                  month: 'short' 
+                                })}
+                              </span>
+                            </span>
+                          )}
                           <span className="flex items-center gap-1">
                             <Clock size={12} />
-                            {estimatedReadingTime} min
+                            <span>{estimatedReadingTime} min</span>
                           </span>
                         </div>
                       </div>
                     </div>
+                    {/* Bio de l'auteur - CORRIGÉ */}
                     {article.author.bio && (
                       <p className="text-sm text-gray-300 leading-relaxed">
                         {article.author.bio}
@@ -904,68 +1195,247 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                   </div>
                 )}
                 
-                {/* Table des matières */}
-                {article.body && article.body.filter((block: any) => block._type === 'block' && ['h2', 'h3'].includes(block.style)).length > 0 && (
-                  <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-md rounded-2xl border border-gray-700/50 p-6">
-                    <div className="flex items-center gap-3 mb-6">
+                {/* Table des matières avec sous-sections repliables */}
+                {article.body && article.body.filter((block: any) => block._type === 'block' && ['h2', 'h3'].includes(block.style)).length > 0 && (() => {
+                  // Organiser les headings en structure hiérarchique
+                  const headings: any[] = [];
+                  let currentH2: any = null;
+                  
+                  article.body
+                    .filter((block: any) => block._type === 'block' && ['h2', 'h3'].includes(block.style))
+                    .forEach((heading: any, index: number) => {
+                      const text = heading.children?.[0]?.text || '';
+                      const id = `heading-${index}`;
+                      
+                      if (heading.style === 'h2') {
+                        currentH2 = {
+                          id,
+                          text,
+                          subheadings: []
+                        };
+                        headings.push(currentH2);
+                      } else if (heading.style === 'h3' && currentH2) {
+                        currentH2.subheadings.push({ id, text });
+                      }
+                    });
+                  
+                  return (
+                    <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-md rounded-2xl border border-gray-700/50 overflow-hidden">
+                      {/* Header fixe avec design amélioré */}
                       <div 
-                        className="w-1 h-6 rounded-full"
-                        style={{ background: colors.bgGradient }}
-                      />
-                      <h3 className="text-lg font-semibold text-white">
-                        Sommaire
-                      </h3>
-                    </div>
-                    
-                    <nav className="space-y-1">
-                      {article.body
-                        .filter((block: any) => block._type === 'block' && ['h2', 'h3'].includes(block.style))
-                        .map((heading: any, index: number) => {
-                          const text = heading.children?.[0]?.text || '';
-                          const id = `heading-${index}`;
-                          const isH3 = heading.style === 'h3';
-                          const isActive = activeSection === id;
-                          
-                          return (
-                            <a
-                              key={id}
-                              href={`#${id}`}
-                              className={`group flex items-center gap-3 py-3 px-4 rounded-xl transition-all duration-200 ${
-                                isH3 ? 'ml-4' : ''
-                              }`}
-                              style={{
-                                background: isActive ? colors.bgLight : 'transparent',
-                                color: isActive ? colors.textColor : '#9ca3af'
-                              }}
-                              onMouseEnter={(e) => {
-                                if (!isActive) {
-                                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                                  e.currentTarget.style.color = '#ffffff';
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                if (!isActive) {
-                                  e.currentTarget.style.background = 'transparent';
-                                  e.currentTarget.style.color = '#9ca3af';
-                                }
-                              }}
+                        className="p-5 border-b"
+                        style={{ borderColor: colors.borderColor + '30' }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <div 
+                              className="w-10 h-10 rounded-xl flex items-center justify-center"
+                              style={{ background: colors.bgGradient }}
                             >
-                              <span 
-                                className="w-2 h-2 rounded-full transition-all duration-200"
-                                style={{
-                                  background: isActive ? colors.primary : '#4b5563',
-                                  boxShadow: isActive ? `0 0 12px ${colors.primary}50` : 'none'
-                                }}
-                              />
-                              <span className={`${isH3 ? 'text-sm' : 'text-base'} line-clamp-2`}>
-                                {text}
-                              </span>
-                            </a>
-                          );
-                        })}
-                    </nav>
-                  </div>
-                )}
+                              <BookOpen size={18} className="text-white" />
+                            </div>
+                            <div 
+                              className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-white/20 animate-pulse"
+                              style={{ background: colors.primary + '40' }}
+                            />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-white">
+                              Table des matières
+                            </h3>
+                            <p className="text-xs text-gray-500">
+                              {headings.length} chapitres • {estimatedReadingTime} min de lecture
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Contenu avec scroll si nécessaire */}
+                      <nav className="p-4 max-h-[600px] overflow-y-auto custom-scrollbar">
+                        <div className="space-y-2">
+                          {headings.map((section, sectionIndex) => {
+                            const isActive = activeSection === section.id;
+                            const hasSubheadings = section.subheadings.length > 0;
+                            const isExpanded = expandedSections[section.id];
+                            const hasActiveChild = section.subheadings.some((sub: any) => activeSection === sub.id);
+                            
+                            return (
+                              <div key={section.id} className="group">
+                                {/* Section principale H2 */}
+                                <div className="relative">
+                                  <a
+                                    href={`#${section.id}`}
+                                    className={`
+                                      flex items-center gap-3 py-3 px-4 rounded-xl
+                                      transition-all duration-300 relative overflow-hidden
+                                      ${isActive ? 'bg-gradient-to-r' : 'hover:bg-white/5'}
+                                    `}
+                                    style={{
+                                      background: isActive 
+                                        ? `linear-gradient(90deg, ${colors.bgLight}, transparent)` 
+                                        : hasActiveChild 
+                                        ? colors.bgLight + '50'
+                                        : undefined,
+                                      borderLeft: isActive ? `3px solid ${colors.primary}` : '3px solid transparent'
+                                    }}
+                                  >
+                                    {/* Indicateur numéroté */}
+                                    <div 
+                                      className={`
+                                        w-7 h-7 rounded-lg flex items-center justify-center
+                                        text-xs font-bold transition-all duration-300
+                                        ${isActive ? 'scale-110' : ''}
+                                      `}
+                                      style={{
+                                        background: isActive ? colors.primary : colors.bgLight,
+                                        color: isActive ? '#000' : colors.textColor
+                                      }}
+                                    >
+                                      {sectionIndex + 1}
+                                    </div>
+                                    
+                                    {/* Texte de la section */}
+                                    <span 
+                                      className={`
+                                        flex-1 font-medium transition-colors duration-300
+                                        ${isActive ? 'text-white' : 'text-gray-300 group-hover:text-white'}
+                                      `}
+                                    >
+                                      {section.text}
+                                    </span>
+                                    
+                                    {/* Indicateur de sous-sections */}
+                                    {hasSubheadings && (
+                                      <button
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          setExpandedSections(prev => ({
+                                            ...prev,
+                                            [section.id]: !prev[section.id]
+                                          }));
+                                        }}
+                                        className={`
+                                          p-1.5 rounded-lg transition-all duration-300
+                                          hover:bg-white/10
+                                        `}
+                                        style={{ color: colors.textColor }}
+                                      >
+                                        <div className="relative">
+                                          <ChevronDown 
+                                            size={16} 
+                                            className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                                          />
+                                          {!isExpanded && (
+                                            <div 
+                                              className="absolute -top-1 -right-1 w-2 h-2 rounded-full"
+                                              style={{ background: colors.primary + '60' }}
+                                            />
+                                          )}
+                                        </div>
+                                      </button>
+                                    )}
+                                    
+                                    {/* Badge de lecture si actif */}
+                                    {isActive && (
+                                      <div className="flex items-center gap-1 text-xs">
+                                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                        <span className="text-green-500">En cours</span>
+                                      </div>
+                                    )}
+                                  </a>
+                                  
+                                  {/* Ligne de progression */}
+                                  {isActive && (
+                                    <motion.div
+                                      layoutId="activeIndicator"
+                                      className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r"
+                                      style={{ 
+                                        background: colors.bgGradient,
+                                        width: '100%'
+                                      }}
+                                      initial={{ width: 0 }}
+                                      animate={{ width: '100%' }}
+                                      transition={{ duration: 0.3 }}
+                                    />
+                                  )}
+                                </div>
+                                
+                                {/* Sous-sections H3 repliables */}
+                                <AnimatePresence>
+                                  {hasSubheadings && isExpanded && (
+                                    <motion.div
+                                      initial={{ height: 0, opacity: 0 }}
+                                      animate={{ height: 'auto', opacity: 1 }}
+                                      exit={{ height: 0, opacity: 0 }}
+                                      transition={{ duration: 0.2 }}
+                                      className="overflow-hidden"
+                                    >
+                                      <div className="ml-8 mt-1 space-y-1 border-l-2 border-gray-700/50 pl-4">
+                                        {section.subheadings.map((sub: any, subIndex: number) => {
+                                          const isSubActive = activeSection === sub.id;
+                                          return (
+                                            <a
+                                              key={sub.id}
+                                              href={`#${sub.id}`}
+                                              className={`
+                                                flex items-center gap-2 py-2 px-3 rounded-lg
+                                                text-sm transition-all duration-200
+                                                ${isSubActive ? 'bg-white/10' : 'hover:bg-white/5'}
+                                              `}
+                                              style={{
+                                                color: isSubActive ? colors.textColor : '#9ca3af'
+                                              }}
+                                            >
+                                              <div 
+                                                className="w-1.5 h-1.5 rounded-full"
+                                                style={{
+                                                  background: isSubActive ? colors.primary : '#4b5563'
+                                                }}
+                                              />
+                                              <span className="line-clamp-1">
+                                                {sub.text}
+                                              </span>
+                                              {isSubActive && (
+                                                <Eye size={12} className="ml-auto" style={{ color: colors.primary }} />
+                                              )}
+                                            </a>
+                                          );
+                                        })}
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </nav>
+                      
+                      {/* Footer avec progression */}
+                      <div 
+                        className="p-4 border-t"
+                        style={{ borderColor: colors.borderColor + '30' }}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs text-gray-500">Progression de lecture</span>
+                          <span className="text-xs font-medium" style={{ color: colors.textColor }}>
+                            {Math.round(scrollProgress)}%
+                          </span>
+                        </div>
+                        <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full"
+                            style={{ 
+                              background: colors.bgGradient,
+                              width: `${scrollProgress}%`
+                            }}
+                            transition={{ duration: 0.1 }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Stats de l'article avec couleurs inline */}
                 <div 
@@ -1188,13 +1658,17 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                         )}
                         <div className="p-6">
                           {related.categories && related.categories[0] && (
-                            <span className={`text-xs ${colors.text} font-medium uppercase`}>
+                            <span 
+                              className="text-xs font-medium uppercase"
+                              style={{ color: colors.textColor }}
+                            >
                               {related.categories[0].title}
                             </span>
                           )}
-                          <h3 className={`text-lg font-semibold text-white mt-2 mb-3 group-hover:${colors.text} transition-colors line-clamp-2`}>
+                          <h3 className="text-lg font-semibold text-white mt-2 mb-3 group-hover:text-blue-400 transition-colors line-clamp-2">
                             {related.title}
                           </h3>
+                          {/* Excerpt des articles liés - CORRIGÉ */}
                           <p className="text-sm text-gray-400 line-clamp-2 mb-4">
                             {related.excerpt}
                           </p>

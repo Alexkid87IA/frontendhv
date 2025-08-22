@@ -419,8 +419,8 @@ export const AllArticlesPage = () => {
           </div>
         </section>
 
-        {/* Filters & Controls */}
-        <section className="sticky top-20 z-30 bg-black/80 backdrop-blur-xl border-b border-white/10">
+        {/* Filters & Controls - Non sticky */}
+        <section className="bg-black/80 backdrop-blur-xl border-b border-white/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}

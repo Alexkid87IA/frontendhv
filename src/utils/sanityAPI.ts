@@ -324,8 +324,8 @@ export const getCategoryBySlug = async (slug: string) => {
 export const getAmuseBouches = async (limit = 5): Promise<any[]> => {
   return getWithCache(`amuseBouches_${limit}`, async () => {
     try {
-      // Chercher les articles avec format "amuse-bouche"
-      const query = `*[_type == "article" && format == "amuse-bouche"] | order(publishedAt desc)[0...$limit] {
+      // Chercher les articles avec contentType "amuse-bouche"
+      const query = `*[_type == "article" && contentType == "amuse-bouche"] | order(publishedAt desc)[0...$limit] {
         _id,
         title,
         slug,
@@ -335,11 +335,12 @@ export const getAmuseBouches = async (limit = 5): Promise<any[]> => {
         excerpt,
         publishedAt,
         keyPoints,
-        "duration": coalesce(readingTime, "5 min"),
+        "duration": coalesce(duration, readingTime, "3 min"),  // Utiliser duration si disponible
         "videoUrl": videoUrl
       }`;
       
       const results = await sanityClient.fetch(query, { limit });
+      console.log(`Amuses-bouches récupérés: ${results?.length || 0}`);
       return results || [];
     } catch (error) {
       console.error("Erreur lors de la récupération des amuses-bouches:", error);
