@@ -170,11 +170,12 @@ export const ResponsiveNavbar = () => {
         {/* Contenu principal */}
         <div className="relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              {/* Logo */}
+            {/* CORRECTION: Container avec largeur fixe sur mobile */}
+            <div className="relative flex items-center justify-between h-20">
+              {/* Logo - CORRECTION: empêcher le décalage */}
               <Link 
                 to="/" 
-                className="flex-shrink-0 relative group"
+                className="relative group z-10 flex-shrink-0"
               >
                 <motion.div
                   whileHover={{ scale: 1.05 }}
@@ -379,7 +380,7 @@ export const ResponsiveNavbar = () => {
                 </div>
               </div>
 
-              {/* Actions à droite */}
+              {/* Actions à droite - Desktop uniquement */}
               <div className="hidden lg:flex items-center gap-3">
                 {/* Search Button */}
                 <motion.button
@@ -459,14 +460,15 @@ export const ResponsiveNavbar = () => {
                 </motion.div>
               </div>
 
-              {/* Mobile Menu Button */}
+              {/* Mobile Menu Button - CORRECTION: position et z-index */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="lg:hidden relative p-2 text-white"
+                className="lg:hidden relative z-10 p-3 -mr-2"
+                aria-label="Menu"
               >
                 <div className="relative w-6 h-5 flex flex-col justify-between">
                   <motion.span
-                    className="w-full h-0.5 bg-white rounded-full origin-left"
+                    className="block w-full h-0.5 bg-white rounded-full origin-left transform transition-all"
                     animate={isOpen ? {
                       rotate: 45,
                       y: -2,
@@ -476,9 +478,10 @@ export const ResponsiveNavbar = () => {
                       y: 0,
                       x: 0
                     }}
+                    transition={{ duration: 0.3 }}
                   />
                   <motion.span
-                    className="w-full h-0.5 bg-white rounded-full"
+                    className="block w-full h-0.5 bg-white rounded-full transform transition-all"
                     animate={isOpen ? {
                       opacity: 0,
                       x: -20
@@ -486,9 +489,10 @@ export const ResponsiveNavbar = () => {
                       opacity: 1,
                       x: 0
                     }}
+                    transition={{ duration: 0.3 }}
                   />
                   <motion.span
-                    className="w-full h-0.5 bg-white rounded-full origin-left"
+                    className="block w-full h-0.5 bg-white rounded-full origin-left transform transition-all"
                     animate={isOpen ? {
                       rotate: -45,
                       y: 2,
@@ -498,20 +502,21 @@ export const ResponsiveNavbar = () => {
                       y: 0,
                       x: 0
                     }}
+                    transition={{ duration: 0.3 }}
                   />
                 </div>
               </button>
             </div>
           </div>
 
-          {/* Search Bar Overlay */}
+          {/* Search Bar Overlay - Desktop only */}
           <AnimatePresence>
             {isSearchOpen && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="border-t border-white/10 overflow-hidden"
+                className="border-t border-white/10 overflow-hidden hidden lg:block"
               >
                 <div className="max-w-3xl mx-auto p-4">
                   <div className="relative">
@@ -530,7 +535,7 @@ export const ResponsiveNavbar = () => {
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - CORRECTION: overlay et panneau */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -539,19 +544,22 @@ export const ResponsiveNavbar = () => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-40 lg:hidden"
           >
+            {/* Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/98 backdrop-blur-2xl"
+              onClick={() => setIsOpen(false)}
             />
 
+            {/* Menu Panel - CORRECTION: largeur adaptative */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="absolute inset-y-0 right-0 w-full max-w-md bg-black/95 backdrop-blur-2xl border-l border-white/10"
+              className="absolute inset-y-0 right-0 w-full sm:max-w-md bg-black/95 backdrop-blur-2xl sm:border-l sm:border-white/10"
             >
               <div className="h-full overflow-y-auto pt-24 px-6 pb-8">
                 {/* Mobile Menu Items */}
@@ -568,7 +576,7 @@ export const ResponsiveNavbar = () => {
                           className={`block px-4 py-3 rounded-xl font-medium transition-all ${
                             isActive 
                               ? 'bg-white/10 text-white' 
-                              : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                              : 'text-gray-300 hover:bg-white/5 hover:text-white active:bg-white/10'
                           }`}
                         >
                           <div className="flex items-center justify-between">
@@ -586,7 +594,7 @@ export const ResponsiveNavbar = () => {
                               key={sub.path}
                               to={sub.path}
                               onClick={() => setIsOpen(false)}
-                              className="block px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                              className="block px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all active:bg-white/10"
                             >
                               {sub.label}
                             </Link>
@@ -605,7 +613,7 @@ export const ResponsiveNavbar = () => {
                       key={item.path}
                       to={item.path}
                       onClick={() => setIsOpen(false)}
-                      className="block px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all font-medium"
+                      className="block px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all font-medium active:bg-white/10"
                     >
                       <div className="flex items-center justify-between">
                         <span>{item.label}</span>
@@ -656,7 +664,7 @@ export const ResponsiveNavbar = () => {
         )}
       </AnimatePresence>
 
-      {/* Background overlay when dropdown is open */}
+      {/* Background overlay when dropdown is open - Desktop only */}
       <AnimatePresence>
         {activeDropdown && (
           <motion.div
