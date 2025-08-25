@@ -1,13 +1,17 @@
+// src/components/sections/HeroSection.tsx
+// VERSION OPTIMISÉE - Garde le design original, optimise seulement les performances
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { ArrowRight, Quote, Calendar, Clock, User, Sparkles, TrendingUp, Star, Play, Pause, Volume2, VolumeX, Share2, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
-import SafeImage from '../common/SafeImage';
+import SafeImage from '../common/SafeImage'; // Utilise SafeImage qui fonctionne
 import ErrorBoundary from '../common/ErrorBoundary';
-import { sanityClient } from '../../utils/sanityClient';
+import { useData } from '../../context/DataContext'; // CHANGEMENT : Utilise le contexte
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { SanityArticle } from '../../types/sanity';
 
+// Données mockées pour fallback (inchangées)
 const mockFeaturedArticle: SanityArticle = {
   _id: '1',
   title: "Comment développer un mindset d'exception",
@@ -121,18 +125,34 @@ const dailyQuotes = [
 ];
 
 export const HeroSection = () => {
+  // CHANGEMENT : Utilise le contexte global au lieu d'états locaux pour les données
+  const { featuredArticles, recentArticles, isLoading: contextLoading } = useData();
+  
+  // DEBUG : Voir ce qui est récupéré
+  useEffect(() => {
+    console.log('🔍 DEBUG HeroSection:');
+    console.log('Featured Articles:', featuredArticles);
+    console.log('Recent Articles:', recentArticles);
+    if (recentArticles && recentArticles.length > 0) {
+      console.log('First article mainImage:', recentArticles[0].mainImage);
+      console.log('Image ref:', recentArticles[0].mainImage?.asset?._ref);
+    }
+  }, [featuredArticles, recentArticles]);
+  
+  // Fallback sur les données mockées si pas de données du contexte
   const [featuredArticle, setFeaturedArticle] = useState<SanityArticle>(mockFeaturedArticle);
-  const [recentArticles, setRecentArticles] = useState<SanityArticle[]>(mockRecentArticles);
+  const [displayedArticles, setDisplayedArticles] = useState<SanityArticle[]>(mockRecentArticles);
+  const [dataSource, setDataSource] = useState<'cms' | 'mock'>('mock');
+  
+  // États pour l'UI (inchangés)
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
   
-  // Motion values pour l'effet 3D
+  // Motion values pour l'effet 3D (inchangés)
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const rotateX = useTransform(mouseY, [-100, 100], [10, -10]);
@@ -140,7 +160,23 @@ export const HeroSection = () => {
 
   const currentQuote = dailyQuotes[currentQuoteIndex];
 
-  // Effet typewriter pour la citation
+  // CHANGEMENT : Utilise les données du contexte quand elles sont disponibles
+  useEffect(() => {
+    if (!contextLoading) {
+      if (featuredArticles && featuredArticles.length > 0) {
+        setFeaturedArticle(featuredArticles[0]);
+        setDataSource('cms');
+      }
+      
+      if (recentArticles && recentArticles.length > 0) {
+        // Prendre les 6 articles les plus récents pour les tendances
+        setDisplayedArticles(recentArticles.slice(0, 6));
+        setDataSource('cms');
+      }
+    }
+  }, [contextLoading, featuredArticles, recentArticles]);
+
+  // Effet typewriter pour la citation (inchangé)
   useEffect(() => {
     setDisplayedText('');
     setIsTyping(true);
@@ -161,7 +197,7 @@ export const HeroSection = () => {
     return () => clearInterval(interval);
   }, [currentQuoteIndex, currentQuote.text]);
 
-  // Rotation automatique des citations
+  // Rotation automatique des citations (inchangé)
   useEffect(() => {
     if (isAutoPlay && !isTyping) {
       const timeout = setTimeout(() => {
@@ -192,127 +228,7 @@ export const HeroSection = () => {
     mouseY.set(0);
   };
 
-  // MODIFICATION ICI : Utilisation des champs isFeatured et isTrending
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Récupérer l'article à la une (featured)
-        const featuredQuery = `*[_type == "article" && isFeatured == true][0] {
-          _id,
-          title,
-          slug,
-          mainImage,
-          excerpt,
-          publishedAt,
-          readingTime,
-          categories[0]->{
-            title,
-            slug
-          }
-        }`;
-        
-        // Récupérer les articles tendances
-        const trendingQuery = `*[_type == "article" && isTrending == true] | order(trendingOrder asc, publishedAt desc)[0...6] {
-          _id,
-          title,
-          slug,
-          mainImage,
-          excerpt,
-          publishedAt,
-          readingTime,
-          categories[]->{
-            _id,
-            title,
-            slug
-          },
-          trendingOrder
-        }`;
-        
-        // Exécuter les deux requêtes en parallèle
-        const [featuredResult, trendingResult] = await Promise.all([
-          sanityClient.fetch(featuredQuery),
-          sanityClient.fetch(trendingQuery)
-        ]);
-        
-        // Gérer l'article à la une
-        if (featuredResult) {
-          setFeaturedArticle(featuredResult);
-          console.log('Article à la une récupéré depuis Sanity');
-        } else {
-          // Fallback : prendre le premier article récent si pas d'article featured
-          console.log('Pas d\'article featured, utilisation du fallback');
-          const fallbackFeaturedQuery = `*[_type == "article"] | order(publishedAt desc)[0] {
-            _id,
-            title,
-            slug,
-            mainImage,
-            excerpt,
-            publishedAt,
-            readingTime,
-            categories[0]->{
-              title,
-              slug
-            }
-          }`;
-          const fallbackFeatured = await sanityClient.fetch(fallbackFeaturedQuery);
-          if (fallbackFeatured) {
-            setFeaturedArticle(fallbackFeatured);
-          } else {
-            setFeaturedArticle(mockFeaturedArticle);
-          }
-        }
-        
-        // Gérer les articles tendances
-        if (trendingResult && trendingResult.length > 0) {
-          setRecentArticles(trendingResult);
-          console.log(`${trendingResult.length} articles tendances récupérés depuis Sanity`);
-          setDataSource('cms');
-        } else {
-          // Fallback : prendre les 6 articles les plus récents
-          console.log('Pas d\'articles tendances, utilisation du fallback');
-          const fallbackQuery = `*[_type == "article"] | order(publishedAt desc)[0...6] {
-            _id,
-            title,
-            slug,
-            mainImage,
-            excerpt,
-            publishedAt,
-            readingTime,
-            categories[]->{
-              _id,
-              title,
-              slug
-            }
-          }`;
-          
-          const fallbackArticles = await sanityClient.fetch(fallbackQuery);
-          
-          if (fallbackArticles && fallbackArticles.length > 0) {
-            setRecentArticles(fallbackArticles);
-            console.log('Utilisation du fallback : articles récents');
-            setDataSource('cms');
-          } else {
-            setRecentArticles(mockRecentArticles);
-            setDataSource('mock');
-            console.log('Utilisation des articles mockés');
-          }
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération des articles:', error);
-        setFeaturedArticle(mockFeaturedArticle);
-        setRecentArticles(mockRecentArticles);
-        setDataSource('mock');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchArticles();
-  }, []);
-
-  if (isLoading) {
+  if (contextLoading) {
     return (
       <section className="relative min-h-screen flex items-center justify-center">
         <LoadingSpinner />
@@ -330,13 +246,13 @@ export const HeroSection = () => {
   return (
     <ErrorBoundary>
       <section className="relative min-h-screen flex items-center py-12">
-        {/* Background animé spectaculaire */}
+        {/* Background animé spectaculaire (inchangé sauf le nombre de particules) */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-neutral-900 to-black" />
           
-          {/* Particules animées */}
+          {/* Particules animées - CHANGEMENT : 15 au lieu de 30 */}
           <div className="absolute inset-0">
-            {[...Array(30)].map((_, i) => (
+            {[...Array(15)].map((_, i) => (
               <motion.div
                 key={i}
                 className="absolute w-1 h-1 bg-blue-500/30 rounded-full"
@@ -357,7 +273,7 @@ export const HeroSection = () => {
             ))}
           </div>
 
-          {/* Mesh gradient */}
+          {/* Mesh gradient (inchangé) */}
           <div className="absolute inset-0">
             <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] animate-pulse" />
             <div className="absolute bottom-0 right-1/3 w-[600px] h-[600px] bg-violet-500/10 rounded-full blur-[120px] animate-pulse animation-delay-2000" />
@@ -365,7 +281,7 @@ export const HeroSection = () => {
         </div>
 
         <div className="container relative z-10">
-          {/* Hero Principal avec Featured Article */}
+          {/* Hero Principal avec Featured Article (structure inchangée) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
             {/* Article Principal - Plus grand */}
             <motion.div
@@ -376,18 +292,20 @@ export const HeroSection = () => {
             >
               <Link to={`/article/${featuredArticle.slug?.current}`} className="group block relative h-full">
                 <div className="relative h-full min-h-[500px] lg:min-h-[600px] rounded-3xl overflow-hidden">
-                  {/* Image de fond */}
+                  {/* Utilise SafeImage */}
                   <SafeImage
                     source={featuredArticle.mainImage}
                     alt={featuredArticle.title}
+                    width={1200}
+                    height={800}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                   />
                   
-                  {/* Overlay gradient amélioré */}
+                  {/* Overlay gradient amélioré (inchangé) */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
                   <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
                   
-                  {/* Badge "À LA UNE" plus élégant */}
+                  {/* Badge "À LA UNE" plus élégant (inchangé) */}
                   <motion.div
                     initial={{ x: -100, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
@@ -401,7 +319,7 @@ export const HeroSection = () => {
                     </div>
                   </motion.div>
                   
-                  {/* Contenu */}
+                  {/* Contenu (inchangé) */}
                   <div className="absolute inset-x-0 bottom-0 p-8 lg:p-12">
                     {featuredArticle.categories?.[0] && (
                       <motion.div
@@ -455,7 +373,7 @@ export const HeroSection = () => {
               </Link>
             </motion.div>
 
-            {/* Citation du jour - VERSION AMÉLIORÉE */}
+            {/* Citation du jour - VERSION AMÉLIORÉE (structure complète inchangée) */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -500,7 +418,7 @@ export const HeroSection = () => {
                     </div>
                   </div>
 
-                  {/* Carte 3D avec effet de perspective */}
+                  {/* Carte 3D avec effet de perspective (structure complète inchangée) */}
                   <motion.div
                     className="relative perspective-1000"
                     onMouseMove={handleMouseMove}
@@ -717,7 +635,7 @@ export const HeroSection = () => {
             </motion.div>
           </div>
 
-          {/* Section titre pour les articles récents */}
+          {/* Section titre pour les articles récents (inchangée) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -733,9 +651,9 @@ export const HeroSection = () => {
             <p className="text-gray-400">Les contenus qui font parler la communauté</p>
           </motion.div>
 
-          {/* Grille d'articles récents - Design cards modernes */}
+          {/* Grille d'articles récents - Design cards modernes (structure inchangée) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {recentArticles.map((article, index) => (
+            {displayedArticles.map((article, index) => (
               <motion.article
                 key={article._id}
                 initial={{ opacity: 0, y: 30 }}
@@ -748,9 +666,12 @@ export const HeroSection = () => {
                   <div className="relative h-full bg-white/[0.02] backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300">
                     {/* Image avec ratio 16:9 */}
                     <div className="relative aspect-[16/9] overflow-hidden">
+                      {/* Utilise SafeImage */}
                       <SafeImage
                         source={article.mainImage}
                         alt={article.title}
+                        width={600}
+                        height={338}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       
@@ -808,7 +729,7 @@ export const HeroSection = () => {
             ))}
           </div>
 
-          {/* CTA vers tous les articles - Amélioré */}
+          {/* CTA vers tous les articles - Amélioré (inchangé) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -830,7 +751,7 @@ export const HeroSection = () => {
           </motion.div>
         </div>
 
-        {/* Styles pour les animations */}
+        {/* Styles pour les animations (inchangés) */}
         <style jsx>{`
           .perspective-1000 {
             perspective: 1000px;
