@@ -188,13 +188,8 @@ export const HomePage = () => {
           {/* 1. Hero avec article à la une + 6 articles récents + CTA */}
           <HeroSection />
           
-          {/* Section AmuseBouche temporairement retirée pour debug */}
-          {/* <AmuseBoucheSection /> */}
-          
           {/* 3. Navigation thématique + stats + CTA */}
-          <section className="py-20">
-            <EditorialSection />
-          </section>
+          <EditorialSection />
           
           {/* 4. Nos formats : Podcasts */}
           <section className="py-20 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent">
@@ -228,10 +223,8 @@ export const HomePage = () => {
             <EssentialArticlesSection />
           </section>
           
-          {/* 8. Proposition premium */}
-          <section className="py-20 bg-gradient-to-t from-purple-900/20 to-transparent">
-            <ClubSection />
-          </section>
+          {/* 8. Proposition premium - SANS WRAPPER */}
+          <ClubSection />
         </main>
         
         {/* 9. Footer avec liens et infos */}

@@ -16,7 +16,8 @@ const mockUniverses = [
     slug: { current: 'story' },
     icon: 'book',
     color: 'amber',
-    gradient: 'from-amber-500 to-orange-500'
+    gradient: 'from-amber-500 to-orange-500',
+    stats: { articles: '67', growth: '+12%' }
   },
   {
     _id: '2',
@@ -26,7 +27,8 @@ const mockUniverses = [
     slug: { current: 'business' },
     icon: 'trending',
     color: 'blue',
-    gradient: 'from-blue-500 to-cyan-500'
+    gradient: 'from-blue-500 to-cyan-500',
+    stats: { articles: '89', growth: '+8%' }
   },
   {
     _id: '3',
@@ -36,7 +38,8 @@ const mockUniverses = [
     slug: { current: 'mental' },
     icon: 'brain',
     color: 'purple',
-    gradient: 'from-purple-500 to-violet-500'
+    gradient: 'from-purple-500 to-violet-500',
+    stats: { articles: '56', growth: '+15%' }
   },
   {
     _id: '4',
@@ -46,7 +49,8 @@ const mockUniverses = [
     slug: { current: 'society' },
     icon: 'users',
     color: 'emerald',
-    gradient: 'from-emerald-500 to-teal-500'
+    gradient: 'from-emerald-500 to-teal-500',
+    stats: { articles: '34', growth: '+10%' }
   }
 ];
 
@@ -232,14 +236,28 @@ export const EditorialSection = () => {
                   </div>
                 </div>
                 
-                <p className="text-white/90 text-sm lg:text-base leading-relaxed">
+                <p className="text-white/90 text-sm lg:text-base leading-relaxed mb-4">
                   {universe.description}
                 </p>
+
+                {/* Stats de la catégorie */}
+                {universe.stats && (
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <BookOpen className="w-3 h-3 text-white/60" />
+                      <span className="text-sm text-white/80 font-medium">{universe.stats.articles} articles</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <TrendingUp className="w-3 h-3 text-white/60" />
+                      <span className="text-sm text-white/80 font-medium">{universe.stats.growth}</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Arrow indicator */}
               <div className="flex items-center gap-2 text-white/80 text-sm">
-                <span>Explorer</span>
+                <span>Explorer la rubrique</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
             </motion.div>
@@ -266,9 +284,12 @@ export const EditorialSection = () => {
                   `}
                 >
                   <div>
-                    <h4 className="text-white font-bold text-[11px] lg:text-[13px] leading-tight">
+                    <h4 className="text-white font-bold text-[11px] lg:text-[13px] leading-tight mb-1">
                       {subcat.title}
                     </h4>
+                    {subcat.articleCount > 0 && (
+                      <span className="text-[10px] text-white/50">{subcat.articleCount} articles</span>
+                    )}
                   </div>
                   
                   <div className="flex justify-end">
@@ -301,6 +322,9 @@ export const EditorialSection = () => {
                       <h4 className="text-white font-bold text-base lg:text-lg">
                         {subcats[2].title}
                       </h4>
+                      {subcats[2].articleCount > 0 && (
+                        <span className="text-xs text-white/50 ml-3">{subcats[2].articleCount} articles</span>
+                      )}
                     </div>
                     
                     <ArrowRight className="w-4 h-4 text-white/40 group-hover:text-white/80 group-hover:translate-x-1 transition-all" />
@@ -314,7 +338,7 @@ export const EditorialSection = () => {
                     to={`/rubrique/${universe.slug.current}/${subcat.slug}`}
                     className="group relative overflow-hidden rounded-xl"
                   >
-                                          <motion.div
+                    <motion.div
                       whileHover={{ scale: 1.05 }}
                       className={`
                         h-full p-2.5 lg:p-3.5
@@ -327,9 +351,12 @@ export const EditorialSection = () => {
                       `}
                     >
                       <div>
-                        <h4 className="text-white font-bold text-[11px] lg:text-[13px] leading-tight">
+                        <h4 className="text-white font-bold text-[11px] lg:text-[13px] leading-tight mb-1">
                           {subcat.title}
                         </h4>
+                        {subcat.articleCount > 0 && (
+                          <span className="text-[10px] text-white/50">{subcat.articleCount} articles</span>
+                        )}
                       </div>
                       
                       <div className="flex justify-end">
@@ -351,31 +378,40 @@ export const EditorialSection = () => {
       <section className="relative py-24 overflow-hidden">
         {/* Background effects simplifiés */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
           
-          {/* Orbes lumineux */}
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-[128px]" />
-          <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[128px]" />
-          <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-purple-500/5 rounded-full blur-[128px]" />
-          <div className="absolute bottom-1/2 right-1/3 w-96 h-96 bg-emerald-500/5 rounded-full blur-[128px]" />
+          {/* Un seul orbe central subtil */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-500/[0.03] rounded-full blur-[150px]" />
         </div>
 
         <div className="container relative z-10">
-          {/* Header */}
+          {/* Header amélioré */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
+            {/* Badge premium */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-6"
+            >
+              <Sparkles className="w-4 h-4 text-purple-400" />
+              <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">
+                4 univers • 20 thématiques
+              </span>
+            </motion.div>
+
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              <span className="text-white">Explorez nos </span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-purple-400 to-emerald-400">
-                univers
+              <span className="text-white">Explorez l'écosystème </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-violet-400">
+                High Value
               </span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Plongez dans nos thématiques phares et découvrez des contenus qui vous inspirent et vous transforment
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              Un contenu premium organisé en 4 univers complémentaires pour transformer votre mindset, votre business et votre vision du monde
             </p>
           </motion.div>
 
@@ -394,41 +430,48 @@ export const EditorialSection = () => {
             {renderMetroGrid(universes[3], subcategories.society)}
           </div>
 
-          {/* Stats Section */}
+          {/* Stats Section - Plus cohérentes */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12"
+            className="mb-16"
           >
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-amber-400 mb-2">250+</div>
-              <div className="text-gray-400">Articles publiés</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">50k+</div>
-              <div className="text-gray-400">Lecteurs mensuels</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-emerald-400 mb-2">15h+</div>
-              <div className="text-gray-400">De lecture</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-blue-400 mb-2">98%</div>
-              <div className="text-gray-400">Satisfaction</div>
+            <div className="max-w-4xl mx-auto bg-gradient-to-r from-purple-500/5 to-violet-500/5 rounded-3xl border border-purple-500/10 p-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">500+</div>
+                  <div className="text-sm text-gray-400">Articles publiés</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">50K+</div>
+                  <div className="text-sm text-gray-400">Lecteurs actifs</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">4</div>
+                  <div className="text-sm text-gray-400">Univers thématiques</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">98%</div>
+                  <div className="text-sm text-gray-400">Satisfaction</div>
+                </div>
+              </div>
             </div>
           </motion.div>
 
-          {/* CTA */}
+          {/* CTA amélioré */}
           <div className="text-center">
             <Link 
               to="/articles" 
-              className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-400 via-purple-400 to-emerald-400 rounded-full text-white font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 hover:scale-105"
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full text-white font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 hover:scale-105"
             >
               <BookOpenCheck size={20} />
-              <span>Explorer tous les articles</span>
+              <span>Explorer tous nos articles</span>
               <ArrowRight size={20} className="transform group-hover:translate-x-1 transition-transform" />
             </Link>
+            <p className="mt-4 text-gray-500 text-sm">
+              Plus de 500 articles pour nourrir votre ambition
+            </p>
           </div>
         </div>
       </section>

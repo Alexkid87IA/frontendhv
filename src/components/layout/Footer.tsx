@@ -2,31 +2,16 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Twitter, 
-  Instagram, 
-  Youtube, 
-  Linkedin,
-  ArrowUpRight,
-  Sparkles,
-  Zap,
-  Crown,
-  Rocket,
-  TrendingUp,
+  ArrowRight,
   Mail,
-  MapPin,
   Heart,
-  Star,
-  Send,
-  ChevronRight,
-  Globe,
-  Users,
-  User,
-  Award,
-  BookOpen,
-  Headphones,
-  MessageCircle,
   CheckCircle,
-  Code2
+  Twitter,
+  Instagram,
+  Youtube,
+  Linkedin,
+  Send,
+  Sparkles
 } from 'lucide-react';
 
 // Import de tous les logos
@@ -40,10 +25,7 @@ export const Footer = () => {
   const location = useLocation();
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const [hoveredSocial, setHoveredSocial] = useState<string | null>(null);
   
-  // Fonction pour obtenir le logo selon la page
   const getCurrentLogo = () => {
     const path = location.pathname;
     
@@ -55,111 +37,12 @@ export const Footer = () => {
     return logoMedia;
   };
 
-  // Navigation principale avec stats dynamiques
-  const mainNav = [
-    { 
-      label: 'Story', 
-      path: '/rubrique/story',
-      icon: Sparkles,
-      description: 'Parcours & réussites',
-      gradient: 'from-amber-400 to-orange-500',
-      bgGradient: 'from-amber-500/10 to-orange-500/10',
-      borderGradient: 'from-amber-500/50 to-orange-500/50',
-      stats: { articles: '267', trending: '+12%' },
-      featured: 'Nouveau : Success Stories'
-    },
-    { 
-      label: 'Business', 
-      path: '/rubrique/business',
-      icon: TrendingUp,
-      description: 'Stratégies & croissance',
-      gradient: 'from-blue-400 to-cyan-500',
-      bgGradient: 'from-blue-500/10 to-cyan-500/10',
-      borderGradient: 'from-blue-500/50 to-cyan-500/50',
-      stats: { articles: '189', trending: '+8%' },
-      featured: 'Dossier : Scale-ups 2025'
-    },
-    { 
-      label: 'Mental', 
-      path: '/rubrique/mental',
-      icon: Crown,
-      description: 'Mindset & performance',
-      gradient: 'from-purple-400 to-violet-500',
-      bgGradient: 'from-purple-500/10 to-violet-500/10',
-      borderGradient: 'from-purple-500/50 to-violet-500/50',
-      stats: { articles: '156', trending: '+15%' },
-      featured: 'Guide : Focus Extrême'
-    },
-    { 
-      label: 'Society', 
-      path: '/rubrique/society',
-      icon: Rocket,
-      description: 'Futur & innovations',
-      gradient: 'from-emerald-400 to-teal-500',
-      bgGradient: 'from-emerald-500/10 to-teal-500/10',
-      borderGradient: 'from-emerald-500/50 to-teal-500/50',
-      stats: { articles: '134', trending: '+10%' },
-      featured: 'Spécial : IA & Société'
-    }
-  ];
-
-  // Réseaux sociaux redesignés
   const socialLinks = [
-    { 
-      icon: Twitter, 
-      url: 'https://twitter.com/highvalue',
-      label: 'Twitter',
-      handle: '@highvalue',
-      gradient: 'from-blue-400 to-blue-600',
-      followers: '24.5K'
-    },
-    { 
-      icon: Instagram, 
-      url: 'https://instagram.com/highvalue',
-      label: 'Instagram',
-      handle: '@highvalue',
-      gradient: 'from-pink-500 to-purple-600',
-      followers: '48.2K'
-    },
-    { 
-      icon: Youtube, 
-      url: 'https://youtube.com/highvalue',
-      label: 'Youtube',
-      handle: 'High Value',
-      gradient: 'from-red-500 to-red-700',
-      followers: '156K'
-    },
-    { 
-      icon: Linkedin, 
-      url: 'https://linkedin.com/company/highvalue',
-      label: 'LinkedIn',
-      handle: 'High Value Media',
-      gradient: 'from-blue-600 to-blue-800',
-      followers: '12.8K'
-    }
+    { icon: Twitter, url: 'https://twitter.com/highvalue' },
+    { icon: Instagram, url: 'https://instagram.com/highvalue' },
+    { icon: Youtube, url: 'https://youtube.com/highvalue' },
+    { icon: Linkedin, url: 'https://linkedin.com/company/highvalue' }
   ];
-
-  // Quick links organisés
-  const quickLinks = {
-    'Contenus': [
-      { label: 'Tous les articles', path: '/articles', isNew: false },
-      { label: 'Podcasts', path: '/podcasts', isNew: true },
-      { label: 'Vidéos', path: '/videos', isNew: false },
-      { label: 'Guides premium', path: '/guides', isNew: false }
-    ],
-    'Communauté': [
-      { label: 'Le Club Elite', path: '/club', isNew: true },
-      { label: 'Events', path: '/events', isNew: false },
-      { label: 'Masterclass', path: '/masterclass', isNew: false },
-      { label: 'Newsletter', path: '/newsletter', isNew: false }
-    ],
-    'À propos': [
-      { label: 'Notre mission', path: '/mission', isNew: false },
-      { label: 'L\'équipe', path: '/team', isNew: false },
-      { label: 'Contact', path: '/contact', isNew: false },
-      { label: 'Carrières', path: '/careers', isNew: true }
-    ]
-  };
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,527 +56,300 @@ export const Footer = () => {
   };
 
   return (
-    <footer className="relative overflow-hidden bg-black">
-      {/* Background avec effets ultra premium */}
+    <footer className="relative bg-black border-t border-white/5">
+      {/* Background avec effet argent métallique subtil */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950 via-black to-neutral-950" />
-        
-        {/* Mesh gradient animé plus subtil */}
-        <motion.div
-          className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-[180px]"
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-          }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-[180px]"
-          animate={{
-            x: [0, -100, 0],
-            y: [0, 50, 0],
-          }}
-          transition={{
-            duration: 35,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        
-        {/* Grille de points lumineux plus subtile */}
-        <div 
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
-          }}
-        />
-        
-        {/* Lignes animées plus fines */}
-        <div className="absolute inset-0">
-          {[...Array(2)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"
-              style={{ top: `${40 + i * 20}%` }}
-              animate={{
-                x: [-1000, 1000],
-              }}
-              transition={{
-                duration: 30 + i * 10,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-            />
-          ))}
+        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 to-black" />
+        {/* Mesh gradient argent très subtil */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1400px] h-[600px]">
+          <div className="absolute inset-0 bg-gradient-radial from-gray-400/[0.03] via-gray-500/[0.02] to-transparent blur-3xl" />
+          {/* Effet de brillance métallique */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent,rgba(255,255,255,0.01)_50%,transparent)] animate-shimmer" />
         </div>
       </div>
 
-      <div className="relative container pt-24 pb-12">
-        {/* Logo et tagline premium */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-20"
-        >
-          <Link to="/" className="inline-block mb-8 group">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="relative"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-700" />
-              <img 
-                src={getCurrentLogo()}
-                alt="High Value Media"
-                className="h-16 w-auto mx-auto relative z-10 opacity-90 group-hover:opacity-100 transition-opacity"
-              />
-            </motion.div>
-          </Link>
-          
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            <span className="text-white">L'excellence </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-gradient">
-              comme standard
-            </span>
-          </h2>
-          
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            Rejoignez 50,000+ entrepreneurs qui développent leur mindset d'exception avec nos contenus premium
-          </p>
-        </motion.div>
-
-        {/* Newsletter Section Ultra Premium - Alignée avec les cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-20 px-6"
-        >
-          <div className="relative">
-            {/* Glow effect plus subtil */}
-            <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl blur-3xl" />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* SECTION PRINCIPALE : Newsletter + Navigation */}
+        <div className="py-12 lg:py-16">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
             
-            <div className="relative bg-gradient-to-br from-neutral-900/80 to-black/80 backdrop-blur-xl rounded-3xl border border-white/5 p-12">
-              <div className="grid md:grid-cols-2 gap-12 items-center">
-                <div>
-                  <div className="flex items-center gap-2 mb-6">
-                    <div className="p-2 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-xl border border-white/10">
-                      <Mail className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 uppercase tracking-wider">
-                      Newsletter Premium
-                    </span>
-                  </div>
-                  
-                  <h3 className="text-3xl font-bold text-white mb-4">
-                    Une longueur d'avance, chaque semaine
-                  </h3>
-                  
-                  <ul className="space-y-3 mb-6">
-                    {['Analyses exclusives', 'Cas pratiques détaillés', 'Accès anticipé aux contenus'].map((item, i) => (
-                      <motion.li 
-                        key={item} 
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        className="flex items-center gap-2 text-gray-300"
-                      >
-                        <div className="p-1 bg-green-400/10 rounded-full">
-                          <CheckCircle className="w-3 h-3 text-green-400" />
-                        </div>
-                        <span>{item}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="flex -space-x-3">
-                      {[...Array(4)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ scale: 0 }}
-                          whileInView={{ scale: 1 }}
-                          transition={{ delay: i * 0.1 }}
-                          className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-400/20 backdrop-blur-sm border border-white/10 flex items-center justify-center"
-                        >
-                          <User className="w-4 h-4 text-white/70" />
-                        </motion.div>
-                      ))}
-                    </div>
-                    <p className="text-sm text-gray-400">
-                      <strong className="text-white">15,000+</strong> leaders inscrits
-                    </p>
-                  </div>
+            {/* GAUCHE : Newsletter avec effet argent */}
+            <div>
+              {/* Header newsletter avec badge argent */}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="p-1.5 bg-gradient-to-br from-gray-300/20 to-gray-400/20 rounded-lg backdrop-blur-sm">
+                  <Mail className="w-4 h-4 text-gray-300" />
                 </div>
+                <span className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-300 to-gray-400 uppercase tracking-wider">
+                  Newsletter Premium
+                </span>
+              </div>
+              
+              <h3 className="text-xl font-bold text-white mb-2">
+                Une longueur d'avance, chaque semaine
+              </h3>
+              
+              <p className="text-gray-400 text-sm mb-6">
+                Rejoignez 15,000+ leaders qui reçoivent nos analyses exclusives et insights premium.
+              </p>
 
-                <form onSubmit={handleSubscribe} className="space-y-4">
-                  <div className="relative group">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Votre meilleur email"
-                      required
-                      className="w-full px-6 py-4 bg-white/[0.02] backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-400/50 focus:bg-white/[0.05] transition-all group-hover:border-white/20"
-                    />
-                    
-                    <AnimatePresence>
-                      {isSubscribed ? (
-                        <motion.div
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          exit={{ scale: 0, rotate: 180 }}
-                          className="absolute right-4 top-1/2 -translate-y-1/2"
-                        >
-                          <CheckCircle className="w-6 h-6 text-green-400" />
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          initial={{ x: -10, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          className="absolute right-4 top-1/2 -translate-y-1/2"
-                        >
-                          <Send className="w-5 h-5 text-gray-400" />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                  
+              {/* Formulaire avec effet métallique */}
+              <form onSubmit={handleSubscribe} className="space-y-3">
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Votre meilleur email"
+                    required
+                    className="flex-1 px-4 py-2.5 bg-white/[0.02] border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500 focus:bg-white/[0.03] transition-all text-sm"
+                  />
                   <motion.button
                     type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     disabled={isSubscribed}
-                    className="relative w-full group overflow-hidden rounded-2xl"
+                    className="relative px-5 py-2.5 rounded-lg text-white font-medium text-sm disabled:opacity-50 overflow-hidden group"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-90 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
-                    <div className="relative px-6 py-4 flex items-center justify-center gap-2 text-white font-bold">
-                      {isSubscribed ? (
-                        <>
-                          <CheckCircle className="w-5 h-5" />
-                          <span>Inscription confirmée !</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Recevoir la newsletter</span>
-                          <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                        </>
-                      )}
-                    </div>
+                    {/* Background métallique animé */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-gray-600 via-gray-400 to-gray-600 animate-shimmer-slow" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-700 to-transparent opacity-50" />
+                    <span className="relative flex items-center gap-2">
+                      {isSubscribed ? <CheckCircle className="w-4 h-4" /> : 'S\'inscrire'}
+                    </span>
                   </motion.button>
-                  
-                  <p className="text-xs text-gray-500 text-center">
-                    Zéro spam. Désinscription en 1 clic.
-                  </p>
-                </form>
+                </div>
+                
+                <AnimatePresence>
+                  {isSubscribed ? (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="text-green-400 text-xs"
+                    >
+                      ✓ Inscription confirmée !
+                    </motion.p>
+                  ) : (
+                    <p className="text-xs text-gray-500">
+                      Zéro spam. Désinscription en 1 clic.
+                    </p>
+                  )}
+                </AnimatePresence>
+              </form>
+
+              {/* Points clés avec checks argentés */}
+              <div className="flex flex-wrap gap-4 mt-6">
+                {['Analyses exclusives', 'Cas pratiques', 'Accès communauté'].map((item) => (
+                  <div key={item} className="flex items-center gap-1.5">
+                    <CheckCircle className="w-3 h-3 text-gray-400" />
+                    <span className="text-xs text-gray-400">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* DROITE : Navigation structurée */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-6">
+              {/* Rubriques */}
+              <div>
+                <h4 className="text-white font-semibold text-sm mb-3">Rubriques</h4>
+                <ul className="space-y-2">
+                  {[
+                    { label: 'Story', path: '/rubrique/story' },
+                    { label: 'Business', path: '/rubrique/business' },
+                    { label: 'Mental', path: '/rubrique/mental' },
+                    { label: 'Society', path: '/rubrique/society' }
+                  ].map((item) => (
+                    <li key={item.path}>
+                      <Link
+                        to={item.path}
+                        className="text-sm text-gray-400 hover:text-gray-200 transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Contenus */}
+              <div>
+                <h4 className="text-white font-semibold text-sm mb-3">Contenus</h4>
+                <ul className="space-y-2">
+                  {[
+                    { label: 'Tous les articles', path: '/articles' },
+                    { label: 'Podcasts', path: '/podcasts', isNew: true },
+                    { label: 'Vidéos', path: '/videos' },
+                    { label: 'Guides premium', path: '/guides' }
+                  ].map((item) => (
+                    <li key={item.path}>
+                      <Link
+                        to={item.path}
+                        className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 transition-colors"
+                      >
+                        <span>{item.label}</span>
+                        {item.isNew && (
+                          <span className="px-1.5 py-0.5 text-[9px] font-bold bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded">
+                            NEW
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Communauté */}
+              <div>
+                <h4 className="text-white font-semibold text-sm mb-3">Communauté</h4>
+                <ul className="space-y-2">
+                  {[
+                    { label: 'Le Club Elite', path: '/club', isNew: true },
+                    { label: 'Events', path: '/events' },
+                    { label: 'Masterclass', path: '/masterclass' },
+                    { label: 'Forums', path: '/forums' }
+                  ].map((item) => (
+                    <li key={item.path}>
+                      <Link
+                        to={item.path}
+                        className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 transition-colors"
+                      >
+                        <span>{item.label}</span>
+                        {item.isNew && (
+                          <span className="px-1.5 py-0.5 text-[9px] font-bold bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded">
+                            NEW
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* À propos */}
+              <div>
+                <h4 className="text-white font-semibold text-sm mb-3">À propos</h4>
+                <ul className="space-y-2">
+                  {[
+                    { label: 'Notre mission', path: '/mission' },
+                    { label: 'L\'équipe', path: '/team' },
+                    { label: 'Contact', path: '/contact' },
+                    { label: 'Carrières', path: '/careers' }
+                  ].map((item) => (
+                    <li key={item.path}>
+                      <Link
+                        to={item.path}
+                        className="text-sm text-gray-400 hover:text-gray-200 transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Navigation Cards Ultra Design - Même padding */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20 px-6"
-        >
-          {mainNav.map((item, index) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={item.path}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                onMouseEnter={() => setHoveredCard(item.label)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <Link to={item.path}>
-                  <motion.div
-                    whileHover={{ y: -8, scale: 1.02 }}
-                    className="relative h-full group"
-                  >
-                    {/* Bordure gradient au hover */}
-                    <div className={`absolute -inset-[1px] bg-gradient-to-br ${item.borderGradient} rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                    
-                    {/* Card avec effet de profondeur */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/[0.06] to-white/[0.02] rounded-3xl" />
-                    <div className="relative h-full p-8 backdrop-blur-xl rounded-3xl border border-white/5 overflow-hidden bg-black/50">
-                      {/* Background gradient animé */}
-                      <div className={`absolute inset-0 bg-gradient-to-br ${item.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
-                      
-                      {/* Particules flottantes au hover */}
-                      <AnimatePresence>
-                        {hoveredCard === item.label && (
-                          <>
-                            {[...Array(3)].map((_, i) => (
-                              <motion.div
-                                key={i}
-                                className={`absolute w-1 h-1 rounded-full bg-gradient-to-r ${item.gradient}`}
-                                initial={{ 
-                                  x: Math.random() * 100 + '%',
-                                  y: 100 + '%',
-                                  opacity: 0
-                                }}
-                                animate={{ 
-                                  y: -20 + '%',
-                                  opacity: [0, 1, 0]
-                                }}
-                                transition={{
-                                  duration: 2,
-                                  delay: i * 0.2,
-                                  ease: "easeOut"
-                                }}
-                              />
-                            ))}
-                          </>
-                        )}
-                      </AnimatePresence>
-                      
-                      {/* Content */}
-                      <div className="relative z-10">
-                        {/* Icon avec effet de glow */}
-                        <div className="relative inline-block mb-6">
-                          <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-500`} />
-                          <div className={`relative p-3 bg-gradient-to-br ${item.gradient} rounded-2xl shadow-lg`}>
-                            <Icon className="w-6 h-6 text-white" />
-                          </div>
-                        </div>
-                        
-                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-200 transition-all duration-300">
-                          {item.label}
-                        </h3>
-                        
-                        <p className="text-gray-400 mb-4 group-hover:text-gray-300 transition-colors">
-                          {item.description}
-                        </p>
-                        
-                        {/* Stats avec animation */}
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="flex items-center gap-1.5">
-                            <BookOpen className="w-3 h-3 text-gray-500" />
-                            <span className="text-sm text-gray-300 font-medium">{item.stats.articles}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <TrendingUp className="w-3 h-3 text-green-400" />
-                            <span className="text-sm text-green-400 font-medium">{item.stats.trending}</span>
-                          </div>
-                        </div>
-                        
-                        {/* Featured content */}
-                        <div className="pt-4 border-t border-white/5">
-                          <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors flex items-center gap-2">
-                            <span className="relative flex h-2 w-2">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
-                            </span>
-                            {item.featured}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* Quick Links Section - Alignée et centrée avec les cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="grid md:grid-cols-4 gap-8 mb-20 px-6"
-        >
-          {/* Company Info - Centré */}
-          <div className="text-center">
-            <h4 className="text-white font-bold mb-6 text-lg">High Value Media</h4>
-            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-              L'écosystème média de référence pour les entrepreneurs ambitieux.
-            </p>
+        {/* SECTION BOTTOM : Logo, Stats, Socials et Legal */}
+        <div className="py-8 border-t border-white/5">
+          <div className="grid lg:grid-cols-3 gap-8 items-center">
             
-            <div className="space-y-3 flex flex-col items-center">
-              <motion.div 
-                whileHover={{ x: 5 }}
-                className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors cursor-default"
-              >
-                <MapPin className="w-4 h-4" />
-                <span>Paris, France</span>
-              </motion.div>
-              <motion.div 
-                whileHover={{ x: 5 }}
-                className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors cursor-default"
-              >
-                <Globe className="w-4 h-4" />
-                <span>Disponible mondialement</span>
-              </motion.div>
-              <motion.div 
-                whileHover={{ x: 5 }}
-                className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors cursor-default"
-              >
-                <Users className="w-4 h-4" />
-                <span>50K+ membres actifs</span>
-              </motion.div>
-            </div>
-          </div>
-
-          {/* Quick Links - Centrés */}
-          {Object.entries(quickLinks).map(([category, links]) => (
-            <div key={category} className="text-center">
-              <h4 className="text-white font-bold mb-6 text-lg">{category}</h4>
-              <ul className="space-y-3 flex flex-col items-center">
-                {links.map((link) => (
-                  <li key={link.path}>
-                    <Link
-                      to={link.path}
-                      className="group inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-all duration-300"
-                    >
-                      <span className="relative">
-                        {link.label}
-                        <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300" />
-                      </span>
-                      {link.isNew && (
-                        <span className="px-2 py-0.5 text-[10px] font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full animate-pulse">
-                          NEW
-                        </span>
-                      )}
-                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-y-1 translate-x-1 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-300" />
-                    </Link>
-                  </li>
+            {/* Logo et social */}
+            <div className="flex items-center gap-6">
+              <Link to="/" className="inline-block">
+                <img 
+                  src={getCurrentLogo()}
+                  alt="High Value Media"
+                  className="h-10 w-auto opacity-90 hover:opacity-100 transition-opacity"
+                />
+              </Link>
+              
+              <div className="flex gap-2">
+                {socialLinks.map((social, index) => (
+                  <a
+                    key={index}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1.5 text-gray-500 hover:text-gray-300 transition-colors"
+                  >
+                    <social.icon className="w-4 h-4" />
+                  </a>
                 ))}
-              </ul>
+              </div>
             </div>
-          ))}
-        </motion.div>
 
-        {/* Social Links Premium */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-12"
-        >
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            {socialLinks.map((social, index) => (
-              <motion.a
-                key={social.label}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -5, scale: 1.05 }}
-                onMouseEnter={() => setHoveredSocial(social.label)}
-                onMouseLeave={() => setHoveredSocial(null)}
-                className="relative group"
-              >
-                <div className="relative px-6 py-3 bg-white/[0.01] backdrop-blur-sm border border-white/5 rounded-2xl hover:bg-white/[0.03] transition-all duration-500">
-                  {/* Glow effect on hover */}
-                  <AnimatePresence>
-                    {hoveredSocial === social.label && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className={`absolute inset-0 bg-gradient-to-r ${social.gradient} opacity-5 rounded-2xl blur-xl`}
-                      />
-                    )}
-                  </AnimatePresence>
-                  
-                  <div className="relative z-10 flex items-center gap-3">
-                    <div className={`p-2 bg-gradient-to-br ${social.gradient} rounded-xl opacity-80 group-hover:opacity-100 transition-opacity`}>
-                      <social.icon className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">{social.label}</p>
-                      <p className="text-sm text-white font-medium flex items-center gap-2">
-                        {social.handle}
-                        <span className="text-xs text-gray-500">{social.followers}</span>
-                      </p>
-                    </div>
+            {/* Stats centrées avec effet métallique */}
+            <div className="flex justify-center gap-8">
+              {[
+                { value: '50K+', label: 'LECTEURS ACTIFS' },
+                { value: '500+', label: 'ARTICLES PREMIUM' }
+              ].map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <div className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white via-gray-300 to-gray-500">
+                    {stat.value}
                   </div>
+                  <div className="text-[10px] text-gray-500 uppercase tracking-wider">{stat.label}</div>
                 </div>
-              </motion.a>
-            ))}
-          </div>
-        </motion.div>
+              ))}
+            </div>
 
-        {/* Bottom Bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="pt-8 border-t border-white/5"
-        >
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span>© {new Date().getFullYear()} High Value Media</span>
-              <span className="text-gray-600">•</span>
-              <span className="flex items-center gap-1.5">
-                Built with
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="relative"
-                >
-                  <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
-                </motion.div>
-                by
-                <motion.a
+            {/* Copyright et legal */}
+            <div className="text-right">
+              <div className="text-xs text-gray-500 mb-2">
+                © {new Date().getFullYear()} High Value Media • Built with ❤️ by 
+                <a
                   href="https://www.instagram.com/alex______kid/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-300 hover:to-pink-300 transition-all font-medium"
-                  whileHover={{ scale: 1.05 }}
+                  className="text-gray-400 hover:text-gray-300 transition-colors ml-1"
                 >
-                  <Code2 className="w-3.5 h-3.5 text-purple-400" />
                   @alexkid
-                </motion.a>
-              </span>
-            </div>
-
-            <div className="flex items-center gap-6">
-              {['Mentions légales', 'Confidentialité', 'CGV', 'Cookies'].map((item, index) => (
-                <motion.div
-                  key={item}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                >
+                </a>
+              </div>
+              <div className="flex justify-end gap-4">
+                {['Mentions légales', 'Confidentialité', 'CGV'].map((item) => (
                   <Link
+                    key={item}
                     to={`/${item.toLowerCase().replace(' ', '-')}`}
-                    className="relative text-sm text-gray-500 hover:text-gray-300 transition-colors group"
+                    className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
                   >
                     {item}
-                    <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gray-400 group-hover:w-full transition-all duration-300" />
                   </Link>
-                </motion.div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
-      {/* Gradient animation keyframes */}
-      <style>{`
-        @keyframes gradient {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
+      {/* Styles pour l'animation shimmer métallique */}
+      <style jsx>{`
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(200%);
+          }
         }
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 3s ease infinite;
+        .animate-shimmer {
+          animation: shimmer 8s infinite;
+        }
+        .animate-shimmer-slow {
+          background-size: 200% 100%;
+          animation: shimmer-gradient 3s linear infinite;
+        }
+        @keyframes shimmer-gradient {
+          0% {
+            background-position: -200% center;
+          }
+          100% {
+            background-position: 200% center;
+          }
         }
       `}</style>
     </footer>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Sparkles, ArrowRight, ChevronDown, Bell, Search } from 'lucide-react';
+import { Menu, X, ChevronDown, Bell, Search, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
@@ -390,52 +390,58 @@ export const ResponsiveNavbar = () => {
                   <span className="absolute top-1 right-1 w-2 h-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full" />
                 </motion.button>
 
-                {/* CTA Principal */}
+                {/* CTA Principal ULTRA PREMIUM */}
                 <motion.div
-                  className="relative group"
+                  className="relative"
                 >
                   <Link
                     to="/create-with-roger"
-                    className="relative block"
+                    className="relative block group"
                   >
                     <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                       className="relative"
                     >
-                      {/* Effet de glow animé */}
-                      <div 
-                        className="absolute -inset-1 rounded-2xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-                        style={{
-                          background: 'linear-gradient(90deg, #3b82f6, #06b6d4, #a855f7)',
-                          backgroundSize: '200% 200%',
-                          animation: 'gradientShift 4s ease infinite'
-                        }}
-                      />
-                      
-                      {/* Bouton principal */}
-                      <div className="relative flex items-center gap-3 px-6 py-3 bg-black border border-white/10 rounded-2xl group-hover:border-white/20 transition-all">
-                        {/* Icône animée */}
-                        <motion.div
-                          animate={{
-                            rotate: [0, 10, -10, 0],
-                          }}
-                          transition={{
-                            duration: 4,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                        >
-                          <Sparkles className="w-4 h-4 text-white" />
-                        </motion.div>
+                      {/* Bouton principal ULTRA PREMIUM */}
+                      <div className="relative px-8 py-3 overflow-hidden">
+                        {/* Fond avec effet de verre dépoli */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/[0.01] via-white/[0.03] to-white/[0.01] backdrop-blur-xl rounded-full" />
                         
-                        {/* Texte avec gradient au hover */}
-                        <span className="font-medium text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:via-cyan-400 group-hover:to-purple-400 transition-all">
-                          Racontez votre histoire
-                        </span>
+                        {/* Bordure fine premium */}
+                        <div className="absolute inset-0 rounded-full p-[0.5px] bg-gradient-to-r from-white/0 via-white/20 to-white/0">
+                          <div className="w-full h-full bg-black/80 rounded-full" />
+                        </div>
                         
-                        {/* Flèche qui apparaît au hover */}
-                        <ArrowRight className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 -ml-2 group-hover:ml-0 transition-all duration-300" />
+                        {/* Effet de shine au hover */}
+                        <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                          <div 
+                            className="absolute inset-0 rounded-full"
+                            style={{
+                              background: 'linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%)',
+                              transform: 'translateX(-100%)',
+                              animation: 'shine 1.5s ease-out'
+                            }}
+                          />
+                        </div>
+                        
+                        {/* Contenu */}
+                        <div className="relative flex items-center gap-4">
+                          <span className="text-[13px] font-extralight text-white/90 tracking-[0.15em] uppercase">
+                            Racontez votre histoire
+                          </span>
+                          
+                          {/* Icône premium minimaliste */}
+                          <svg 
+                            className="w-3 h-3 text-white/50 group-hover:text-white/80 transition-colors duration-500" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="0.5"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
                       </div>
                     </motion.div>
                   </Link>
@@ -601,18 +607,35 @@ export const ResponsiveNavbar = () => {
                     </Link>
                   ))}
 
-                  {/* Mobile CTA */}
+                  {/* Mobile CTA ULTRA PREMIUM */}
                   <Link
                     to="/create-with-roger"
                     onClick={() => setIsOpen(false)}
                     className="block mt-6"
                   >
                     <motion.div
-                      whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full px-6 py-3 bg-white text-black rounded-xl font-medium text-center"
+                      className="relative"
                     >
-                      Racontez votre histoire
+                      {/* Bouton premium mobile */}
+                      <div className="relative overflow-hidden rounded-full p-[0.5px] bg-gradient-to-r from-white/10 via-white/20 to-white/10">
+                        <div className="relative w-full px-6 py-3.5 bg-black/90 backdrop-blur-xl rounded-full">
+                          <div className="flex items-center justify-center gap-3">
+                            <span className="text-[13px] font-extralight text-white/90 tracking-[0.12em] uppercase">
+                              Racontez votre histoire
+                            </span>
+                            <svg 
+                              className="w-3 h-3 text-white/50" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              strokeWidth="0.5"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
                     </motion.div>
                   </Link>
                 </div>
@@ -634,6 +657,27 @@ export const ResponsiveNavbar = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* Styles CSS pour les animations */}
+      <style jsx>{`
+        @keyframes gradientShift {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+        
+        @keyframes shine {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+      `}</style>
     </>
   );
 };

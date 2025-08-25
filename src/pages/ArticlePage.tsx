@@ -283,6 +283,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
   const [copied, setCopied] = useState(false);
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({});
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Gestion du scroll
   useEffect(() => {
@@ -712,6 +713,34 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
     },
   };
 
+  // Fonction pour générer la table des matières
+  const generateTableOfContents = () => {
+    if (!article?.body) return null;
+
+    const headings: any[] = [];
+    let currentH2: any = null;
+    
+    article.body
+      .filter((block: any) => block._type === 'block' && ['h2', 'h3'].includes(block.style))
+      .forEach((heading: any, index: number) => {
+        const text = heading.children?.[0]?.text || '';
+        const id = `heading-${index}`;
+        
+        if (heading.style === 'h2') {
+          currentH2 = {
+            id,
+            text,
+            subheadings: []
+          };
+          headings.push(currentH2);
+        } else if (heading.style === 'h3' && currentH2) {
+          currentH2.subheadings.push({ id, text });
+        }
+      });
+
+    return headings;
+  };
+
   // États de chargement et d'erreur
   if (isLoading) {
     return (
@@ -740,6 +769,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
 
   const isPreviewMode = new URLSearchParams(window.location.search).get('preview') === 'true';
   const estimatedReadingTime = article.readingTime || Math.ceil((article.body?.length || 0) * 0.5);
+  const headings = generateTableOfContents();
 
   return (
     <ErrorBoundary>
@@ -860,58 +890,85 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
       />
 
       <div className="min-h-screen bg-black text-white">
-        {/* Hero Section avec image visible */}
-        <section className="relative min-h-[50vh] md:min-h-[70vh] flex items-end overflow-hidden bg-gradient-to-br from-gray-900 to-black">
-          {/* Image de fond */}
+        {/* Hero Section avec image plus grande */}
+        <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-end overflow-hidden bg-gradient-to-br from-gray-900 to-black">
+          {/* Container de l'image avec meilleur cadrage */}
           <div className="absolute inset-0">
             {article.mainImage && article.mainImage.asset && article.mainImage.asset._ref ? (
-              <img 
-                src={buildSanityImageUrl(article.mainImage.asset._ref)}
-                alt={article.title}
-                className="absolute inset-0 w-full h-full object-cover object-top md:object-center"
-                style={{ 
-                  opacity: 0.85,
-                  objectPosition: 'center 25%'  // Garde le haut de l'image visible (visages)
-                }}
-                onError={(e) => {
-                  console.error("Erreur chargement image:", e);
-                  (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80";
-                }}
-              />
+              <>
+                {/* Image principale avec object-position amélioré */}
+                <img 
+                  src={buildSanityImageUrl(article.mainImage.asset._ref)}
+                  alt={article.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{ 
+                    opacity: 0.9,
+                    // Position intelligente : privilégie le haut de l'image (visages)
+                    objectPosition: 'center 20%' // Montre plus le haut de l'image
+                  }}
+                  onError={(e) => {
+                    console.error("Erreur chargement image:", e);
+                    (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80";
+                  }}
+                />
+                
+                {/* Version mobile avec cadrage différent */}
+                <img 
+                  src={buildSanityImageUrl(article.mainImage.asset._ref)}
+                  alt={article.title}
+                  className="absolute inset-0 w-full h-full object-cover md:hidden"
+                  style={{ 
+                    opacity: 0.9,
+                    // Sur mobile, on montre encore plus le haut pour les portraits
+                    objectPosition: 'center 15%'
+                  }}
+                />
+              </>
             ) : (
               <img 
                 src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80"
                 alt="Article background"
-                className="absolute inset-0 w-full h-full object-cover object-top md:object-center"
+                className="absolute inset-0 w-full h-full object-cover"
                 style={{ 
-                  opacity: 0.85,
-                  objectPosition: 'center 25%'
+                  opacity: 0.9,
+                  objectPosition: 'center 30%'
                 }}
               />
             )}
-            {/* Gradient minimal juste pour assurer la lisibilité du texte */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent" />
+            
+            {/* Gradients très légers pour bien voir l'image */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+            
+            {/* Overlay minimal uniquement sur le tiers inférieur pour le texte */}
+            <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
           </div>
 
-          {/* Contenu Hero */}
-          <div className="relative container mx-auto px-4 pb-12 pt-40">
-            {/* Breadcrumb avec couleurs de la verticale */}
+          {/* Contenu Hero avec plus d'espace */}
+          <div className="relative container mx-auto px-4 pb-16 pt-48">{/* Plus d'espace en bas */}
+            {/* Breadcrumb plus visible avec meilleur contraste */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 text-gray-300 text-sm mb-8 backdrop-blur-sm bg-black/20 rounded-full px-4 py-2 w-fit"
+              className="flex items-center gap-2 text-sm mb-8 backdrop-blur-md bg-black/50 rounded-full px-5 py-2.5 w-fit border border-white/20"
             >
-              <Link to="/" className="hover:text-white transition-colors">Accueil</Link>
-              <ChevronRight size={14} className="text-gray-500" />
-              <Link to="/articles" className="hover:text-white transition-colors">Articles</Link>
+              <Link to="/" className="text-white font-medium hover:text-gray-200 transition-colors">Accueil</Link>
+              <ChevronRight size={16} className="text-gray-400" />
+              <Link to="/articles" className="text-white font-medium hover:text-gray-200 transition-colors">Articles</Link>
               {article.categories && article.categories[0] && (
                 <>
-                  <ChevronRight size={14} className="text-gray-500" />
+                  <ChevronRight size={16} className="text-gray-400" />
                   <Link 
                     to={`/rubrique/${article.categories[0].slug.current}`}
-                    className="font-medium transition-colors"
+                    className="font-semibold transition-colors"
                     style={{ color: colors.textColor }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.primary;
+                      e.currentTarget.style.textShadow = `0 0 20px ${colors.primary}50`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.textColor;
+                      e.currentTarget.style.textShadow = 'none';
+                    }}
                   >
                     {article.categories[0].title}
                   </Link>
@@ -952,80 +1009,175 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
               </motion.div>
             )}
 
-            {/* Titre */}
+            {/* Titre qui prend toute la largeur */}
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 max-w-4xl leading-tight"
+              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 max-w-full lg:max-w-[90%] leading-[1.1] tracking-tight"
             >
               {article.title}
             </motion.h1>
 
-            {/* Excerpt - CORRIGÉ */}
-            {article.excerpt && (
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-xl text-gray-300 max-w-3xl mb-8"
-              >
-                {article.excerpt}
-              </motion.p>
-            )}
+            {/* PAS D'EXCERPT ICI - Il sera dans le corps de l'article */}
 
-            {/* Meta info */}
+            {/* Meta info simplifiée - seulement date et vues */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="flex flex-wrap items-center gap-6"
+              className="flex flex-wrap items-center gap-4 text-gray-300 text-sm"
             >
-              {article.author && (
-                <div className="flex items-center gap-3">
-                  {article.author.image ? (
-                    <img 
-                      src={urlFor(article.author.image).width(48).height(48).url()}
-                      alt={article.author.name}
-                      className="w-12 h-12 rounded-full border-2 border-white/20"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                      <User size={20} className="text-white" />
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-white font-medium">{article.author.name}</p>
-                    {article.author.bio && (
-                      <p className="text-gray-400 text-sm line-clamp-1">{article.author.bio}</p>
-                    )}
-                  </div>
-                </div>
+              {article.publishedAt && (
+                <span className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                  <Calendar size={14} />
+                  {new Date(article.publishedAt).toLocaleDateString('fr-FR', { 
+                    day: 'numeric', 
+                    month: 'long', 
+                    year: 'numeric' 
+                  })}
+                </span>
               )}
-
-              <div className="flex items-center gap-6 text-gray-400 text-sm">
-                {article.publishedAt && (
-                  <span className="flex items-center gap-2">
-                    <Calendar size={16} />
-                    {new Date(article.publishedAt).toLocaleDateString('fr-FR', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric' 
-                    })}
-                  </span>
-                )}
-                <span className="flex items-center gap-2">
-                  <Clock size={16} />
-                  {estimatedReadingTime} min
-                </span>
-                <span className="flex items-center gap-2">
-                  <Eye size={16} />
-                  {(article.views || 0).toLocaleString()} vues
-                </span>
-              </div>
+              <span className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                <Eye size={14} />
+                {(article.views || 0).toLocaleString()} vues
+              </span>
             </motion.div>
           </div>
         </section>
+
+        {/* TABLE DES MATIÈRES MOBILE - Affichée uniquement sur mobile */}
+        {headings && headings.length > 0 && (
+          <div className="lg:hidden container mx-auto px-4 py-8">
+            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-md rounded-2xl border border-gray-700/50 overflow-hidden">
+              {/* Header avec toggle */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="w-full p-5 border-b flex items-center justify-between"
+                style={{ borderColor: colors.borderColor + '30' }}
+              >
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: colors.bgGradient }}
+                  >
+                    <BookOpen size={18} className="text-white" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-lg font-semibold text-white">
+                      Table des matières
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      {headings.length} chapitres
+                    </p>
+                  </div>
+                </div>
+                <ChevronDown 
+                  size={20} 
+                  className={`text-gray-400 transition-transform ${mobileMenuOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+              
+              {/* Contenu repliable */}
+              <AnimatePresence>
+                {mobileMenuOpen && (
+                  <motion.nav
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar"
+                  >
+                    <div className="space-y-2">
+                      {headings.map((section: any, sectionIndex: number) => {
+                        const isActive = activeSection === section.id;
+                        const hasSubheadings = section.subheadings.length > 0;
+                        const isExpanded = expandedSections[section.id];
+                        
+                        return (
+                          <div key={section.id}>
+                            {/* Section H2 */}
+                            <div className="flex items-center gap-2">
+                              <a
+                                href={`#${section.id}`}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={`flex-1 flex items-center gap-3 py-3 px-4 rounded-xl transition-all ${
+                                  isActive ? 'bg-white/10' : 'hover:bg-white/5'
+                                }`}
+                                style={{
+                                  borderLeft: isActive ? `3px solid ${colors.primary}` : '3px solid transparent'
+                                }}
+                              >
+                                <div 
+                                  className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold"
+                                  style={{
+                                    background: isActive ? colors.primary : colors.bgLight,
+                                    color: isActive ? '#000' : colors.textColor
+                                  }}
+                                >
+                                  {sectionIndex + 1}
+                                </div>
+                                <span className={`text-sm ${isActive ? 'text-white font-medium' : 'text-gray-300'}`}>
+                                  {section.text}
+                                </span>
+                              </a>
+                              
+                              {/* Bouton toggle SÉPARÉ du lien */}
+                              {hasSubheadings && (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setExpandedSections(prev => ({
+                                      ...prev,
+                                      [section.id]: !prev[section.id]
+                                    }));
+                                  }}
+                                  className="p-2 rounded-lg hover:bg-white/10 transition-all"
+                                >
+                                  <ChevronDown 
+                                    size={16} 
+                                    className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                    style={{ color: colors.textColor }}
+                                  />
+                                </button>
+                              )}
+                            </div>
+                            
+                            {/* Sous-sections H3 */}
+                            {hasSubheadings && isExpanded && (
+                              <div className="ml-8 mt-1 space-y-1">
+                                {section.subheadings.map((sub: any) => (
+                                  <a
+                                    key={sub.id}
+                                    href={`#${sub.id}`}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-2 py-2 px-3 rounded-lg text-sm hover:bg-white/5"
+                                    style={{
+                                      color: activeSection === sub.id ? colors.textColor : '#9ca3af'
+                                    }}
+                                  >
+                                    <div 
+                                      className="w-1.5 h-1.5 rounded-full"
+                                      style={{
+                                        background: activeSection === sub.id ? colors.primary : '#4b5563'
+                                      }}
+                                    />
+                                    {sub.text}
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </motion.nav>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
 
         {/* Container principal avec layout 2 colonnes */}
         <div className="container mx-auto px-4 py-16">
@@ -1033,6 +1185,93 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
             
             {/* Contenu principal */}
             <article className="lg:col-span-8">
+              {/* EXCERPT - Intégré comme introduction */}
+              {article.excerpt && (
+                <div className="mb-10 relative">
+                  {/* Ligne décorative gauche */}
+                  <div 
+                    className="absolute left-0 top-0 bottom-0 w-1 rounded-full"
+                    style={{ 
+                      background: colors.bgGradient,
+                      opacity: 0.6
+                    }}
+                  />
+                  
+                  {/* Contenu de l'extrait */}
+                  <div className="pl-8">
+                    <p className="text-xl md:text-2xl leading-relaxed text-gray-200 font-light italic">
+                      {article.excerpt}
+                    </p>
+                  </div>
+                  
+                  {/* Séparateur décoratif en bas */}
+                  <div className="mt-8 flex items-center gap-4">
+                    <div 
+                      className="h-[1px] flex-1"
+                      style={{ 
+                        background: `linear-gradient(to right, ${colors.primary}40, transparent)`
+                      }}
+                    />
+                    <div className="flex gap-1">
+                      <div 
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{ background: colors.primary, opacity: 0.6 }}
+                      />
+                      <div 
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{ background: colors.primary, opacity: 0.4 }}
+                      />
+                      <div 
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{ background: colors.primary, opacity: 0.2 }}
+                      />
+                    </div>
+                    <div 
+                      className="h-[1px] flex-1"
+                      style={{ 
+                        background: `linear-gradient(to left, ${colors.primary}40, transparent)`
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Encart Auteur - Version mobile uniquement */}
+              {article.author && (
+                <div className="lg:hidden mb-10">
+                  <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 p-5">
+                    <div className="flex items-center gap-4">
+                      {article.author.image ? (
+                        <img 
+                          src={urlFor(article.author.image).width(64).height(64).url()}
+                          alt={article.author.name}
+                          className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                          style={{ border: `2px solid ${colors.borderColor}` }}
+                        />
+                      ) : (
+                        <div 
+                          className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ background: colors.bgGradient }}
+                        >
+                          <User size={24} className="text-white" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-gray-400 mb-0.5">Écrit par</p>
+                        <h3 className="text-base font-semibold text-white mb-1">
+                          {article.author.name}
+                        </h3>
+                        {article.author.bio && (
+                          <p className="text-xs text-gray-300 line-clamp-2">
+                            {article.author.bio}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Player YouTube si c'est une émission avec videoUrl */}
               {isEmission && article.videoUrl && (
                 <div className="mb-12">
@@ -1047,7 +1286,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                   </div>
                   <div className="mt-4 p-4 bg-white/5 rounded-lg border border-white/10">
                     <p className="text-sm text-gray-400">
-                      📺 Émission complète • {estimatedReadingTime} min
+                      📺 Émission complète
                     </p>
                   </div>
                 </div>
@@ -1126,10 +1365,84 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                   </button>
                 </div>
               </div>
+
+              {/* CTA Club Élite - Version mobile affichée après l'article */}
+              <div className="lg:hidden mt-12">
+                <div className="relative overflow-hidden rounded-2xl">
+                  <div 
+                    className="absolute inset-0 opacity-90"
+                    style={{ background: colors.bgGradient }}
+                  />
+                  {/* Pattern décoratif */}
+                  <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-0 right-0 w-32 h-32 transform rotate-45 translate-x-16 -translate-y-16">
+                      <div className="w-full h-full bg-white rounded-lg" />
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-32 h-32 transform rotate-45 -translate-x-16 translate-y-16">
+                      <div className="w-full h-full bg-white rounded-lg" />
+                    </div>
+                  </div>
+                  
+                  <div className="relative p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2 py-1 bg-white/20 rounded text-xs font-semibold text-white uppercase">
+                        Le Club Élite
+                      </span>
+                      <span className="px-2 py-1 bg-orange-500 text-black rounded text-xs font-bold">
+                        -50%
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-2">
+                      Rejoindre la liste d'attente
+                    </h3>
+                    <p className="text-white/90 text-sm mb-4">
+                      L'écosystème premium pour les entrepreneurs d'exception. 500+ inscrits sur liste d'attente.
+                    </p>
+                    
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-3xl font-bold text-white">99€</p>
+                        <p className="text-xs text-white/70">/mois</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-white/70 line-through">199€</p>
+                        <p className="text-xs text-yellow-400 font-semibold">Offre fondateurs</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center gap-2 text-xs text-white/90">
+                        <span className="text-yellow-400">✔</span>
+                        <span>Accès VIP aux contenus</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-white/90">
+                        <span className="text-yellow-400">✔</span>
+                        <span>Communauté privée</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-white/90">
+                        <span className="text-yellow-400">✔</span>
+                        <span>Events mensuels exclusifs</span>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      className="w-full py-3 bg-yellow-400 text-black rounded-xl font-bold hover:bg-yellow-300 transition-all transform hover:scale-105"
+                      onClick={() => window.location.href = '/le-club'}
+                    >
+                      🚀 Rejoindre la liste d'attente
+                    </button>
+                    
+                    <p className="text-xs text-white/60 text-center mt-3">
+                      7 jours d'essai • Sans engagement
+                    </p>
+                  </div>
+                </div>
+              </div>
             </article>
 
-            {/* Sidebar droite */}
-            <aside className="lg:col-span-4">
+            {/* Sidebar droite - Cachée sur mobile, visible sur desktop */}
+            <aside className="hidden lg:block lg:col-span-4">
               <div className="sticky top-24 space-y-8">
                 
                 {/* Encart Auteur - COMPLÈTEMENT CORRIGÉ */}
@@ -1168,10 +1481,6 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                               </span>
                             </span>
                           )}
-                          <span className="flex items-center gap-1">
-                            <Clock size={12} />
-                            <span>{estimatedReadingTime} min</span>
-                          </span>
                         </div>
                       </div>
                     </div>
@@ -1201,247 +1510,206 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                   </div>
                 )}
                 
-                {/* Table des matières avec sous-sections repliables */}
-                {article.body && article.body.filter((block: any) => block._type === 'block' && ['h2', 'h3'].includes(block.style)).length > 0 && (() => {
-                  // Organiser les headings en structure hiérarchique
-                  const headings: any[] = [];
-                  let currentH2: any = null;
-                  
-                  article.body
-                    .filter((block: any) => block._type === 'block' && ['h2', 'h3'].includes(block.style))
-                    .forEach((heading: any, index: number) => {
-                      const text = heading.children?.[0]?.text || '';
-                      const id = `heading-${index}`;
-                      
-                      if (heading.style === 'h2') {
-                        currentH2 = {
-                          id,
-                          text,
-                          subheadings: []
-                        };
-                        headings.push(currentH2);
-                      } else if (heading.style === 'h3' && currentH2) {
-                        currentH2.subheadings.push({ id, text });
-                      }
-                    });
-                  
-                  return (
-                    <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-md rounded-2xl border border-gray-700/50 overflow-hidden">
-                      {/* Header fixe avec design amélioré */}
-                      <div 
-                        className="p-5 border-b"
-                        style={{ borderColor: colors.borderColor + '30' }}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="relative">
-                            <div 
-                              className="w-10 h-10 rounded-xl flex items-center justify-center"
-                              style={{ background: colors.bgGradient }}
-                            >
-                              <BookOpen size={18} className="text-white" />
-                            </div>
-                            <div 
-                              className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-white/20 animate-pulse"
-                              style={{ background: colors.primary + '40' }}
-                            />
+                {/* Table des matières DESKTOP avec sous-sections repliables */}
+                {headings && headings.length > 0 && (
+                  <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-md rounded-2xl border border-gray-700/50 overflow-hidden">
+                    {/* Header fixe avec design amélioré */}
+                    <div 
+                      className="p-5 border-b"
+                      style={{ borderColor: colors.borderColor + '30' }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div 
+                            className="w-10 h-10 rounded-xl flex items-center justify-center"
+                            style={{ background: colors.bgGradient }}
+                          >
+                            <BookOpen size={18} className="text-white" />
                           </div>
-                          <div>
-                            <h3 className="text-lg font-semibold text-white">
-                              Table des matières
-                            </h3>
-                            <p className="text-xs text-gray-500">
-                              {headings.length} chapitres • {estimatedReadingTime} min de lecture
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Contenu avec scroll si nécessaire */}
-                      <nav className="p-4 max-h-[600px] overflow-y-auto custom-scrollbar">
-                        <div className="space-y-2">
-                          {headings.map((section, sectionIndex) => {
-                            const isActive = activeSection === section.id;
-                            const hasSubheadings = section.subheadings.length > 0;
-                            const isExpanded = expandedSections[section.id];
-                            const hasActiveChild = section.subheadings.some((sub: any) => activeSection === sub.id);
-                            
-                            return (
-                              <div key={section.id} className="group">
-                                {/* Section principale H2 */}
-                                <div className="relative">
-                                  <a
-                                    href={`#${section.id}`}
-                                    className={`
-                                      flex items-center gap-3 py-3 px-4 rounded-xl
-                                      transition-all duration-300 relative overflow-hidden
-                                      ${isActive ? 'bg-gradient-to-r' : 'hover:bg-white/5'}
-                                    `}
-                                    style={{
-                                      background: isActive 
-                                        ? `linear-gradient(90deg, ${colors.bgLight}, transparent)` 
-                                        : hasActiveChild 
-                                        ? colors.bgLight + '50'
-                                        : undefined,
-                                      borderLeft: isActive ? `3px solid ${colors.primary}` : '3px solid transparent'
-                                    }}
-                                  >
-                                    {/* Indicateur numéroté */}
-                                    <div 
-                                      className={`
-                                        w-7 h-7 rounded-lg flex items-center justify-center
-                                        text-xs font-bold transition-all duration-300
-                                        ${isActive ? 'scale-110' : ''}
-                                      `}
-                                      style={{
-                                        background: isActive ? colors.primary : colors.bgLight,
-                                        color: isActive ? '#000' : colors.textColor
-                                      }}
-                                    >
-                                      {sectionIndex + 1}
-                                    </div>
-                                    
-                                    {/* Texte de la section */}
-                                    <span 
-                                      className={`
-                                        flex-1 font-medium transition-colors duration-300
-                                        ${isActive ? 'text-white' : 'text-gray-300 group-hover:text-white'}
-                                      `}
-                                    >
-                                      {section.text}
-                                    </span>
-                                    
-                                    {/* Indicateur de sous-sections */}
-                                    {hasSubheadings && (
-                                      <button
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          setExpandedSections(prev => ({
-                                            ...prev,
-                                            [section.id]: !prev[section.id]
-                                          }));
-                                        }}
-                                        className={`
-                                          p-1.5 rounded-lg transition-all duration-300
-                                          hover:bg-white/10
-                                        `}
-                                        style={{ color: colors.textColor }}
-                                      >
-                                        <div className="relative">
-                                          <ChevronDown 
-                                            size={16} 
-                                            className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
-                                          />
-                                          {!isExpanded && (
-                                            <div 
-                                              className="absolute -top-1 -right-1 w-2 h-2 rounded-full"
-                                              style={{ background: colors.primary + '60' }}
-                                            />
-                                          )}
-                                        </div>
-                                      </button>
-                                    )}
-                                    
-                                    {/* Badge de lecture si actif */}
-                                    {isActive && (
-                                      <div className="flex items-center gap-1 text-xs">
-                                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                        <span className="text-green-500">En cours</span>
-                                      </div>
-                                    )}
-                                  </a>
-                                  
-                                  {/* Ligne de progression */}
-                                  {isActive && (
-                                    <motion.div
-                                      layoutId="activeIndicator"
-                                      className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r"
-                                      style={{ 
-                                        background: colors.bgGradient,
-                                        width: '100%'
-                                      }}
-                                      initial={{ width: 0 }}
-                                      animate={{ width: '100%' }}
-                                      transition={{ duration: 0.3 }}
-                                    />
-                                  )}
-                                </div>
-                                
-                                {/* Sous-sections H3 repliables */}
-                                <AnimatePresence>
-                                  {hasSubheadings && isExpanded && (
-                                    <motion.div
-                                      initial={{ height: 0, opacity: 0 }}
-                                      animate={{ height: 'auto', opacity: 1 }}
-                                      exit={{ height: 0, opacity: 0 }}
-                                      transition={{ duration: 0.2 }}
-                                      className="overflow-hidden"
-                                    >
-                                      <div className="ml-8 mt-1 space-y-1 border-l-2 border-gray-700/50 pl-4">
-                                        {section.subheadings.map((sub: any, subIndex: number) => {
-                                          const isSubActive = activeSection === sub.id;
-                                          return (
-                                            <a
-                                              key={sub.id}
-                                              href={`#${sub.id}`}
-                                              className={`
-                                                flex items-center gap-2 py-2 px-3 rounded-lg
-                                                text-sm transition-all duration-200
-                                                ${isSubActive ? 'bg-white/10' : 'hover:bg-white/5'}
-                                              `}
-                                              style={{
-                                                color: isSubActive ? colors.textColor : '#9ca3af'
-                                              }}
-                                            >
-                                              <div 
-                                                className="w-1.5 h-1.5 rounded-full"
-                                                style={{
-                                                  background: isSubActive ? colors.primary : '#4b5563'
-                                                }}
-                                              />
-                                              <span className="line-clamp-1">
-                                                {sub.text}
-                                              </span>
-                                              {isSubActive && (
-                                                <Eye size={12} className="ml-auto" style={{ color: colors.primary }} />
-                                              )}
-                                            </a>
-                                          );
-                                        })}
-                                      </div>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </nav>
-                      
-                      {/* Footer avec progression */}
-                      <div 
-                        className="p-4 border-t"
-                        style={{ borderColor: colors.borderColor + '30' }}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs text-gray-500">Progression de lecture</span>
-                          <span className="text-xs font-medium" style={{ color: colors.textColor }}>
-                            {Math.round(scrollProgress)}%
-                          </span>
-                        </div>
-                        <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                          <motion.div
-                            className="h-full rounded-full"
-                            style={{ 
-                              background: colors.bgGradient,
-                              width: `${scrollProgress}%`
-                            }}
-                            transition={{ duration: 0.1 }}
+                          <div 
+                            className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-white/20 animate-pulse"
+                            style={{ background: colors.primary + '40' }}
                           />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-white">
+                            Table des matières
+                          </h3>
+                          <p className="text-xs text-gray-500">
+                            {headings.length} chapitres
+                          </p>
                         </div>
                       </div>
                     </div>
-                  );
-                })()}
+                    
+                    {/* Contenu avec scroll si nécessaire */}
+                    <nav className="p-4 max-h-[600px] overflow-y-auto custom-scrollbar">
+                      <div className="space-y-2">
+                        {headings.map((section: any, sectionIndex: number) => {
+                          const isActive = activeSection === section.id;
+                          const hasSubheadings = section.subheadings.length > 0;
+                          const isExpanded = expandedSections[section.id];
+                          const hasActiveChild = section.subheadings.some((sub: any) => activeSection === sub.id);
+                          
+                          return (
+                            <div key={section.id} className="group">
+                              {/* Section principale H2 */}
+                              <div className="relative flex items-center gap-2">
+                                <a
+                                  href={`#${section.id}`}
+                                  className={`
+                                    flex-1 flex items-center gap-3 py-3 px-4 rounded-xl
+                                    transition-all duration-300 relative overflow-hidden
+                                    ${isActive ? 'bg-gradient-to-r' : 'hover:bg-white/5'}
+                                  `}
+                                  style={{
+                                    background: isActive 
+                                      ? `linear-gradient(90deg, ${colors.bgLight}, transparent)` 
+                                      : hasActiveChild 
+                                      ? colors.bgLight + '50'
+                                      : undefined,
+                                    borderLeft: isActive ? `3px solid ${colors.primary}` : '3px solid transparent'
+                                  }}
+                                >
+                                  {/* Indicateur numéroté */}
+                                  <div 
+                                    className={`
+                                      w-7 h-7 rounded-lg flex items-center justify-center
+                                      text-xs font-bold transition-all duration-300
+                                      ${isActive ? 'scale-110' : ''}
+                                    `}
+                                    style={{
+                                      background: isActive ? colors.primary : colors.bgLight,
+                                      color: isActive ? '#000' : colors.textColor
+                                    }}
+                                  >
+                                    {sectionIndex + 1}
+                                  </div>
+                                  
+                                  {/* Texte de la section */}
+                                  <span 
+                                    className={`
+                                      flex-1 font-medium transition-colors duration-300
+                                      ${isActive ? 'text-white' : 'text-gray-300 group-hover:text-white'}
+                                    `}
+                                  >
+                                    {section.text}
+                                  </span>
+                                  
+                                  {/* Badge de lecture si actif */}
+                                  {isActive && (
+                                    <div className="flex items-center gap-1 text-xs">
+                                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                      <span className="text-green-500">En cours</span>
+                                    </div>
+                                  )}
+                                </a>
+                                
+                                {/* Bouton toggle SÉPARÉ - En dehors du lien */}
+                                {hasSubheadings && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setExpandedSections(prev => ({
+                                        ...prev,
+                                        [section.id]: !prev[section.id]
+                                      }));
+                                    }}
+                                    className="p-1.5 rounded-lg transition-all duration-300 hover:bg-white/10"
+                                    style={{ color: colors.textColor }}
+                                  >
+                                    <div className="relative">
+                                      <ChevronDown 
+                                        size={16} 
+                                        className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                                      />
+                                      {!isExpanded && section.subheadings.length > 0 && (
+                                        <div 
+                                          className="absolute -top-1 -right-1 w-2 h-2 rounded-full"
+                                          style={{ background: colors.primary + '60' }}
+                                        />
+                                      )}
+                                    </div>
+                                  </button>
+                                )}
+                              </div>
+                              
+                              {/* Sous-sections H3 repliables */}
+                              <AnimatePresence>
+                                {hasSubheadings && isExpanded && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="ml-8 mt-1 space-y-1 border-l-2 border-gray-700/50 pl-4">
+                                      {section.subheadings.map((sub: any, subIndex: number) => {
+                                        const isSubActive = activeSection === sub.id;
+                                        return (
+                                          <a
+                                            key={sub.id}
+                                            href={`#${sub.id}`}
+                                            className={`
+                                              flex items-center gap-2 py-2 px-3 rounded-lg
+                                              text-sm transition-all duration-200
+                                              ${isSubActive ? 'bg-white/10' : 'hover:bg-white/5'}
+                                            `}
+                                            style={{
+                                              color: isSubActive ? colors.textColor : '#9ca3af'
+                                            }}
+                                          >
+                                            <div 
+                                              className="w-1.5 h-1.5 rounded-full"
+                                              style={{
+                                                background: isSubActive ? colors.primary : '#4b5563'
+                                              }}
+                                            />
+                                            <span className="line-clamp-1">
+                                              {sub.text}
+                                            </span>
+                                            {isSubActive && (
+                                              <Eye size={12} className="ml-auto" style={{ color: colors.primary }} />
+                                            )}
+                                          </a>
+                                        );
+                                      })}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </nav>
+                    
+                    {/* Footer avec progression */}
+                    <div 
+                      className="p-4 border-t"
+                      style={{ borderColor: colors.borderColor + '30' }}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-gray-500">Progression de lecture</span>
+                        <span className="text-xs font-medium" style={{ color: colors.textColor }}>
+                          {Math.round(scrollProgress)}%
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full"
+                          style={{ 
+                            background: colors.bgGradient,
+                            width: `${scrollProgress}%`
+                          }}
+                          transition={{ duration: 0.1 }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Stats de l'article avec couleurs inline */}
                 <div 
@@ -1530,10 +1798,6 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                               </h4>
                               <div className="flex items-center gap-3 text-xs text-gray-500">
                                 <span className="flex items-center gap-1">
-                                  <Clock size={12} />
-                                  {related.readingTime || 5} min
-                                </span>
-                                <span className="flex items-center gap-1">
                                   <Eye size={12} />
                                   {(related.views || 0).toLocaleString()}
                                 </span>
@@ -1592,15 +1856,15 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                     
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-xs text-white/90">
-                        <span className="text-yellow-400">✓</span>
+                        <span className="text-yellow-400">✔</span>
                         <span>Accès VIP aux contenus</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-white/90">
-                        <span className="text-yellow-400">✓</span>
+                        <span className="text-yellow-400">✔</span>
                         <span>Communauté privée</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-white/90">
-                        <span className="text-yellow-400">✓</span>
+                        <span className="text-yellow-400">✔</span>
                         <span>Events mensuels exclusifs</span>
                       </div>
                     </div>
@@ -1641,55 +1905,124 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
               </motion.div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {relatedArticles.slice(0, 6).map((related, index) => (
-                  <motion.article 
-                    key={related._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="group"
-                  >
-                    <Link to={`/article/${related.slug.current}`}>
-                      <div className="relative overflow-hidden rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all hover:transform hover:scale-105">
-                        {related.mainImage && related.mainImage.asset && related.mainImage.asset._ref && (
-                          <div className="relative h-48 overflow-hidden">
-                            <img 
-                              src={`https://cdn.sanity.io/images/z9wsynas/production/${related.mainImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}?w=400&h=250&fit=crop&auto=format`}
-                              alt={related.title}
-                              className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                          </div>
-                        )}
-                        <div className="p-6">
-                          {related.categories && related.categories[0] && (
-                            <span 
-                              className="text-xs font-medium uppercase"
-                              style={{ color: colors.textColor }}
-                            >
-                              {related.categories[0].title}
-                            </span>
+                {relatedArticles.slice(0, 6).map((related, index) => {
+                  // Déterminer les couleurs pour chaque article selon SA catégorie
+                  const getCardColors = () => {
+                    const cardCategory = related.categories?.[0]?.slug?.current?.toLowerCase();
+                    
+                    switch(cardCategory) {
+                      case 'story':
+                      case 'recits':
+                        return {
+                          gradient: 'from-amber-500 to-orange-500',
+                          primary: '#f59e0b',
+                          textColor: '#fbbf24',
+                          borderColor: 'rgba(245, 158, 11, 0.3)'
+                        };
+                      case 'business':
+                        return {
+                          gradient: 'from-blue-500 to-cyan-500',
+                          primary: '#3b82f6',
+                          textColor: '#60a5fa',
+                          borderColor: 'rgba(59, 130, 246, 0.3)'
+                        };
+                      case 'mental':
+                      case 'psycho':
+                        return {
+                          gradient: 'from-purple-500 to-violet-500',
+                          primary: '#a855f7',
+                          textColor: '#c084fc',
+                          borderColor: 'rgba(168, 85, 247, 0.3)'
+                        };
+                      case 'society':
+                        return {
+                          gradient: 'from-emerald-500 to-teal-500',
+                          primary: '#10b981',
+                          textColor: '#34d399',
+                          borderColor: 'rgba(16, 185, 129, 0.3)'
+                        };
+                      default:
+                        return {
+                          gradient: 'from-gray-500 to-gray-600',
+                          primary: '#6b7280',
+                          textColor: '#9ca3af',
+                          borderColor: 'rgba(107, 114, 128, 0.3)'
+                        };
+                    }
+                  };
+                  
+                  const cardColors = getCardColors();
+                  
+                  return (
+                    <motion.article 
+                      key={related._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="group"
+                    >
+                      <Link to={`/article/${related.slug.current}`}>
+                        <div 
+                          className="relative overflow-hidden rounded-xl bg-white/5 border transition-all hover:transform hover:scale-105"
+                          style={{
+                            borderColor: cardColors.borderColor
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = cardColors.primary;
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = cardColors.borderColor;
+                          }}
+                        >
+                          {related.mainImage && related.mainImage.asset && related.mainImage.asset._ref && (
+                            <div className="relative h-48 overflow-hidden">
+                              <img 
+                                src={`https://cdn.sanity.io/images/z9wsynas/production/${related.mainImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}?w=400&h=250&fit=crop&auto=format`}
+                                alt={related.title}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                              
+                              {/* Badge de catégorie avec gradient */}
+                              {related.categories && related.categories[0] && (
+                                <div className="absolute top-4 left-4">
+                                  <span 
+                                    className={`inline-block px-3 py-1 rounded-full text-xs font-medium text-white bg-gradient-to-r ${cardColors.gradient}`}
+                                  >
+                                    {related.categories[0].title}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           )}
-                          <h3 className="text-lg font-semibold text-white mt-2 mb-3 group-hover:text-blue-400 transition-colors line-clamp-2">
-                            {related.title}
-                          </h3>
-                          {/* Excerpt des articles liés - CORRIGÉ */}
-                          <p className="text-sm text-gray-400 line-clamp-2 mb-4">
-                            {related.excerpt}
-                          </p>
-                          <div className="flex items-center justify-between text-sm text-gray-500">
-                            <span>{related.readingTime || 5} min de lecture</span>
-                            <span className="flex items-center gap-1">
-                              <Eye size={14} />
-                              {(related.views || 0).toLocaleString()}
-                            </span>
+                          <div className="p-6">
+                            <h3 className="text-lg font-semibold text-white mt-2 mb-3 transition-colors line-clamp-2">
+                              {related.title}
+                            </h3>
+                            <p className="text-sm text-gray-400 line-clamp-2 mb-4">
+                              {related.excerpt}
+                            </p>
+                            <div className="flex items-center justify-between text-sm text-gray-500">
+                              <span className="flex items-center gap-1">
+                                <Eye size={14} style={{ color: cardColors.textColor, opacity: 0.7 }} />
+                                {(related.views || 0).toLocaleString()} vues
+                              </span>
+                            </div>
+                            
+                            {/* Ligne de progression colorée au survol */}
+                            <div 
+                              className="absolute bottom-0 left-0 right-0 h-0.5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 bg-gradient-to-r"
+                              style={{
+                                background: `linear-gradient(to right, ${cardColors.primary}, ${cardColors.textColor})`
+                              }}
+                            />
                           </div>
                         </div>
-                      </div>
-                    </Link>
-                  </motion.article>
-                ))}
+                      </Link>
+                    </motion.article>
+                  );
+                })}
               </div>
 
               <div className="text-center mt-12">
