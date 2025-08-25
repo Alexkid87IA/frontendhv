@@ -976,39 +976,6 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
               )}
             </motion.div>
 
-            {/* Catégories avec couleurs inline */}
-            {article.categories && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="flex flex-wrap gap-3 mb-8"
-              >
-                {article.categories.map((cat) => (
-                  <Link
-                    key={cat._id}
-                    to={`/rubrique/${cat.slug.current}`}
-                    className="group relative px-5 py-2 backdrop-blur-md rounded-full text-sm font-medium transition-all duration-300"
-                    style={{
-                      background: colors.bgLight,
-                      border: `1px solid ${colors.borderColor}`,
-                      color: colors.textColor
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = colors.bgMedium;
-                      e.currentTarget.style.borderColor = colors.primary;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = colors.bgLight;
-                      e.currentTarget.style.borderColor = colors.borderColor;
-                    }}
-                  >
-                    <span className="relative z-10">{cat.title}</span>
-                  </Link>
-                ))}
-              </motion.div>
-            )}
-
             {/* Titre qui prend toute la largeur */}
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
@@ -1357,11 +1324,11 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                     {"S'inscrire à la newsletter"}
                   </button>
                   <button 
-                    onClick={handleBookmark}
+                    onClick={handleShare}
                     className="flex-1 py-3 px-6 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                   >
-                    <Bookmark size={20} className={isBookmarked ? 'fill-current' : ''} />
-                    {isBookmarked ? 'Article sauvegardé' : 'Sauvegarder pour plus tard'}
+                    <Share2 size={20} />
+                    Partager l'article
                   </button>
                 </div>
               </div>
@@ -1711,7 +1678,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                   </div>
                 )}
 
-                {/* Stats de l'article avec couleurs inline */}
+                {/* Stats de l'article - Partage uniquement */}
                 <div 
                   className="backdrop-blur-md rounded-2xl p-6"
                   style={{
@@ -1719,29 +1686,13 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                     border: `1px solid ${colors.borderColor}`
                   }}
                 >
-                  <div className="grid grid-cols-3 gap-4">
-                    <button
-                      onClick={handleLike}
-                      className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition-all"
-                    >
-                      <Heart size={24} className={`${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-400'} transition-colors`} />
-                      <span className="text-xs text-gray-400">{localLikes}</span>
-                    </button>
-                    <button
-                      onClick={handleBookmark}
-                      className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition-all"
-                    >
-                      <Bookmark size={24} className={`${isBookmarked ? 'fill-yellow-500 text-yellow-500' : 'text-gray-400'} transition-colors`} />
-                      <span className="text-xs text-gray-400">Sauver</span>
-                    </button>
-                    <button
-                      onClick={handleShare}
-                      className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition-all"
-                    >
-                      <Share2 size={24} className="text-gray-400" />
-                      <span className="text-xs text-gray-400">Partager</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleShare}
+                    className="w-full flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-white/5 transition-all"
+                  >
+                    <Share2 size={24} className="text-gray-400" />
+                    <span className="text-sm text-gray-400">Partager cet article</span>
+                  </button>
                 </div>
 
                 {/* Articles similaires */}
@@ -2038,33 +1989,15 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
           </section>
         )}
 
-        {/* Barre d'actions mobile */}
+        {/* Barre d'actions mobile - Partage uniquement */}
         <div className="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-lg border-t border-white/10 p-4 lg:hidden z-50">
-          <div className="flex items-center justify-around">
-            <button
-              onClick={handleLike}
-              className="flex flex-col items-center gap-1 text-gray-400"
-            >
-              <Heart size={20} className={isLiked ? 'fill-red-500 text-red-500' : ''} />
-              <span className="text-xs">{localLikes}</span>
-            </button>
-            <button className="flex flex-col items-center gap-1 text-gray-400">
-              <MessageSquare size={20} />
-              <span className="text-xs">0</span>
-            </button>
-            <button
-              onClick={handleBookmark}
-              className="flex flex-col items-center gap-1 text-gray-400"
-            >
-              <Bookmark size={20} className={isBookmarked ? 'fill-yellow-500 text-yellow-500' : ''} />
-            </button>
-            <button
-              onClick={handleShare}
-              className="flex flex-col items-center gap-1 text-gray-400"
-            >
-              <Share2 size={20} />
-            </button>
-          </div>
+          <button
+            onClick={handleShare}
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
+          >
+            <Share2 size={20} />
+            <span className="text-sm font-medium">Partager cet article</span>
+          </button>
         </div>
       </div>
 

@@ -136,46 +136,55 @@ const ContentSection: React.FC<ContentSectionProps> = ({
     const fetchContent = async () => {
       try {
         setIsLoading(true);
+        console.log(`🔍 Récupération des contenus pour la section: ${sectionType}`);
+        
         const sanityArticles = await getAllArticles();
         
         // Si on a des articles depuis Sanity
         if (sanityArticles && sanityArticles.length > 0) {
-          // TODO: Filtrer par catégorie/type quand les métadonnées seront disponibles dans Sanity
-          // Pour l'instant, on divise les articles disponibles entre les sections
+          // CORRECTION : Filtrer par contentType au lieu de la répartition mathématique
           let filteredItems: SanityArticle[] = [];
           
-          // Distribution temporaire des articles entre les sections
-          // pour éviter d'avoir les mêmes partout
-          if (sectionType === 'emission') {
-            // Prendre les articles 0, 3, 6, 9... (tous les 3 en partant de 0)
-            filteredItems = sanityArticles.filter((_, index) => index % 3 === 0).slice(0, 3);
-          } else if (sectionType === 'business-idea') {
-            // Prendre les articles 1, 4, 7, 10... (tous les 3 en partant de 1)
-            filteredItems = sanityArticles.filter((_, index) => index % 3 === 1).slice(0, 3);
-          } else if (sectionType === 'success-story') {
-            // Prendre les articles 2, 5, 8, 11... (tous les 3 en partant de 2)
-            filteredItems = sanityArticles.filter((_, index) => index % 3 === 2).slice(0, 3);
-          }
+          // Mapping des types de section vers les valeurs de contentType dans Sanity
+          const contentTypeMapping: Record<string, string> = {
+            'emission': 'emission',
+            'business-idea': 'case-study',
+            'success-story': 'success-story'
+          };
+          
+          const targetContentType = contentTypeMapping[sectionType];
+          console.log(`🎯 Recherche d'articles avec contentType: ${targetContentType}`);
+          
+          // Filtrer les articles par contentType
+          filteredItems = sanityArticles
+            .filter(article => article.contentType === targetContentType)
+            .slice(0, 3); // Limiter à 3 articles
+          
+          console.log(`✅ ${filteredItems.length} articles trouvés pour ${sectionType} (contentType: ${targetContentType})`);
           
           // Si on a trouvé des articles après filtrage, les utiliser
           if (filteredItems.length > 0) {
             setItems(filteredItems);
             setDataSource('cms');
-            console.log(`${filteredItems.length} articles récupérés depuis Sanity pour ${sectionType}`);
+            console.log(`📊 Utilisation de ${filteredItems.length} articles depuis Sanity pour ${sectionType}`);
           } else {
             // Sinon utiliser les données mockées
+            console.log(`⚠️ Aucun article avec contentType "${targetContentType}" trouvé, utilisation des données mockées`);
             setItems(mockItems[sectionType] || []);
             setDataSource('mock');
-            console.log(`Pas d'articles Sanity pour ${sectionType}, utilisation des données mockées`);
+            
+            // Log pour debug : afficher les contentTypes disponibles
+            const availableContentTypes = [...new Set(sanityArticles.map(a => a.contentType))];
+            console.log('📋 ContentTypes disponibles dans Sanity:', availableContentTypes);
           }
         } else {
           // Pas d'articles du tout, utiliser les données mockées
+          console.log(`⚠️ Aucun article dans Sanity, utilisation des données mockées pour ${sectionType}`);
           setItems(mockItems[sectionType] || []);
           setDataSource('mock');
-          console.log(`Utilisation des données mockées pour ${sectionType}`);
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération des articles:', error);
+        console.error('❌ Erreur lors de la récupération des articles:', error);
         setItems(mockItems[sectionType] || []);
         setDataSource('mock');
       } finally {
@@ -203,7 +212,8 @@ const ContentSection: React.FC<ContentSectionProps> = ({
           color: 'violet',
           gradient: 'from-violet-500 to-purple-500',
           link: '/emissions',
-          label: 'Podcast'
+          label: 'Podcast',
+          emptyMessage: 'Aucune émission disponible pour le moment'
         };
       case 'business-idea':
         return {
@@ -211,7 +221,8 @@ const ContentSection: React.FC<ContentSectionProps> = ({
           color: 'blue',
           gradient: 'from-blue-500 to-cyan-500',
           link: '/business-ideas',
-          label: 'Étude de cas'
+          label: 'Étude de cas',
+          emptyMessage: 'Aucune étude de cas disponible pour le moment'
         };
       case 'success-story':
         return {
@@ -219,7 +230,8 @@ const ContentSection: React.FC<ContentSectionProps> = ({
           color: 'emerald',
           gradient: 'from-emerald-500 to-green-500',
           link: '/success-stories',
-          label: 'Parcours'
+          label: 'Parcours',
+          emptyMessage: 'Aucune success story disponible pour le moment'
         };
       default:
         return {
@@ -227,13 +239,31 @@ const ContentSection: React.FC<ContentSectionProps> = ({
           color: 'blue',
           gradient: 'from-blue-500 to-cyan-500',
           link: '/articles',
-          label: 'Article'
+          label: 'Article',
+          emptyMessage: 'Aucun article disponible pour le moment'
         };
     }
   };
 
   const config = getTypeConfig();
   const Icon = config.icon;
+
+  // Si aucun article n'est disponible
+  if (items.length === 0) {
+    return (
+      <section className="relative py-16 overflow-hidden">
+        <div className="container">
+          <div className="text-center py-12">
+            <div className="inline-flex items-center justify-center p-3 rounded-xl bg-gradient-to-r ${config.gradient} mb-4">
+              <Icon className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-400 mb-2">{config.emptyMessage}</h3>
+            <p className="text-gray-500">De nouveaux contenus arrivent bientôt !</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <ErrorBoundary>
@@ -260,6 +290,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
                 </span>
                 <span className="text-xs text-gray-500 ml-2">
                   • {items.length} nouveaux contenus
+                  {dataSource === 'mock' && ' (données d\'exemple)'}
                 </span>
               </div>
             </div>
@@ -302,7 +333,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
                       
-                      {/* Badge type */}
+                      {/* Badge type pour les émissions */}
                       {sectionType === 'emission' && (
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <div className="p-4 rounded-full bg-black/60 backdrop-blur-sm">
@@ -310,10 +341,24 @@ const ContentSection: React.FC<ContentSectionProps> = ({
                           </div>
                         </div>
                       )}
+                      
+                      {/* Durée pour les émissions */}
+                      {sectionType === 'emission' && item.duration && (
+                        <div className="absolute top-3 right-3 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-md">
+                          <span className="text-xs text-white font-medium">{item.duration}</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Contenu */}
                     <div className="p-6">
+                      {/* Invité pour les émissions */}
+                      {sectionType === 'emission' && item.guest && (
+                        <div className="text-xs text-violet-400 font-medium mb-2">
+                          Avec {item.guest}
+                        </div>
+                      )}
+                      
                       <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-accent-cyan transition-colors">
                         {item.title}
                       </h3>
@@ -324,18 +369,41 @@ const ContentSection: React.FC<ContentSectionProps> = ({
 
                       {/* Meta info */}
                       <div className="flex items-center justify-between text-xs text-gray-500">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-3 h-3" />
-                          <time>
-                            {new Date(item.publishedAt || '').toLocaleDateString('fr-FR', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric'
-                            })}
-                          </time>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            <time>
+                              {new Date(item.publishedAt || '').toLocaleDateString('fr-FR', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                            </time>
+                          </div>
+                          
+                          {/* Stats pour les émissions */}
+                          {sectionType === 'emission' && item.stats && (
+                            <>
+                              {item.stats.views > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <Eye className="w-3 h-3" />
+                                  <span>{item.stats.views}</span>
+                                </div>
+                              )}
+                            </>
+                          )}
+                          
+                          {/* Temps de lecture pour les articles */}
+                          {sectionType !== 'emission' && item.readingTime && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              <span>{item.readingTime} min</span>
+                            </div>
+                          )}
                         </div>
+                        
                         <span className="flex items-center gap-1">
-                          Lire plus
+                          {sectionType === 'emission' ? 'Écouter' : 'Lire'} 
                           <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
                         </span>
                       </div>

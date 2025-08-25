@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Quote, Calendar, Clock, User, Sparkles, TrendingUp, Star, Play, Pause, Volume2, VolumeX, Share2, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import SafeImage from '../common/SafeImage'; // Utilise SafeImage qui fonctionne
 import ErrorBoundary from '../common/ErrorBoundary';
@@ -151,12 +151,6 @@ export const HeroSection = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
-  
-  // Motion values pour l'effet 3D (inchangés)
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const rotateX = useTransform(mouseY, [-100, 100], [10, -10]);
-  const rotateY = useTransform(mouseX, [-100, 100], [-10, 10]);
 
   const currentQuote = dailyQuotes[currentQuoteIndex];
 
@@ -213,19 +207,6 @@ export const HeroSection = () => {
 
   const handlePrevQuote = () => {
     setCurrentQuoteIndex((prev) => (prev - 1 + dailyQuotes.length) % dailyQuotes.length);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    mouseX.set(x);
-    mouseY.set(y);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
   };
 
   if (contextLoading) {
@@ -291,7 +272,7 @@ export const HeroSection = () => {
               className="lg:col-span-8"
             >
               <Link to={`/article/${featuredArticle.slug?.current}`} className="group block relative h-full">
-                <div className="relative h-full min-h-[500px] lg:min-h-[600px] rounded-3xl overflow-hidden">
+                <div className="relative h-full min-h-[550px] lg:min-h-[650px] rounded-3xl overflow-hidden">
                   {/* Utilise SafeImage */}
                   <SafeImage
                     source={featuredArticle.mainImage}
@@ -301,9 +282,14 @@ export const HeroSection = () => {
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                   />
                   
-                  {/* Overlay gradient amélioré (inchangé) */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
+                  {/* Overlay gradient amélioré - BEAUCOUP PLUS LÉGER */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
+                  
+                  {/* Vignette très subtile sur les bords */}
+                  <div className="absolute inset-0" style={{
+                    boxShadow: 'inset 0 0 100px rgba(0,0,0,0.2)'
+                  }} />
                   
                   {/* Badge "À LA UNE" plus élégant (inchangé) */}
                   <motion.div
@@ -319,7 +305,7 @@ export const HeroSection = () => {
                     </div>
                   </motion.div>
                   
-                  {/* Contenu (inchangé) */}
+                  {/* Contenu (modifié) */}
                   <div className="absolute inset-x-0 bottom-0 p-8 lg:p-12">
                     {featuredArticle.categories?.[0] && (
                       <motion.div
@@ -329,7 +315,6 @@ export const HeroSection = () => {
                         className="inline-block mb-4"
                       >
                         <span className={`inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${categoryColors[featuredArticle.categories[0].title] || 'from-gray-500 to-gray-600'} rounded-full`}>
-                          <Star className="w-4 h-4 text-white fill-white" />
                           <span className="text-sm font-medium text-white">
                             {featuredArticle.categories[0].title}
                           </span>
@@ -352,10 +337,6 @@ export const HeroSection = () => {
                       transition={{ delay: 0.7 }}
                       className="flex items-center gap-6"
                     >
-                      <div className="flex items-center gap-2 text-gray-300">
-                        <Clock className="w-4 h-4" />
-                        <span>{featuredArticle.readingTime || '10 min'}</span>
-                      </div>
                       <div className="flex items-center gap-2 text-gray-300">
                         <Calendar className="w-4 h-4" />
                         <span>{new Date(featuredArticle.publishedAt || '').toLocaleDateString('fr-FR')}</span>
@@ -392,13 +373,15 @@ export const HeroSection = () => {
                     >
                       {/* Badge animé */}
                       <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-xl opacity-60 animate-pulse" />
-                        <div className="relative flex items-center gap-2 px-4 py-2 bg-black/80 backdrop-blur-sm rounded-full border border-blue-500/30">
-                          <Quote className="w-4 h-4 text-blue-400" />
-                          <span className="text-xs font-medium text-white uppercase tracking-wider">
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-300 to-gray-100 rounded-full blur-xl opacity-60 animate-pulse" />
+                        <div className="relative flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 backdrop-blur-sm rounded-full border border-gray-300/50 shadow-lg overflow-hidden">
+                          {/* Effet métallique brillant */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent animate-pulse"></div>
+                          <Quote className="w-4 h-4 text-gray-700 relative z-10" />
+                          <span className="text-xs font-bold text-gray-800 uppercase tracking-wider relative z-10">
                             Inspirations du jour
                           </span>
-                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
+                          <div className="w-1.5 h-1.5 bg-gray-600 rounded-full animate-pulse relative z-10" />
                         </div>
                       </div>
                     </motion.div>
@@ -407,12 +390,12 @@ export const HeroSection = () => {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setIsAutoPlay(!isAutoPlay)}
-                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all hover:scale-110"
+                        className="p-2 rounded-lg bg-gray-700/20 hover:bg-gray-700/30 transition-all hover:scale-110"
                       >
                         {isAutoPlay ? (
-                          <Pause className="w-4 h-4 text-gray-400" />
+                          <Pause className="w-4 h-4 text-gray-700" />
                         ) : (
-                          <Play className="w-4 h-4 text-gray-400" />
+                          <Play className="w-4 h-4 text-gray-700" />
                         )}
                       </button>
                     </div>
@@ -420,35 +403,32 @@ export const HeroSection = () => {
 
                   {/* Carte 3D avec effet de perspective (structure complète inchangée) */}
                   <motion.div
-                    className="relative perspective-1000"
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
-                    style={{
-                      rotateX,
-                      rotateY,
-                      transformStyle: "preserve-3d"
-                    }}
+                    className="relative"
                   >
                     {/* Bordure animée gradient */}
-                    <div className="absolute -inset-[1px] rounded-3xl opacity-60">
-                      <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500 via-cyan-500 to-sky-500" />
+                    <div className="absolute -inset-[1px] rounded-3xl opacity-90">
+                      <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-gray-400 via-gray-200 to-gray-400 shadow-xl animate-pulse" />
                     </div>
 
                     {/* Carte principale */}
-                    <div className="relative bg-black/40 backdrop-blur-2xl border border-blue-500/20 rounded-3xl p-8 overflow-hidden">
+                    <div className="relative bg-gradient-to-br from-gray-200 via-gray-100 to-gray-300 backdrop-blur-2xl border border-gray-400/50 rounded-3xl p-8 overflow-hidden shadow-2xl">
+                      {/* Effet métallique brillant */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-white/20 to-transparent pointer-events-none animate-pulse"></div>
+                      
                       {/* Particules flottantes dans la carte - SIMPLIFIÉ */}
                       <div className="absolute inset-0">
                         {[...Array(8)].map((_, i) => (
                           <motion.div
                             key={i}
-                            className="absolute w-1 h-1 bg-blue-400/20 rounded-full"
+                            className="absolute w-1 h-1 bg-white/60 rounded-full shadow-sm"
                             initial={{
                               x: Math.random() * 100 + '%',
                               y: Math.random() * 100 + '%',
                             }}
                             animate={{
                               y: [0, -20, 0],
-                              opacity: [0.2, 0.5, 0.2],
+                              opacity: [0.3, 0.8, 0.3],
                             }}
                             transition={{
                               duration: 8 + i * 2,
@@ -464,15 +444,6 @@ export const HeroSection = () => {
                         className="absolute inset-0 opacity-5"
                         style={{
                           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                        }}
-                      />
-
-                      {/* Effet de lumière qui suit le curseur */}
-                      <motion.div
-                        className="absolute w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"
-                        style={{
-                          x: mouseX,
-                          y: mouseY,
                         }}
                       />
                       
@@ -492,18 +463,18 @@ export const HeroSection = () => {
                               animate={{ scale: 1, rotate: 0 }}
                               transition={{ delay: 0.2, type: "spring" }}
                             >
-                              <Quote className="w-10 h-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400" />
+                              <Quote className="w-10 h-10 text-gray-700" />
                             </motion.div>
                           </div>
                           
                           {/* Citation avec effet typewriter */}
-                          <blockquote className="text-xl md:text-2xl font-light text-white leading-relaxed mb-8 min-h-[120px]">
+                          <blockquote className="text-xl md:text-2xl font-medium text-gray-900 leading-relaxed mb-8 min-h-[120px]">
                             {displayedText}
                             {isTyping && (
                               <motion.span
                                 animate={{ opacity: [1, 0] }}
                                 transition={{ duration: 0.5, repeat: Infinity }}
-                                className="inline-block w-0.5 h-6 bg-blue-400 ml-1"
+                                className="inline-block w-0.5 h-6 bg-gray-700 ml-1"
                               />
                             )}
                           </blockquote>
@@ -517,8 +488,8 @@ export const HeroSection = () => {
                           >
                             {/* Avatar avec effet glow */}
                             <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full blur-lg opacity-60 animate-pulse" />
-                              <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center">
+                              <div className="absolute inset-0 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full blur-lg opacity-60 animate-pulse" />
+                              <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center shadow-xl">
                                 <span className="text-white font-bold text-lg">
                                   {currentQuote.avatar}
                                 </span>
@@ -526,10 +497,10 @@ export const HeroSection = () => {
                             </div>
                             
                             <div className="flex-1">
-                              <cite className="block text-white font-semibold not-italic">
+                              <cite className="block text-gray-900 font-bold not-italic">
                                 {currentQuote.author}
                               </cite>
-                              <span className="text-sm text-gray-400">
+                              <span className="text-sm text-gray-600">
                                 {currentQuote.role}
                               </span>
                             </div>
@@ -539,70 +510,73 @@ export const HeroSection = () => {
                               <motion.button
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => setIsLiked(!isLiked)}
-                                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
+                                className="p-2 rounded-lg bg-gray-700/10 hover:bg-gray-700/20 transition-all"
                               >
                                 <Heart 
                                   className={`w-4 h-4 transition-all ${
-                                    isLiked ? 'text-red-500 fill-red-500' : 'text-gray-400'
+                                    isLiked ? 'text-red-500 fill-red-500' : 'text-gray-600'
                                   }`}
                                 />
                               </motion.button>
                               <motion.button
                                 whileTap={{ scale: 0.9 }}
-                                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
+                                className="p-2 rounded-lg bg-gray-700/10 hover:bg-gray-700/20 transition-all"
                               >
-                                <Share2 className="w-4 h-4 text-gray-400" />
+                                <Share2 className="w-4 h-4 text-gray-600" />
                               </motion.button>
                             </div>
                           </motion.div>
                         </motion.div>
                       </AnimatePresence>
-
-                      {/* Navigation arrows */}
-                      <div className="absolute top-1/2 -translate-y-1/2 left-2 right-2 flex justify-between pointer-events-none">
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={handlePrevQuote}
-                          className="p-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 pointer-events-auto hover:bg-white/10 transition-all"
-                        >
-                          <ChevronLeft className="w-4 h-4 text-white" />
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={handleNextQuote}
-                          className="p-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 pointer-events-auto hover:bg-white/10 transition-all"
-                        >
-                          <ChevronRight className="w-4 h-4 text-white" />
-                        </motion.button>
-                      </div>
                     </div>
                   </motion.div>
 
-                  {/* Progress bar avec animation */}
+                  {/* Navigation et Progress bar combinés */}
                   <div className="relative mt-6">
-                    <div className="flex gap-2">
-                      {dailyQuotes.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentQuoteIndex(index)}
-                          className="relative flex-1 h-1 bg-blue-400/20 rounded-full overflow-hidden"
-                        >
-                          <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400"
-                            initial={{ scaleX: 0 }}
-                            animate={{ 
-                              scaleX: index === currentQuoteIndex ? 1 : 0
-                            }}
-                            transition={{ 
-                              duration: index === currentQuoteIndex && isAutoPlay && !isTyping ? 5 : 0.3,
-                              ease: "linear"
-                            }}
-                            style={{ transformOrigin: "left" }}
-                          />
-                        </button>
-                      ))}
+                    <div className="flex items-center gap-3">
+                      {/* Bouton précédent */}
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={handlePrevQuote}
+                        className="p-2 rounded-full bg-gray-700/20 backdrop-blur-sm border border-gray-600/30 hover:bg-gray-700/30 transition-all"
+                      >
+                        <ChevronLeft className="w-4 h-4 text-gray-700" />
+                      </motion.button>
+
+                      {/* Progress bars */}
+                      <div className="flex gap-2 flex-1">
+                        {dailyQuotes.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentQuoteIndex(index)}
+                            className="relative flex-1 h-1 bg-gray-400/30 rounded-full overflow-hidden"
+                          >
+                            <motion.div
+                              className="absolute inset-0 bg-gradient-to-r from-gray-600 to-gray-800"
+                              initial={{ scaleX: 0 }}
+                              animate={{ 
+                                scaleX: index === currentQuoteIndex ? 1 : 0
+                              }}
+                              transition={{ 
+                                duration: index === currentQuoteIndex && isAutoPlay && !isTyping ? 5 : 0.3,
+                                ease: "linear"
+                              }}
+                              style={{ transformOrigin: "left" }}
+                            />
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Bouton suivant */}
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={handleNextQuote}
+                        className="p-2 rounded-full bg-gray-700/20 backdrop-blur-sm border border-gray-600/30 hover:bg-gray-700/30 transition-all"
+                      >
+                        <ChevronRight className="w-4 h-4 text-gray-700" />
+                      </motion.button>
                     </div>
                   </div>
 
@@ -620,13 +594,13 @@ export const HeroSection = () => {
                     ].map((stat, index) => (
                       <motion.div
                         key={stat.label}
-                        className="relative text-center p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10"
-                        whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.08)" }}
+                        className="relative text-center p-3 rounded-xl bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-sm border border-gray-300/50 shadow-lg"
+                        whileHover={{ scale: 1.05, backgroundColor: "rgba(229,231,235,0.9)" }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <stat.icon className="w-4 h-4 text-blue-400 mx-auto mb-2" />
-                        <div className="text-xl font-bold text-white">{stat.value}</div>
-                        <div className="text-xs text-gray-500 uppercase tracking-wider">{stat.label}</div>
+                        <stat.icon className="w-4 h-4 text-gray-700 mx-auto mb-2" />
+                        <div className="text-xl font-bold text-gray-900">{stat.value}</div>
+                        <div className="text-xs text-gray-600 uppercase tracking-wider">{stat.label}</div>
                       </motion.div>
                     ))}
                   </motion.div>

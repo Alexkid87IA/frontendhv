@@ -140,11 +140,22 @@ export const ResponsiveNavbar = () => {
     return gradients[color as keyof typeof gradients] || gradients.blue;
   };
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <>
       <motion.nav
         initial={{ y: 0 }}
-        animate={{ y: visible || isOpen ? 0 : -120 }}
+        animate={{ y: (!isMobile && !visible && !isOpen) ? -120 : 0 }}
         transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
         className="fixed top-0 left-0 right-0 z-50"
         style={{ backgroundColor: navbarBackground as any }}

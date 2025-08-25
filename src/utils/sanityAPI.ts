@@ -54,10 +54,19 @@ export const getAllArticles = async (): Promise<SanityArticle[]> => {
         _id,
         title,
         slug,
+        contentType,  // AJOUT IMPORTANT : récupération du contentType
         mainImage,
         excerpt,
         publishedAt,
         keyPoints,
+        readingTime,
+        duration,
+        videoUrl,
+        guest,
+        isEssential,
+        isTrending,
+        isFeatured,
+        stats,
         categories[]->{
           _id,
           title,
@@ -72,10 +81,24 @@ export const getAllArticles = async (): Promise<SanityArticle[]> => {
             title,
             slug
           }
+        },
+        author->{
+          _id,
+          name,
+          image
         }
       }`;
       
-      return await sanityClient.fetch(query);
+      const articles = await sanityClient.fetch(query);
+      console.log(`Articles récupérés: ${articles?.length || 0}`);
+      
+      // Log pour debug : afficher les types de contenu présents
+      if (articles && articles.length > 0) {
+        const contentTypes = [...new Set(articles.map(a => a.contentType))];
+        console.log('Types de contenu disponibles:', contentTypes);
+      }
+      
+      return articles || [];
     } catch (error) {
       console.error("Erreur lors de la récupération des articles:", error);
       return [];
@@ -106,11 +129,20 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         _type,
         title,
         slug,
+        contentType,
         mainImage,
         body,
         excerpt,
         publishedAt,
         keyPoints,
+        readingTime,
+        duration,
+        videoUrl,
+        guest,
+        isEssential,
+        isTrending,
+        isFeatured,
+        stats,
         categories[]->{
           _id,
           title,
@@ -143,6 +175,7 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         found: !!result,
         id: result?._id,
         title: result?.title,
+        contentType: result?.contentType,
         keyPoints: result?.keyPoints,
         isPublished: result?._id && !result._id.startsWith('drafts.')
       });
@@ -157,11 +190,20 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
           _type,
           title,
           slug,
+          contentType,
           mainImage,
           body,
           excerpt,
           publishedAt,
           keyPoints,
+          readingTime,
+          duration,
+          videoUrl,
+          guest,
+          isEssential,
+          isTrending,
+          isFeatured,
+          stats,
           categories[]->{
             _id,
             title,
@@ -191,6 +233,7 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         console.log("📋 Résultat recherche brouillons:", {
           found: !!draftResult,
           id: draftResult?._id,
+          contentType: draftResult?.contentType,
           keyPoints: draftResult?.keyPoints
         });
         
@@ -213,11 +256,20 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         _id,
         title,
         slug,
+        contentType,
         mainImage,
         body,
         excerpt,
         publishedAt,
         keyPoints,
+        readingTime,
+        duration,
+        videoUrl,
+        guest,
+        isEssential,
+        isTrending,
+        isFeatured,
+        stats,
         categories[]->{
           _id,
           title,
@@ -242,7 +294,7 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
       }`;
       
       const result = await sanityClient.fetch(query, { slug });
-      console.log("📋 Article récupéré avec keyPoints:", result?.keyPoints);
+      console.log("📋 Article récupéré avec contentType:", result?.contentType);
       return result;
     } catch (error) {
       console.error(`Erreur lors de la récupération de l'article ${slug}:`, error);
@@ -269,10 +321,19 @@ export const getArticlesByCategory = async (categorySlug: string): Promise<Sanit
         _id,
         title,
         slug,
+        contentType,
         mainImage,
         excerpt,
         publishedAt,
         keyPoints,
+        readingTime,
+        duration,
+        videoUrl,
+        guest,
+        isEssential,
+        isTrending,
+        isFeatured,
+        stats,
         categories[]->{
           _id,
           title,
@@ -482,67 +543,57 @@ export const getClubPricing = async (): Promise<SanityClubPricing[]> => {
   });
 };
 
-// Récupérer les contenus par type (podcast, études de cas, success stories)
+// Récupérer les contenus par type (utilise contentType maintenant)
 export const getContentItems = async (contentType: string, limit = 5): Promise<any[]> => {
   return getWithCache(`contentItems_${contentType}_${limit}`, async () => {
     try {
-      // Requête qui résout les références pour obtenir le titre du type de section
-      const query = `*[_type == "article"] {
-        _id,
-        title,
-        mainImage,
-        excerpt,
-        slug,
-        keyPoints,
-        "sectionTypeTitle": sectionType->title,
-        "typeDeSection": typeDeSection->title,
-        "typeTitle": type->title
-      }`;
-      
-      const allArticles = await sanityClient.fetch(query);
-      console.log(`Total articles récupérés: ${allArticles.length}`);
-      
-      // Afficher un exemple pour debug
-      if (allArticles.length > 0) {
-        console.log(`Exemple d'article avec types résolus:`, allArticles[0]);
-      }
-      
-      // Mapping des types recherchés vers les valeurs possibles dans Sanity
-      const typeMapping: Record<string, string[]> = {
-        'emission': ['Emission', 'emission', 'Émission', 'Podcast'],
-        'business-idea': ['Business Idea', 'business-idea', 'Business idea', 'BusinessIdea', 'Étude de cas'],
-        'success-story': ['Success Story', 'success-story', 'Success story', 'SuccessStory']
+      // Mapping des types de section vers les valeurs de contentType dans Sanity
+      const typeMapping: Record<string, string> = {
+        'emission': 'emission',
+        'business-idea': 'case-study',
+        'success-story': 'success-story'
       };
       
-      const validTypes = typeMapping[contentType] || [];
-      console.log(`Recherche pour ${contentType}, valeurs acceptées:`, validTypes);
+      const sanityContentType = typeMapping[contentType];
       
-      // Filtrer les articles selon le type
-      const filtered = allArticles.filter((article: any) => {
-        const sectionType = article.sectionTypeTitle || 
-                          article.typeDeSection || 
-                          article.typeTitle;
-        
-        if (sectionType) {
-          console.log(`Article "${article.title}" a le type résolu:`, sectionType);
-        }
-        
-        return validTypes.some(validType => 
-          sectionType && sectionType.toLowerCase() === validType.toLowerCase()
-        );
-      }).slice(0, limit);
-      
-      console.log(`Articles trouvés pour ${contentType}: ${filtered.length}`);
-      
-      // Si toujours pas de résultats, affichons tous les types disponibles
-      if (filtered.length === 0) {
-        const allTypes = allArticles
-          .map((a: any) => a.sectionTypeTitle || a.typeDeSection || a.typeTitle)
-          .filter(Boolean);
-        console.log(`Aucun article trouvé. Types disponibles dans Sanity:`, [...new Set(allTypes)]);
+      if (!sanityContentType) {
+        console.log(`Type de contenu non mappé: ${contentType}`);
+        return [];
       }
       
-      return filtered;
+      const query = `*[_type == "article" && contentType == $sanityContentType] | order(publishedAt desc)[0...$limit] {
+        _id,
+        title,
+        slug,
+        contentType,
+        mainImage,
+        excerpt,
+        publishedAt,
+        keyPoints,
+        readingTime,
+        duration,
+        videoUrl,
+        guest,
+        isEssential,
+        isTrending,
+        isFeatured,
+        stats,
+        categories[]->{
+          _id,
+          title,
+          slug
+        },
+        subcategories[]->{
+          _id,
+          title,
+          slug
+        }
+      }`;
+      
+      const results = await sanityClient.fetch(query, { sanityContentType, limit });
+      console.log(`Articles trouvés pour ${contentType} (${sanityContentType}): ${results?.length || 0}`);
+      
+      return results || [];
     } catch (error) {
       console.error(`Erreur lors de la récupération des contenus de type ${contentType}:`, error);
       return [];
@@ -570,14 +621,19 @@ export const getArticlesBySubcategory = async (subcategorySlug: string): Promise
         _id,
         title,
         slug,
+        contentType,
         mainImage,
         excerpt,
         publishedAt,
         keyPoints,
         readingTime,
+        duration,
+        videoUrl,
+        guest,
         isTrending,
         isFeatured,
         isEssential,
+        stats,
         categories[]->{
           _id,
           title,
