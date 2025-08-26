@@ -160,14 +160,15 @@ const InstagramEmbedBase: React.FC<{ url: string; caption?: string }> = ({ url, 
   
   return (
     <div className="my-12 flex justify-center">
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-3xl px-4">
         {/* Container avec isolation et optimisation pour éviter les reflows */}
         <div 
           className="bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-800"
           style={{
             contain: 'layout style paint',
             willChange: 'contents',
-            isolation: 'isolate'
+            isolation: 'isolate',
+            maxWidth: '100%'
           }}
         >
           {/* Header Instagram */}
@@ -671,11 +672,11 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
     },
     types: {
       image: ({value}: any) => (
-        <figure className="my-12 -mx-4 lg:-mx-12">
+        <figure className="my-12">
           <img 
             src={urlFor(value).width(1200).url()}
             alt={value.alt || "Image de l'article"}
-            className="w-full rounded-xl"
+            className="w-full rounded-xl max-w-full"
           />
           {value.caption && (
             <figcaption className="text-center text-sm text-gray-400 mt-4">
@@ -782,7 +783,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
         image={article.mainImage}
       />
 
-      {/* Styles CSS pour scrollbar personnalisée */}
+      {/* Styles CSS pour scrollbar personnalisée et fix overflow mobile */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
@@ -797,6 +798,16 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: rgba(255, 255, 255, 0.3);
+        }
+        /* Fix pour empêcher le scroll horizontal sur mobile */
+        html, body {
+          overflow-x: hidden;
+          max-width: 100vw;
+        }
+        /* Assurer que les mots longs se cassent */
+        p, h1, h2, h3, h4, h5, h6, li, span {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
         }
       `}</style>
 
@@ -889,7 +900,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
         style={{ width: `${scrollProgress}%` }}
       />
 
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-black text-white overflow-x-hidden">
         {/* Hero Section avec image plus grande */}
         <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-end overflow-hidden bg-gradient-to-br from-gray-900 to-black">
           {/* Container de l'image avec meilleur cadrage */}
