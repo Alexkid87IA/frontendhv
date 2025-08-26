@@ -167,15 +167,16 @@ export const ResponsiveNavbar = () => {
         {/* Ligne de gradient en haut */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         
-        {/* Contenu principal */}
+        {/* Contenu principal avec styles spécifiques mobile */}
         <div className="relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* CORRECTION: Container avec largeur fixe sur mobile */}
-            <div className="relative flex items-center justify-between h-20">
-              {/* Logo - CORRECTION: empêcher le décalage */}
+            {/* Container avec flexbox robuste et hauteur fixe */}
+            <div className="relative flex items-center justify-between h-20" style={{ width: '100%' }}>
+              {/* Logo avec positionnement fixe sur mobile */}
               <Link 
                 to="/" 
-                className="relative group z-10 flex-shrink-0"
+                className="relative group z-20 flex-shrink-0 flex items-center"
+                style={{ minWidth: 'auto', maxWidth: '200px' }}
               >
                 <motion.div
                   whileHover={{ scale: 1.05 }}
@@ -460,49 +461,42 @@ export const ResponsiveNavbar = () => {
                 </motion.div>
               </div>
 
-              {/* Mobile Menu Button - CORRECTION: position et z-index */}
+              {/* Mobile Menu Button - Version Android stable sans Framer Motion */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="lg:hidden relative z-10 p-3 -mr-2"
+                className="lg:hidden relative z-50 p-3"
                 aria-label="Menu"
+                style={{ 
+                  position: 'relative',
+                  right: '0',
+                  width: '48px',
+                  height: '48px',
+                  WebkitTapHighlightColor: 'transparent',
+                  border: 'none',
+                  background: 'transparent',
+                  cursor: 'pointer'
+                }}
               >
-                <div className="relative w-6 h-5 flex flex-col justify-between">
-                  <motion.span
-                    className="block w-full h-0.5 bg-white rounded-full origin-left transform transition-all"
-                    animate={isOpen ? {
-                      rotate: 45,
-                      y: -2,
-                      x: 1
-                    } : {
-                      rotate: 0,
-                      y: 0,
-                      x: 0
+                <div className="relative w-6 h-5 pointer-events-none mx-auto">
+                  <span 
+                    className="absolute left-0 w-full h-0.5 bg-white rounded transition-all duration-300"
+                    style={{
+                      top: isOpen ? '10px' : '0',
+                      transform: isOpen ? 'rotate(45deg)' : 'none'
                     }}
-                    transition={{ duration: 0.3 }}
                   />
-                  <motion.span
-                    className="block w-full h-0.5 bg-white rounded-full transform transition-all"
-                    animate={isOpen ? {
-                      opacity: 0,
-                      x: -20
-                    } : {
-                      opacity: 1,
-                      x: 0
+                  <span 
+                    className="absolute left-0 top-[10px] w-full h-0.5 bg-white rounded transition-all duration-300"
+                    style={{
+                      opacity: isOpen ? '0' : '1'
                     }}
-                    transition={{ duration: 0.3 }}
                   />
-                  <motion.span
-                    className="block w-full h-0.5 bg-white rounded-full origin-left transform transition-all"
-                    animate={isOpen ? {
-                      rotate: -45,
-                      y: 2,
-                      x: 1
-                    } : {
-                      rotate: 0,
-                      y: 0,
-                      x: 0
+                  <span 
+                    className="absolute left-0 w-full h-0.5 bg-white rounded transition-all duration-300"
+                    style={{
+                      top: isOpen ? '10px' : '20px',
+                      transform: isOpen ? 'rotate(-45deg)' : 'none'
                     }}
-                    transition={{ duration: 0.3 }}
                   />
                 </div>
               </button>
