@@ -2,22 +2,22 @@
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
-    <!-- Logo SVG comme favicon -->
-    <link rel="icon" type="image/svg+xml" href="%PUBLIC_URL%/LOGO_HV_MEDIA.svg" />
+    <!-- Pour Vite, pas de %PUBLIC_URL% -->
+    <link rel="icon" type="image/svg+xml" href="/LOGO_HV_MEDIA.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
       content="High Value Media - Média indépendant pour entrepreneurs et créateurs ambitieux"
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/LOGO_HV_MEDIA.svg" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="apple-touch-icon" href="/LOGO_HV_MEDIA.svg" />
     <title>High Value Media</title>
-    <!-- Patch de sécurité pour les images -->
-    <script src="%PUBLIC_URL%/image-safety-patch.js"></script>
+    <!-- Si tu as toujours ce script, adapte-le aussi -->
+    <script src="/image-safety-patch.js"></script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <!-- Avec Vite, le script est ajouté ici -->
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
