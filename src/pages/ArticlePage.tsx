@@ -801,13 +801,22 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
         }
         /* Fix pour empêcher le scroll horizontal sur mobile */
         html, body {
-          overflow-x: hidden;
-          max-width: 100vw;
+          overflow-x: hidden !important;
+          max-width: 100vw !important;
+          position: relative;
+        }
+        /* Empêcher le scroll élastique sur iOS */
+        body {
+          overscroll-behavior-x: none;
         }
         /* Assurer que les mots longs se cassent */
         p, h1, h2, h3, h4, h5, h6, li, span {
           word-wrap: break-word;
           overflow-wrap: break-word;
+        }
+        /* Fix pour le main container */
+        #root, main {
+          overflow-x: hidden !important;
         }
       `}</style>
 
@@ -1064,9 +1073,9 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar"
+                    className="p-4 max-h-[400px] overflow-y-auto overflow-x-hidden custom-scrollbar"
                   >
-                    <div className="space-y-2">
+                    <div className="space-y-2 max-w-full">
                       {headings.map((section: any, sectionIndex: number) => {
                         const isActive = activeSection === section.id;
                         const hasSubheadings = section.subheadings.length > 0;
@@ -1079,7 +1088,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                               <a
                                 href={`#${section.id}`}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className={`flex-1 flex items-center gap-3 py-3 px-4 rounded-xl transition-all ${
+                                className={`flex-1 flex items-center gap-3 py-3 px-3 rounded-xl transition-all ${
                                   isActive ? 'bg-white/10' : 'hover:bg-white/5'
                                 }`}
                                 style={{
@@ -1087,7 +1096,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                                 }}
                               >
                                 <div 
-                                  className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold"
+                                  className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
                                   style={{
                                     background: isActive ? colors.primary : colors.bgLight,
                                     color: isActive ? '#000' : colors.textColor
@@ -1095,7 +1104,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                                 >
                                   {sectionIndex + 1}
                                 </div>
-                                <span className={`text-sm ${isActive ? 'text-white font-medium' : 'text-gray-300'}`}>
+                                <span className={`text-sm ${isActive ? 'text-white font-medium' : 'text-gray-300'} break-words line-clamp-2`}>
                                   {section.text}
                                 </span>
                               </a>
@@ -1158,14 +1167,14 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
         )}
 
         {/* Container principal avec layout 2 colonnes */}
-        <div className="container mx-auto px-4 py-16">
+        <div className="container mx-auto px-4 py-16 max-w-full overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             
             {/* Contenu principal */}
-            <article className="lg:col-span-8">
+            <article className="lg:col-span-8 overflow-hidden">
               {/* EXCERPT - Intégré comme introduction */}
               {article.excerpt && (
-                <div className="mb-10 relative">
+                <div className="mb-10 relative max-w-full overflow-hidden">
                   {/* Ligne décorative gauche */}
                   <div 
                     className="absolute left-0 top-0 bottom-0 w-1 rounded-full"
@@ -1176,8 +1185,8 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                   />
                   
                   {/* Contenu de l'extrait */}
-                  <div className="pl-8">
-                    <p className="text-xl md:text-2xl leading-relaxed text-gray-200 font-light italic">
+                  <div className="pl-6 pr-2">
+                    <p className="text-lg md:text-xl lg:text-2xl leading-relaxed text-gray-200 font-light italic break-words">
                       {article.excerpt}
                     </p>
                   </div>
@@ -1270,7 +1279,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                 </div>
               )}
               
-              <div className="prose prose-invert prose-lg max-w-none">
+              <div className="prose prose-invert prose-lg max-w-none overflow-hidden">
                 {(article.body || article.content) && (
                   <PortableText 
                     value={article.body || article.content}
@@ -1280,7 +1289,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
 
                 {!article.body && !article.content && (
                   <div className="text-center py-12">
-                    <p className="text-gray-400">Le contenu de cet article est en cours de rédaction.</p>
+                    <p className="text-gray-400 px-2">Le contenu de cet article est en cours de rédaction.</p>
                   </div>
                 )}
               </div>
@@ -1323,9 +1332,9 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
               )}
 
               {/* CTA de fin d'article avec couleurs de la verticale */}
-              <div className={`mt-16 p-8 bg-gradient-to-br ${colors.gradient}/10 rounded-2xl border ${colors.border}`}>
-                <h3 className="text-2xl font-bold text-white mb-4">
-                  Vous avez aimé cet article ?
+              <div className={`mt-16 p-6 md:p-8 bg-gradient-to-br ${colors.gradient}/10 rounded-2xl border ${colors.border}`}>
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-4 whitespace-nowrap">
+                  Vous avez aimé cet article&nbsp;?
                 </h3>
                 <p className="text-gray-300 mb-6">
                   Rejoignez notre communauté pour recevoir nos meilleurs contenus directement dans votre boîte mail.
