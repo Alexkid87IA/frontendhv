@@ -157,8 +157,16 @@ export const ResponsiveNavbar = () => {
         initial={{ y: 0 }}
         animate={{ y: (!isMobile && !visible && !isOpen) ? -120 : 0 }}
         transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-        className="fixed top-0 left-0 right-0 z-50"
-        style={{ backgroundColor: navbarBackground as any }}
+        className="fixed top-0 left-0 right-0"
+        style={{ 
+          backgroundColor: navbarBackground as any,
+          zIndex: 9999,
+          position: 'fixed',
+          width: '100%',
+          top: 0,
+          left: 0,
+          right: 0
+        }}
         onMouseLeave={() => setActiveDropdown(null)}
       >
         {/* Effet de blur premium */}
@@ -461,45 +469,23 @@ export const ResponsiveNavbar = () => {
                 </motion.div>
               </div>
 
-              {/* Mobile Menu Button - Version Android stable sans Framer Motion */}
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="lg:hidden relative z-50 p-3"
-                aria-label="Menu"
-                style={{ 
-                  position: 'relative',
-                  right: '0',
-                  width: '48px',
-                  height: '48px',
-                  WebkitTapHighlightColor: 'transparent',
-                  border: 'none',
-                  background: 'transparent',
-                  cursor: 'pointer'
-                }}
-              >
-                <div className="relative w-6 h-5 pointer-events-none mx-auto">
-                  <span 
-                    className="absolute left-0 w-full h-0.5 bg-white rounded transition-all duration-300"
-                    style={{
-                      top: isOpen ? '10px' : '0',
-                      transform: isOpen ? 'rotate(45deg)' : 'none'
-                    }}
-                  />
-                  <span 
-                    className="absolute left-0 top-[10px] w-full h-0.5 bg-white rounded transition-all duration-300"
-                    style={{
-                      opacity: isOpen ? '0' : '1'
-                    }}
-                  />
-                  <span 
-                    className="absolute left-0 w-full h-0.5 bg-white rounded transition-all duration-300"
-                    style={{
-                      top: isOpen ? '10px' : '20px',
-                      transform: isOpen ? 'rotate(-45deg)' : 'none'
-                    }}
-                  />
-                </div>
-              </button>
+              {/* Mobile Menu Button - Fix Android définitif avec fond visible */}
+              <div className="lg:hidden absolute right-4 top-1/2 -translate-y-1/2" style={{ zIndex: 10000 }}>
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="w-12 h-12 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-lg border border-white/20"
+                  aria-label="Menu"
+                  style={{ 
+                    WebkitTapHighlightColor: 'transparent'
+                  }}
+                >
+                  <div className="space-y-1.5 pointer-events-none">
+                    <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
+                    <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
+                    <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
 
