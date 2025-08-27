@@ -175,16 +175,18 @@ export const HomePage = () => {
   return (
     <>
       <SEO {...staticSEO.home} />
-      <div className="relative min-h-screen bg-black">
-        {/* Background effects */}
-        <div className="fixed inset-0 z-0">
+      {/* CORRECTION: overflow-hidden ajouté */}
+      <div className="relative min-h-screen bg-black overflow-hidden">
+        {/* Background effects - CORRECTION: contenus dans un div avec overflow hidden */}
+        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,164,249,0.15),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(99,253,253,0.15),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,164,249,0.15),transparent_50%)]" />
           <div className="absolute inset-0 backdrop-blur-[100px]" />
         </div>
 
-        <main className="relative z-10 pt-20">
+        {/* CORRECTION: z-[5] au lieu de z-10, et overflow-x-hidden */}
+        <main className="relative z-[5] pt-20 overflow-x-hidden">
           {/* 1. Hero avec article à la une + 6 articles récents + CTA */}
           <HeroSection />
           
@@ -192,7 +194,7 @@ export const HomePage = () => {
           <EditorialSection />
           
           {/* 4. Nos formats : Podcasts */}
-          <section className="py-20 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent">
+          <section className="py-20 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent overflow-hidden">
             <ContentSection 
               title="Le podcast High Value"
               description="Des conversations authentiques avec ceux qui façonnent le monde de demain"
@@ -201,7 +203,7 @@ export const HomePage = () => {
           </section>
           
           {/* 5. Nos formats : Études de cas */}
-          <section className="py-20">
+          <section className="py-20 overflow-hidden">
             <ContentSection 
               title="Des études de cas exclusives"
               description="Découvrez les stratégies et idées qui transforment le monde des affaires"
@@ -210,7 +212,7 @@ export const HomePage = () => {
           </section>
           
           {/* 6. Nos formats : Parcours exceptionnels */}
-          <section className="py-20 bg-gradient-to-b from-transparent via-blue-900/10 to-transparent">
+          <section className="py-20 bg-gradient-to-b from-transparent via-blue-900/10 to-transparent overflow-hidden">
             <ContentSection 
               title="Des parcours inspirants"
               description="Histoires d'entrepreneurs qui ont réussi à concrétiser leur vision"
@@ -219,7 +221,7 @@ export const HomePage = () => {
           </section>
           
           {/* 7. Articles essentiels (différents du Hero) */}
-          <section className="py-20">
+          <section className="py-20 overflow-hidden">
             <EssentialArticlesSection />
           </section>
           

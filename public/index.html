@@ -1,23 +1,36 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <!-- Pour Vite, pas de %PUBLIC_URL% -->
-    <link rel="icon" type="image/svg+xml" href="/LOGO_HV_MEDIA.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="High Value Media - Média indépendant pour entrepreneurs et créateurs ambitieux"
-    />
-    <link rel="apple-touch-icon" href="/LOGO_HV_MEDIA.svg" />
-    <title>High Value Media</title>
-    <!-- Si tu as toujours ce script, adapte-le aussi -->
-    <script src="/image-safety-patch.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <!-- Avec Vite, le script est ajouté ici -->
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/LOGO_HV_MEDIA.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>High Value Media</title>
+  <style>
+    /* Fix critique pour Android - Débordement et navbar */
+    html, body {
+      overflow-x: hidden !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      position: relative !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    /* Force la navbar à rester visible sur Android */
+    @media (max-width: 1024px) {
+      nav {
+        z-index: 999999 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
 </html>

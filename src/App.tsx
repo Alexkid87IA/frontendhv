@@ -5,7 +5,7 @@ import { ResponsiveNavbar } from './components/layout/ResponsiveNavbar';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Analytics } from './components/common/Analytics';
 import { ChatWidget } from './components/chat/ChatWidget';
-import { DataProvider } from './context/DataContext'; // Import du DataProvider
+import { DataProvider } from './context/DataContext';
 import { HomePage } from './pages/HomePage';
 import { ArticlePage } from './pages/ArticlePage';
 import { CategoryPage } from './pages/CategoryPage';
@@ -27,11 +27,13 @@ import { NotFound } from './pages/NotFound';
 function App() {
   return (
     <Router>
-      <DataProvider> {/* DataProvider DANS le Router pour que le routing fonctionne */}
+      <DataProvider>
         <ErrorBoundary>
-          <div className="relative min-h-screen bg-black">
+          {/* CORRECTION: overflow-hidden et z-index ajustés */}
+          <div className="relative min-h-screen bg-black overflow-x-hidden">
             <ResponsiveNavbar />
-            <main className="flex-grow">
+            {/* CORRECTION: z-[1] au lieu de z-10, position relative */}
+            <main className="relative z-[1]">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/articles" element={<AllArticlesPage />} />
@@ -56,7 +58,7 @@ function App() {
             <ChatWidget />
           </div>
         </ErrorBoundary>
-      </DataProvider> {/* Fermeture du DataProvider */}
+      </DataProvider>
     </Router>
   );
 }
