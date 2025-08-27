@@ -153,21 +153,17 @@ export const ResponsiveNavbar = () => {
 
   return (
     <>
-      <motion.nav
-        initial={{ y: 0 }}
-        animate={{ y: (!isMobile && !visible && !isOpen) ? -120 : 0 }}
-        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-        className="fixed top-0 left-0 right-0"
+      {/* NAVBAR SIMPLIFIÉE POUR ANDROID */}
+      <nav
+        className="fixed top-0 left-0 right-0 w-full h-20 bg-black/90 backdrop-blur-xl"
         style={{ 
-          backgroundColor: navbarBackground as any,
-          zIndex: 9999,
-          position: 'fixed',
-          width: '100%',
-          top: 0,
-          left: 0,
-          right: 0
+          zIndex: 999999,
+          position: 'fixed !important',
+          display: 'block !important',
+          visibility: 'visible !important',
+          opacity: '1 !important',
+          transform: 'none !important'
         }}
-        onMouseLeave={() => setActiveDropdown(null)}
       >
         {/* Effet de blur premium */}
         <div className="absolute inset-0 backdrop-blur-2xl" />
@@ -175,34 +171,24 @@ export const ResponsiveNavbar = () => {
         {/* Ligne de gradient en haut */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         
-        {/* Contenu principal avec styles spécifiques mobile */}
-        <div className="relative">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Container avec flexbox robuste et hauteur fixe */}
-            <div className="relative flex items-center justify-between h-20" style={{ width: '100%' }}>
-              {/* Logo avec positionnement fixe sur mobile */}
+        {/* Container simple sans animation complexe */}
+        <div className="relative h-full">
+          <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="h-full flex items-center justify-between">
+              {/* Logo fixe */}
               <Link 
                 to="/" 
-                className="relative group z-20 flex-shrink-0 flex items-center"
-                style={{ minWidth: 'auto', maxWidth: '200px' }}
+                className="block"
+                style={{ zIndex: 10 }}
               >
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="relative"
-                >
-                  {/* Effet de lueur */}
-                  <div className="absolute inset-0 bg-white/20 blur-2xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
-                  <img 
-                    src={getCurrentLogo()}
-                    alt="High Value Media"
-                    className="h-10 md:h-12 w-auto relative z-10 filter group-hover:brightness-125 transition-all duration-300" 
-                  />
-                </motion.div>
+                <img 
+                  src={getCurrentLogo()}
+                  alt="High Value Media"
+                  className="h-10 md:h-12 w-auto" 
+                />
               </Link>
               
-              {/* Desktop Navigation */}
+              {/* Desktop Navigation - INCHANGÉ */}
               <div className="hidden lg:flex items-center flex-1 justify-center px-8">
                 <div className="flex items-center space-x-1 relative">
                   {menuItems.map((item, index) => {
@@ -241,7 +227,7 @@ export const ResponsiveNavbar = () => {
                     );
                   })}
 
-                  {/* Dropdown - POSITION FIXE EN DEHORS DE LA BOUCLE */}
+                  {/* Dropdown - INCHANGÉ */}
                   <AnimatePresence>
                     {activeDropdown && (
                       <motion.div
@@ -264,13 +250,9 @@ export const ResponsiveNavbar = () => {
                           
                           return (
                             <div className="relative">
-                              {/* Flèche avec gradient */}
                               <div className={`absolute -top-2 left-12 w-4 h-4 bg-gradient-to-br ${gradient} rotate-45 rounded-sm`} />
-                              
-                              {/* Container principal avec gradient border */}
                               <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-white/20 to-white/5">
                                 <div className="bg-black/95 backdrop-blur-2xl rounded-2xl p-6">
-                                  {/* Header de la catégorie */}
                                   <div className="mb-5">
                                     <div className={`text-xs font-bold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r ${gradient} mb-2`}>
                                       Explorer {item.label}
@@ -278,7 +260,6 @@ export const ResponsiveNavbar = () => {
                                     <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                                   </div>
                                   
-                                  {/* Grid des sous-catégories */}
                                   <div className="grid grid-cols-2 gap-2">
                                     {item.subcategories.slice(0, 4).map((sub, idx) => (
                                       <Link
@@ -290,14 +271,12 @@ export const ResponsiveNavbar = () => {
                                           whileHover={{ scale: 1.02, x: 3 }}
                                           className="relative p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300"
                                         >
-                                          {/* Numéro stylisé */}
                                           <div className={`absolute top-3 right-3 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br ${gradient} opacity-20 group-hover:opacity-40 transition-opacity`}>
                                             0{idx + 1}
                                           </div>
                                           
-                                          {/* Contenu */}
                                           <div className="relative z-10">
-                                            <h4 className="text-white font-medium text-sm mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:${gradient} transition-all">
+                                            <h4 className="text-white font-medium text-sm mb-1">
                                               {sub.label}
                                             </h4>
                                             <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
@@ -305,59 +284,10 @@ export const ResponsiveNavbar = () => {
                                             </p>
                                           </div>
                                           
-                                          {/* Hover effect gradient */}
                                           <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 rounded-xl transition-opacity`} />
                                         </motion.div>
                                       </Link>
                                     ))}
-                                    
-                                    {/* 5ème élément pour Business (Finance) */}
-                                    {item.subcategories.length === 5 && (
-                                      <Link
-                                        to={item.subcategories[4].path}
-                                        className="group relative col-span-2"
-                                      >
-                                        <motion.div
-                                          whileHover={{ scale: 1.02, x: 3 }}
-                                          className="relative p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300"
-                                        >
-                                          <div className={`absolute top-3 right-3 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br ${gradient} opacity-20 group-hover:opacity-40 transition-opacity`}>
-                                            05
-                                          </div>
-                                          <div className="relative z-10">
-                                            <h4 className="text-white font-medium text-sm mb-1">
-                                              {item.subcategories[4].label}
-                                            </h4>
-                                            <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
-                                              Découvrir les articles →
-                                            </p>
-                                          </div>
-                                          <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 rounded-xl transition-opacity`} />
-                                        </motion.div>
-                                      </Link>
-                                    )}
-                                  </div>
-                                  
-                                  {/* Footer avec stats */}
-                                  <div className="mt-5 pt-5 border-t border-white/5">
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-6">
-                                        <div className="text-xs">
-                                          <span className="text-gray-500">Articles</span>
-                                          <span className="ml-2 font-bold text-white">247</span>
-                                        </div>
-                                        <div className="text-xs">
-                                          <span className="text-gray-500">Auteurs</span>
-                                          <span className="ml-2 font-bold text-white">18</span>
-                                        </div>
-                                      </div>
-                                      <Link
-                                        to={item.path}
-                                        className={`text-xs font-medium text-transparent bg-clip-text bg-gradient-to-r ${gradient} hover:opacity-80 transition-opacity`}
-                                      >
-                                        Voir tout →
-                                      </Link>
-                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -368,10 +298,8 @@ export const ResponsiveNavbar = () => {
                     )}
                   </AnimatePresence>
 
-                  {/* Séparateur */}
                   <div className="w-px h-6 bg-white/10 mx-2" />
 
-                  {/* Items spéciaux */}
                   {specialItems.map((item) => (
                     <Link
                       key={item.path}
@@ -391,7 +319,6 @@ export const ResponsiveNavbar = () => {
 
               {/* Actions à droite - Desktop uniquement */}
               <div className="hidden lg:flex items-center gap-3">
-                {/* Search Button */}
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -401,7 +328,6 @@ export const ResponsiveNavbar = () => {
                   <Search className="w-4 h-4 text-gray-300" />
                 </motion.button>
 
-                {/* Notification */}
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -411,272 +337,129 @@ export const ResponsiveNavbar = () => {
                   <span className="absolute top-1 right-1 w-2 h-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full" />
                 </motion.button>
 
-                {/* CTA Principal ULTRA PREMIUM */}
-                <motion.div
-                  className="relative"
+                <Link
+                  to="/create-with-roger"
+                  className="px-6 py-2.5 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white hover:bg-white/20 transition-all"
                 >
-                  <Link
-                    to="/create-with-roger"
-                    className="relative block group"
-                  >
-                    <motion.div
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      className="relative"
-                    >
-                      {/* Bouton principal ULTRA PREMIUM */}
-                      <div className="relative px-8 py-3 overflow-hidden">
-                        {/* Fond avec effet de verre dépoli */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/[0.01] via-white/[0.03] to-white/[0.01] backdrop-blur-xl rounded-full" />
-                        
-                        {/* Bordure fine premium */}
-                        <div className="absolute inset-0 rounded-full p-[0.5px] bg-gradient-to-r from-white/0 via-white/20 to-white/0">
-                          <div className="w-full h-full bg-black/80 rounded-full" />
-                        </div>
-                        
-                        {/* Effet de shine au hover */}
-                        <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                          <div 
-                            className="absolute inset-0 rounded-full"
-                            style={{
-                              background: 'linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%)',
-                              transform: 'translateX(-100%)',
-                              animation: 'shine 1.5s ease-out'
-                            }}
-                          />
-                        </div>
-                        
-                        {/* Contenu */}
-                        <div className="relative flex items-center gap-4">
-                          <span className="text-[13px] font-extralight text-white/90 tracking-[0.15em] uppercase">
-                            Racontez votre histoire
-                          </span>
-                          
-                          {/* Icône premium minimaliste */}
-                          <svg 
-                            className="w-3 h-3 text-white/50 group-hover:text-white/80 transition-colors duration-500" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            strokeWidth="0.5"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </Link>
-                </motion.div>
+                  Racontez votre histoire
+                </Link>
               </div>
 
-              {/* Mobile Menu Button - Fix Android définitif avec fond visible */}
-              <div className="lg:hidden absolute right-4 top-1/2 -translate-y-1/2" style={{ zIndex: 10000 }}>
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className="w-12 h-12 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-lg border border-white/20"
-                  aria-label="Menu"
-                  style={{ 
-                    WebkitTapHighlightColor: 'transparent'
-                  }}
+              {/* BURGER MOBILE ULTRA SIMPLE - SANS FRAMER MOTION */}
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="lg:hidden block w-12 h-12 relative"
+                style={{ 
+                  zIndex: 999999,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '12px'
+                }}
+              >
+                {!isOpen ? (
+                  <svg className="w-6 h-6 mx-auto text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                ) : (
+                  <svg className="w-6 h-6 mx-auto text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* MENU MOBILE SIMPLE SANS ANIMATION COMPLEXE */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 lg:hidden"
+          style={{ 
+            zIndex: 999998,
+            backgroundColor: 'rgba(0, 0, 0, 0.98)',
+            backdropFilter: 'blur(20px)'
+          }}
+        >
+          {/* Panneau de menu simple */}
+          <div 
+            className="absolute inset-y-0 right-0 w-full max-w-sm bg-black/95"
+            style={{ zIndex: 999999 }}
+          >
+            <div className="h-full overflow-y-auto pt-24 px-6 pb-8">
+              <div className="space-y-2">
+                {menuItems.map((item) => {
+                  const isActive = location.pathname.includes(item.slug);
+                  const gradient = getGradientByColor(item.color);
+                  
+                  return (
+                    <div key={item.slug} className="space-y-1">
+                      <Link
+                        to={item.path}
+                        onClick={() => setIsOpen(false)}
+                        className={`block px-4 py-3 rounded-xl font-medium transition-all ${
+                          isActive 
+                            ? 'bg-white/10 text-white' 
+                            : 'text-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span>{item.label}</span>
+                          {isActive && (
+                            <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${gradient}`} />
+                          )}
+                        </div>
+                      </Link>
+                      
+                      <div className="pl-4 space-y-1">
+                        {item.subcategories.map((sub) => (
+                          <Link
+                            key={sub.path}
+                            to={sub.path}
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-400 rounded-lg"
+                          >
+                            {sub.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <div className="my-4 h-px bg-white/10" />
+
+                {specialItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsOpen(false)}
+                    className="block px-4 py-3 rounded-xl text-gray-300 font-medium"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>{item.label}</span>
+                      {item.isNew && (
+                        <span className="px-2 py-0.5 text-[10px] font-bold bg-gradient-to-r from-yellow-400 to-amber-500 text-black rounded-full">
+                          NEW
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+
+                <Link
+                  to="/create-with-roger"
+                  onClick={() => setIsOpen(false)}
+                  className="block mt-6 w-full py-3.5 bg-white/10 rounded-full text-center text-white"
                 >
-                  <div className="space-y-1.5 pointer-events-none">
-                    <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
-                    <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
-                    <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-                  </div>
-                </button>
+                  Racontez votre histoire
+                </Link>
               </div>
             </div>
           </div>
-
-          {/* Search Bar Overlay - Desktop only */}
-          <AnimatePresence>
-            {isSearchOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="border-t border-white/10 overflow-hidden hidden lg:block"
-              >
-                <div className="max-w-3xl mx-auto p-4">
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Rechercher un article, un podcast, un auteur..."
-                      className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
-                      autoFocus
-                    />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
-      </motion.nav>
-
-      {/* Mobile Menu - CORRECTION: overlay et panneau */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 lg:hidden"
-          >
-            {/* Overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/98 backdrop-blur-2xl"
-              onClick={() => setIsOpen(false)}
-            />
-
-            {/* Menu Panel - CORRECTION: largeur adaptative */}
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="absolute inset-y-0 right-0 w-full sm:max-w-md bg-black/95 backdrop-blur-2xl sm:border-l sm:border-white/10"
-            >
-              <div className="h-full overflow-y-auto pt-24 px-6 pb-8">
-                {/* Mobile Menu Items */}
-                <div className="space-y-2">
-                  {menuItems.map((item) => {
-                    const isActive = location.pathname.includes(item.slug);
-                    const gradient = getGradientByColor(item.color);
-                    
-                    return (
-                      <div key={item.slug} className="space-y-1">
-                        <Link
-                          to={item.path}
-                          onClick={() => setIsOpen(false)}
-                          className={`block px-4 py-3 rounded-xl font-medium transition-all ${
-                            isActive 
-                              ? 'bg-white/10 text-white' 
-                              : 'text-gray-300 hover:bg-white/5 hover:text-white active:bg-white/10'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span>{item.label}</span>
-                            {isActive && (
-                              <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${gradient}`} />
-                            )}
-                          </div>
-                        </Link>
-                        
-                        {/* Mobile Subcategories */}
-                        <div className="pl-4 space-y-1">
-                          {item.subcategories.map((sub) => (
-                            <Link
-                              key={sub.path}
-                              to={sub.path}
-                              onClick={() => setIsOpen(false)}
-                              className="block px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all active:bg-white/10"
-                            >
-                              {sub.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {/* Divider */}
-                  <div className="my-4 h-px bg-white/10" />
-
-                  {/* Special Items */}
-                  {specialItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setIsOpen(false)}
-                      className="block px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all font-medium active:bg-white/10"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span>{item.label}</span>
-                        {item.isNew && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold bg-gradient-to-r from-yellow-400 to-amber-500 text-black rounded-full">
-                            NEW
-                          </span>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
-
-                  {/* Mobile CTA ULTRA PREMIUM */}
-                  <Link
-                    to="/create-with-roger"
-                    onClick={() => setIsOpen(false)}
-                    className="block mt-6"
-                  >
-                    <motion.div
-                      whileTap={{ scale: 0.98 }}
-                      className="relative"
-                    >
-                      {/* Bouton premium mobile */}
-                      <div className="relative overflow-hidden rounded-full p-[0.5px] bg-gradient-to-r from-white/10 via-white/20 to-white/10">
-                        <div className="relative w-full px-6 py-3.5 bg-black/90 backdrop-blur-xl rounded-full">
-                          <div className="flex items-center justify-center gap-3">
-                            <span className="text-[13px] font-extralight text-white/90 tracking-[0.12em] uppercase">
-                              Racontez votre histoire
-                            </span>
-                            <svg 
-                              className="w-3 h-3 text-white/50" 
-                              fill="none" 
-                              stroke="currentColor" 
-                              strokeWidth="0.5"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Background overlay when dropdown is open - Desktop only */}
-      <AnimatePresence>
-        {activeDropdown && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 hidden lg:block"
-            onClick={() => setActiveDropdown(null)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Styles CSS pour les animations */}
-      <style jsx>{`
-        @keyframes gradientShift {
-          0%, 100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-        
-        @keyframes shine {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(100%);
-          }
-        }
-      `}</style>
+      )}
     </>
   );
 };
