@@ -833,17 +833,17 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
             />
             
-            {/* Popup */}
+            {/* Popup de partage adaptatif */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", duration: 0.3 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-gray-700/50 shadow-2xl z-[101]"
+              className="fixed inset-x-4 bottom-20 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90%] max-w-md bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-gray-700/50 shadow-2xl z-[101]"
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-700/50">
-                <h3 className="text-xl font-semibold text-white">
+              <div className="flex items-center justify-between p-5 md:p-6 border-b border-gray-700/50">
+                <h3 className="text-lg md:text-xl font-semibold text-white">
                   Partager cet article
                 </h3>
                 <button
@@ -855,7 +855,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
               </div>
               
               {/* Réseaux sociaux */}
-              <div className="p-6 space-y-4">
+              <div className="p-5 md:p-6 space-y-4">
                 <div className="grid grid-cols-3 gap-3">
                   {shareLinks.map((platform) => {
                     const Icon = platform.icon;
@@ -866,10 +866,11 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => setShowSharePopup(false)}
-                        className={`flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/10 transition-all ${platform.color}`}
+                        className={`flex flex-col items-center gap-2 p-3 md:p-4 rounded-xl bg-white/5 border border-white/10 transition-all ${platform.color}`}
                       >
-                        <Icon size={24} />
-                        <span className="text-xs text-gray-400">{platform.name}</span>
+                        <Icon size={20} className="md:hidden" />
+                        <Icon size={24} className="hidden md:block" />
+                        <span className="text-[10px] md:text-xs text-gray-400">{platform.name}</span>
                       </a>
                     );
                   })}
@@ -877,23 +878,24 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                 
                 {/* Copier le lien */}
                 <div className="pt-4 border-t border-gray-700/50">
-                  <p className="text-sm text-gray-400 mb-3">Ou copier le lien</p>
+                  <p className="text-xs md:text-sm text-gray-400 mb-3">Ou copier le lien</p>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={shareUrl}
                       readOnly
-                      className="flex-1 px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-gray-300 text-sm"
+                      className="flex-1 px-3 py-2.5 md:px-4 md:py-3 bg-black/50 border border-gray-700 rounded-lg text-gray-300 text-xs md:text-sm"
                     />
                     <button
                       onClick={() => {
                         handleCopyLink();
                         setTimeout(() => setShowSharePopup(false), 1000);
                       }}
-                      className="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                      className="px-3 py-2.5 md:px-4 md:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
                     >
-                      {copied ? <Check size={18} /> : <Copy size={18} />}
-                      {copied ? 'Copié!' : 'Copier'}
+                      {copied ? <Check size={16} className="md:hidden" /> : <Copy size={16} className="md:hidden" />}
+                      {copied ? <Check size={18} className="hidden md:block" /> : <Copy size={18} className="hidden md:block" />}
+                      <span className="hidden sm:inline">{copied ? 'Copié!' : 'Copier'}</span>
                     </button>
                   </div>
                 </div>
@@ -1008,7 +1010,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
 
             {/* PAS D'EXCERPT ICI - Il sera dans le corps de l'article */}
 
-            {/* Meta info simplifiée - seulement date et vues */}
+            {/* Meta info simplifiée - seulement date */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1025,10 +1027,6 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                   })}
                 </span>
               )}
-              <span className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                <Eye size={14} />
-                {(article.views || 0).toLocaleString()} vues
-              </span>
             </motion.div>
           </div>
         </section>
@@ -1227,7 +1225,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
               {article.author && (
                 <div className="lg:hidden mb-10">
                   <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 p-5">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-start gap-4">
                       {article.author.image ? (
                         <img 
                           src={urlFor(article.author.image).width(64).height(64).url()}
@@ -1249,7 +1247,7 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                           {article.author.name}
                         </h3>
                         {article.author.bio && (
-                          <p className="text-xs text-gray-300 line-clamp-2">
+                          <p className="text-xs text-gray-300 leading-relaxed">
                             {article.author.bio}
                           </p>
                         )}
@@ -1767,12 +1765,6 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                               >
                                 {related.title}
                               </h4>
-                              <div className="flex items-center gap-3 text-xs text-gray-500">
-                                <span className="flex items-center gap-1">
-                                  <Eye size={12} />
-                                  {(related.views || 0).toLocaleString()}
-                                </span>
-                              </div>
                             </div>
                           </div>
                         </Link>
@@ -1974,12 +1966,6 @@ const ArticlePage: React.FC<{ isEmission?: boolean }> = ({ isEmission = false })
                             <p className="text-sm text-gray-400 line-clamp-2 mb-4">
                               {related.excerpt}
                             </p>
-                            <div className="flex items-center justify-between text-sm text-gray-500">
-                              <span className="flex items-center gap-1">
-                                <Eye size={14} style={{ color: cardColors.textColor, opacity: 0.7 }} />
-                                {(related.views || 0).toLocaleString()} vues
-                              </span>
-                            </div>
                             
                             {/* Ligne de progression colorée au survol */}
                             <div 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { BookOpen, TrendingUp, Brain, Users, ArrowRight, BookOpenCheck, Sparkles, Target, Heart, Globe } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, ArrowUpRight, Zap } from 'lucide-react';
 import { getUniverses, getSubcategoriesGrouped } from '../../utils/sanityAPI';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import ErrorBoundary from '../common/ErrorBoundary';
@@ -12,128 +12,120 @@ const mockUniverses = [
     _id: '1',
     title: 'Story',
     subtitle: 'Pour t\'inspirer',
-    description: 'Des histoires authentiques qui redéfinissent le possible',
+    description: 'Plonge dans les récits authentiques d\'entrepreneurs et de visionnaires. Chaque histoire est une leçon, chaque parcours une source d\'inspiration.',
+    atomicNumber: '01',
+    symbol: 'St',
     slug: { current: 'story' },
-    icon: 'book',
-    color: 'amber',
-    gradient: 'from-amber-500 to-orange-500',
-    stats: { articles: '67', growth: '+12%' }
+    stats: '120+ récits'
   },
   {
     _id: '2',
     title: 'Business',
     subtitle: 'Pour faire du chiffre',
-    description: 'Les stratégies qui font la différence',
+    description: 'Stratégies concrètes, études de cas détaillées et insights exclusifs pour dominer ton marché.',
+    atomicNumber: '02',
+    symbol: 'Bu',
     slug: { current: 'business' },
-    icon: 'trending',
-    color: 'blue',
-    gradient: 'from-blue-500 to-cyan-500',
-    stats: { articles: '89', growth: '+8%' }
+    stats: '200+ guides'
   },
   {
     _id: '3',
     title: 'Mental',
     subtitle: 'Pour ta tête',
-    description: 'Développe une psychologie de champion',
+    description: 'Développe une psychologie de champion et optimise tes performances cognitives.',
+    atomicNumber: '03',
+    symbol: 'Mt',
     slug: { current: 'mental' },
-    icon: 'brain',
-    color: 'purple',
-    gradient: 'from-purple-500 to-violet-500',
-    stats: { articles: '56', growth: '+15%' }
+    stats: '80+ articles'
   },
   {
     _id: '4',
     title: 'Society',
     subtitle: 'Pour ta culture',
-    description: 'Comprendre les mutations de notre époque',
+    description: 'Décrypte les mutations sociétales et anticipe les tendances de demain.',
+    atomicNumber: '04',
+    symbol: 'Sc',
     slug: { current: 'society' },
-    icon: 'users',
-    color: 'emerald',
-    gradient: 'from-emerald-500 to-teal-500',
-    stats: { articles: '34', growth: '+10%' }
+    stats: '150+ analyses'
   }
 ];
 
-// Données mockées pour les sous-catégories
 const mockSubcategories = {
   story: [
-    { title: 'Parcours inspirants', slug: 'parcours', articleCount: 47 },
-    { title: 'Success stories', slug: 'success', articleCount: 23 },
-    { title: 'Échecs formateurs', slug: 'echecs', articleCount: 18 },
-    { title: 'Transformations', slug: 'transformations', articleCount: 31 }
+    { title: 'Parcours inspirants', slug: 'parcours', symbol: 'Pi' },
+    { title: 'Success stories', slug: 'success', symbol: 'Ss' },
+    { title: 'Échecs formateurs', slug: 'echecs', symbol: 'Ef' },
+    { title: 'Transformations', slug: 'transformations', symbol: 'Tr' },
+    { title: 'Entrepreneuriat', slug: 'entrepreneuriat', symbol: 'Ep' }
   ],
   business: [
-    { title: 'Stratégie', slug: 'strategie', articleCount: 52 },
-    { title: 'Innovation', slug: 'innovation', articleCount: 38 },
-    { title: 'Leadership', slug: 'leadership', articleCount: 29 },
-    { title: 'Croissance', slug: 'croissance', articleCount: 44 },
-    { title: 'Finance', slug: 'finance', articleCount: 26 }
+    { title: 'Stratégie', slug: 'strategie', symbol: 'Sr' },
+    { title: 'Innovation', slug: 'innovation', symbol: 'In' },
+    { title: 'Leadership', slug: 'leadership', symbol: 'Ld' },
+    { title: 'Croissance', slug: 'croissance', symbol: 'Cr' },
+    { title: 'Finance', slug: 'finance', symbol: 'Fi' }
   ],
   mental: [
-    { title: 'Mindset', slug: 'mindset', articleCount: 41 },
-    { title: 'Productivité', slug: 'productivite', articleCount: 35 },
-    { title: 'Résilience', slug: 'resilience', articleCount: 22 },
-    { title: 'Focus', slug: 'focus', articleCount: 19 },
-    { title: 'Bien-être', slug: 'bien-etre', articleCount: 28 }
+    { title: 'Mindset', slug: 'mindset', symbol: 'Ms' },
+    { title: 'Productivité', slug: 'productivite', symbol: 'Pr' },
+    { title: 'Résilience', slug: 'resilience', symbol: 'Rs' },
+    { title: 'Focus', slug: 'focus', symbol: 'Fc' },
+    { title: 'Bien-être', slug: 'bien-etre', symbol: 'Be' }
   ],
   society: [
-    { title: 'Tendances', slug: 'tendances', articleCount: 33 },
-    { title: 'Impact social', slug: 'impact', articleCount: 27 },
-    { title: 'Futur du travail', slug: 'futur', articleCount: 24 },
-    { title: 'Tech & IA', slug: 'tech', articleCount: 45 },
-    { title: 'Environnement', slug: 'environnement', articleCount: 21 }
+    { title: 'Tendances', slug: 'tendances', symbol: 'Td' },
+    { title: 'Impact social', slug: 'impact', symbol: 'Is' },
+    { title: 'Futur du travail', slug: 'futur', symbol: 'Ft' },
+    { title: 'Tech & IA', slug: 'tech', symbol: 'Ti' },
+    { title: 'Environnement', slug: 'environnement', symbol: 'Ev' }
   ]
 };
 
-const iconMap = {
-  book: BookOpen,
-  trending: TrendingUp,
-  brain: Brain,
-  users: Users
-};
-
-const categoryColors = {
-  amber: {
-    gradient: 'from-amber-500 to-orange-500',
-    bgLight: 'bg-amber-500/10',
-    bgMedium: 'bg-amber-500/20',
-    border: 'border-amber-500/30',
-    borderHover: 'hover:border-amber-500/50',
-    text: 'text-amber-400',
-    shadow: 'hover:shadow-amber-500/25'
+// Styles fixes pour chaque univers avec plus de couleur
+const universeStyles = {
+  story: {
+    gradient: 'from-orange-500 via-pink-500 to-red-500',
+    lightGradient: 'from-orange-500/30 via-pink-500/30 to-red-500/30',
+    cardBg: 'bg-gradient-to-br from-orange-500/20 via-pink-500/20 to-red-500/20',
+    border: 'border-orange-500/50',
+    activeBorder: 'border-orange-400',
+    text: 'text-orange-400',
+    subBg: 'bg-gradient-to-br from-orange-500/10 to-red-500/10'
   },
-  blue: {
-    gradient: 'from-blue-500 to-cyan-500',
-    bgLight: 'bg-blue-500/10',
-    bgMedium: 'bg-blue-500/20',
-    border: 'border-blue-500/30',
-    borderHover: 'hover:border-blue-500/50',
+  business: {
+    gradient: 'from-blue-500 via-cyan-500 to-teal-500',
+    lightGradient: 'from-blue-500/30 via-cyan-500/30 to-teal-500/30',
+    cardBg: 'bg-gradient-to-br from-blue-500/20 via-cyan-500/20 to-teal-500/20',
+    border: 'border-blue-500/50',
+    activeBorder: 'border-blue-400',
     text: 'text-blue-400',
-    shadow: 'hover:shadow-blue-500/25'
+    subBg: 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10'
   },
-  purple: {
-    gradient: 'from-purple-500 to-violet-500',
-    bgLight: 'bg-purple-500/10',
-    bgMedium: 'bg-purple-500/20',
-    border: 'border-purple-500/30',
-    borderHover: 'hover:border-purple-500/50',
+  mental: {
+    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
+    lightGradient: 'from-purple-500/30 via-violet-500/30 to-indigo-500/30',
+    cardBg: 'bg-gradient-to-br from-purple-500/20 via-violet-500/20 to-indigo-500/20',
+    border: 'border-purple-500/50',
+    activeBorder: 'border-purple-400',
     text: 'text-purple-400',
-    shadow: 'hover:shadow-purple-500/25'
+    subBg: 'bg-gradient-to-br from-purple-500/10 to-indigo-500/10'
   },
-  emerald: {
-    gradient: 'from-emerald-500 to-teal-500',
-    bgLight: 'bg-emerald-500/10',
-    bgMedium: 'bg-emerald-500/20',
-    border: 'border-emerald-500/30',
-    borderHover: 'hover:border-emerald-500/50',
-    text: 'text-emerald-400',
-    shadow: 'hover:shadow-emerald-500/25'
+  society: {
+    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+    lightGradient: 'from-green-500/30 via-emerald-500/30 to-teal-500/30',
+    cardBg: 'bg-gradient-to-br from-green-500/20 via-emerald-500/20 to-teal-500/20',
+    border: 'border-green-500/50',
+    activeBorder: 'border-green-400',
+    text: 'text-green-400',
+    subBg: 'bg-gradient-to-br from-green-500/10 to-teal-500/10'
   }
 };
 
 export const EditorialSection = () => {
   const [universes, setUniverses] = useState(mockUniverses);
   const [subcategories, setSubcategories] = useState(mockSubcategories);
+  const [selectedUniverse, setSelectedUniverse] = useState<string | null>(null);
+  const [hoveredUniverse, setHoveredUniverse] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -141,35 +133,46 @@ export const EditorialSection = () => {
       try {
         setIsLoading(true);
         
-        // Récupérer les univers
         const sanityUniverses = await getUniverses();
         if (sanityUniverses && sanityUniverses.length > 0) {
-          setUniverses(sanityUniverses);
+          setUniverses(sanityUniverses.map((u: any, i: number) => ({
+            ...u,
+            atomicNumber: mockUniverses[i]?.atomicNumber || `0${i+1}`,
+            symbol: mockUniverses[i]?.symbol || u.title.substring(0, 2),
+            description: u.description || mockUniverses[i]?.description,
+            stats: mockUniverses[i]?.stats
+          })));
         }
 
-        // Récupérer les sous-catégories groupées
         const sanitySubcategories = await getSubcategoriesGrouped();
         if (sanitySubcategories && sanitySubcategories.length > 0) {
-          // Transformer les données pour correspondre à notre structure
           const subcatMap: any = {};
           sanitySubcategories.forEach((cat: any) => {
             if (cat.subcategories && cat.subcategories.length > 0) {
-              subcatMap[cat.slug.current] = cat.subcategories.map((sub: any) => ({
+              subcatMap[cat.slug.current] = cat.subcategories.map((sub: any, i: number) => ({
                 title: sub.title,
                 slug: sub.slug.current,
-                articleCount: sub.articleCount || 0
+                symbol: mockSubcategories[cat.slug.current]?.[i]?.symbol || sub.title.substring(0, 2)
               }));
             }
           });
           
-          // Fusionner avec les données mockées si nécessaire
           setSubcategories({
             ...mockSubcategories,
             ...subcatMap
           });
+          
+          // Forcer l'ajout d'Entrepreneuriat si Story n'a que 4 sous-catégories
+          if (subcatMap.story && subcatMap.story.length === 4) {
+            subcatMap.story.push({
+              title: 'Entrepreneuriat',
+              slug: 'entrepreneuriat',
+              symbol: 'Ep'
+            });
+          }
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération des données:', error);
+        console.error('Erreur:', error);
       } finally {
         setIsLoading(false);
       }
@@ -180,299 +183,276 @@ export const EditorialSection = () => {
 
   if (isLoading) {
     return (
-      <section className="relative py-20 flex items-center justify-center">
+      <section className="relative py-20 flex items-center justify-center bg-black">
         <LoadingSpinner />
       </section>
     );
   }
 
-  // Fonction pour rendre une grille Metro pour une catégorie
-  const renderMetroGrid = (universe: any, subcats: any[]) => {
-    const Icon = iconMap[universe.icon as keyof typeof iconMap] || BookOpen;
-    const colors = categoryColors[universe.color as keyof typeof categoryColors];
-    const hasExtraSubcat = subcats.length === 5;
-
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="relative"
-      >
-        {/* Container avec ratio fixe pour maintenir la forme Metro */}
-        <div className="grid grid-cols-4 gap-2 lg:gap-3 h-full">
-          {/* Grande carte principale - 2x2 */}
-          <Link
-            to={`/rubrique/${universe.slug.current}`}
-            className="group col-span-2 row-span-2 relative overflow-hidden rounded-2xl"
-          >
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className={`
-                h-full p-6 lg:p-8
-                bg-gradient-to-br ${colors.gradient}
-                backdrop-blur-sm
-                transition-all duration-500
-                hover:shadow-2xl ${colors.shadow}
-                flex flex-col justify-between
-                min-h-[250px] lg:min-h-[300px]
-              `}
-            >
-              {/* Effet de lumière */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
-              
-              <div className="relative z-10">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-3xl lg:text-4xl font-bold text-white mb-2">
-                      {universe.title}
-                    </h3>
-                    <p className="text-sm font-medium text-white/80">
-                      {universe.subtitle}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
-                    <Icon className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                
-                <p className="text-white/90 text-sm lg:text-base leading-relaxed mb-4">
-                  {universe.description}
-                </p>
-
-                {/* Stats de la catégorie */}
-                {universe.stats && (
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5">
-                      <BookOpen className="w-3 h-3 text-white/60" />
-                      <span className="text-sm text-white/80 font-medium">{universe.stats.articles} articles</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <TrendingUp className="w-3 h-3 text-white/60" />
-                      <span className="text-sm text-white/80 font-medium">{universe.stats.growth}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Arrow indicator */}
-              <div className="flex items-center gap-2 text-white/80 text-sm">
-                <span>Explorer la rubrique</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </motion.div>
-          </Link>
-
-          {/* Sous-catégories - Layout différent selon le nombre */}
-          <div className="col-span-2 grid grid-cols-2 gap-2 lg:gap-3">
-            {subcats.slice(0, hasExtraSubcat ? 2 : 4).map((subcat, idx) => (
-              <Link
-                key={subcat.slug}
-                to={`/rubrique/${universe.slug.current}/${subcat.slug}`}
-                className="group relative overflow-hidden rounded-xl"
-              >
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className={`
-                    h-full p-2.5 lg:p-3.5
-                    ${colors.bgMedium} backdrop-blur-sm
-                    border ${colors.border} ${colors.borderHover}
-                    transition-all duration-300
-                    hover:shadow-lg ${colors.shadow}
-                    flex flex-col justify-between
-                    min-h-[115px] lg:min-h-[140px]
-                  `}
-                >
-                  <div>
-                    <h4 className="text-white font-bold text-[11px] lg:text-[13px] leading-tight mb-1">
-                      {subcat.title}
-                    </h4>
-                    {subcat.articleCount > 0 && (
-                      <span className="text-[10px] text-white/50">{subcat.articleCount} articles</span>
-                    )}
-                  </div>
-                  
-                  <div className="flex justify-end">
-                    <ArrowRight className="w-3 h-3 text-white/40 group-hover:text-white/80 group-hover:translate-x-1 transition-all" />
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
-
-            {/* Pour 5 sous-catégories : Leadership/Résilience en pleine largeur */}
-            {hasExtraSubcat && (
-              <>
-                <Link
-                  to={`/rubrique/${universe.slug.current}/${subcats[2].slug}`}
-                  className="group relative overflow-hidden rounded-xl col-span-2"
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    className={`
-                      h-full p-4 lg:p-5
-                      ${colors.bgMedium} backdrop-blur-sm
-                      border ${colors.border} ${colors.borderHover}
-                      transition-all duration-300
-                      hover:shadow-lg ${colors.shadow}
-                      flex items-center justify-between
-                      min-h-[60px] lg:min-h-[70px]
-                    `}
-                  >
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-white font-bold text-base lg:text-lg">
-                        {subcats[2].title}
-                      </h4>
-                      {subcats[2].articleCount > 0 && (
-                        <span className="text-xs text-white/50 ml-3">{subcats[2].articleCount} articles</span>
-                      )}
-                    </div>
-                    
-                    <ArrowRight className="w-4 h-4 text-white/40 group-hover:text-white/80 group-hover:translate-x-1 transition-all" />
-                  </motion.div>
-                </Link>
-
-                {/* Les 2 dernières sous-catégories */}
-                {subcats.slice(3, 5).map((subcat) => (
-                  <Link
-                    key={subcat.slug}
-                    to={`/rubrique/${universe.slug.current}/${subcat.slug}`}
-                    className="group relative overflow-hidden rounded-xl"
-                  >
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      className={`
-                        h-full p-2.5 lg:p-3.5
-                        ${colors.bgMedium} backdrop-blur-sm
-                        border ${colors.border} ${colors.borderHover}
-                        transition-all duration-300
-                        hover:shadow-lg ${colors.shadow}
-                        flex flex-col justify-between
-                        min-h-[115px] lg:min-h-[140px]
-                      `}
-                    >
-                      <div>
-                        <h4 className="text-white font-bold text-[11px] lg:text-[13px] leading-tight mb-1">
-                          {subcat.title}
-                        </h4>
-                        {subcat.articleCount > 0 && (
-                          <span className="text-[10px] text-white/50">{subcat.articleCount} articles</span>
-                        )}
-                      </div>
-                      
-                      <div className="flex justify-end">
-                        <ArrowRight className="w-3 h-3 text-white/40 group-hover:text-white/80 group-hover:translate-x-1 transition-all" />
-                      </div>
-                    </motion.div>
-                  </Link>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
-      </motion.div>
-    );
+  const getStyle = (slug: string) => {
+    return universeStyles[slug as keyof typeof universeStyles] || universeStyles.story;
   };
 
   return (
     <ErrorBoundary>
-      <section className="relative py-24 overflow-hidden">
-        {/* Background effects simplifiés */}
+      <section className="relative py-16 md:py-24 overflow-hidden bg-black">
+        {/* Background avec particules colorées */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
           
-          {/* Un seul orbe central subtil */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-500/[0.03] rounded-full blur-[150px]" />
+          {/* Orbes de couleur flottants */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[150px] animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse" />
         </div>
 
         <div className="container relative z-10">
-          {/* Header amélioré */}
+          {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            {/* Badge premium */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-6"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 mb-6"
             >
-              <Sparkles className="w-4 h-4 text-purple-400" />
-              <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">
-                4 univers • 20 thématiques
-              </span>
+              <Zap className="w-6 h-6 text-white" />
             </motion.div>
-
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              <span className="text-white">Explorez l'écosystème </span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-violet-400">
+            
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              <span className="text-white">Système périodique </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400">
                 High Value
               </span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Un contenu premium organisé en 4 univers complémentaires pour transformer votre mindset, votre business et votre vision du monde
+            <p className="text-gray-400 text-lg max-w-3xl mx-auto">
+              4 éléments fondamentaux, 20 isotopes thématiques pour transformer ta vision
             </p>
           </motion.div>
 
-          {/* Metro Grids - 2x2 layout sur desktop */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 lg:gap-12 mb-20">
-            {/* Story Grid */}
-            {renderMetroGrid(universes[0], subcategories.story)}
-            
-            {/* Business Grid */}
-            {renderMetroGrid(universes[1], subcategories.business)}
-            
-            {/* Mental Grid */}
-            {renderMetroGrid(universes[2], subcategories.mental)}
-            
-            {/* Society Grid */}
-            {renderMetroGrid(universes[3], subcategories.society)}
+          {/* Grille principale avec design coloré */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto">
+            {universes.map((universe, index) => {
+              const isSelected = selectedUniverse === universe.slug.current;
+              const isHovered = hoveredUniverse === universe.slug.current;
+              const style = getStyle(universe.slug.current);
+              const subcats = subcategories[universe.slug.current] || [];
+              
+              return (
+                <motion.div
+                  key={universe._id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02 }}
+                  onMouseEnter={() => setHoveredUniverse(universe.slug.current)}
+                  onMouseLeave={() => setHoveredUniverse(null)}
+                  onClick={() => setSelectedUniverse(
+                    selectedUniverse === universe.slug.current ? null : universe.slug.current
+                  )}
+                  className="group cursor-pointer"
+                >
+                  <div className={`
+                    relative overflow-hidden rounded-3xl transition-all duration-500
+                    ${style.cardBg} ${isSelected || isHovered ? style.activeBorder : style.border}
+                    border-2 backdrop-blur-sm
+                    ${isSelected || isHovered ? 'shadow-2xl' : 'shadow-lg'}
+                  `}>
+                    {/* Effet de brillance animé */}
+                    <div className="absolute inset-0 opacity-50">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${style.lightGradient}`} />
+                      {(isSelected || isHovered) && (
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
+                          animate={{ x: [-200, 200] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        />
+                      )}
+                    </div>
+
+                    <div className="relative p-8">
+                      {/* Header avec symbole périodique stylisé */}
+                      <div className="flex items-start justify-between mb-6">
+                        <div className="flex-1">
+                          {/* Badge numéro atomique */}
+                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 backdrop-blur-sm mb-4">
+                            <span className="text-xs font-mono text-white/60">Element</span>
+                            <span className="text-xs font-bold text-white">{universe.atomicNumber}</span>
+                          </div>
+                          
+                          {/* Titre XXL */}
+                          <h3 className="text-4xl md:text-5xl font-bold text-white mb-2">
+                            {universe.title}
+                          </h3>
+                          
+                          {/* Subtitle avec stats */}
+                          <div className="flex items-center gap-3">
+                            <p className="text-white/90 font-medium">{universe.subtitle}</p>
+                            <span className="text-xs px-2 py-1 rounded-full bg-white/20 text-white/80">
+                              {universe.stats}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Symbole périodique géant avec effet 3D */}
+                        <motion.div
+                          className="relative"
+                          animate={{ rotateY: isHovered ? 10 : 0 }}
+                        >
+                          {/* Ombre portée pour créer de la profondeur */}
+                          <div className="absolute -inset-2 bg-black/30 rounded-3xl blur-xl" />
+                          
+                          {/* Glow coloré */}
+                          <div className={`absolute -inset-4 bg-gradient-to-br ${style.gradient} opacity-30 rounded-3xl blur-2xl`} />
+                          
+                          {/* Carte principale avec élévation */}
+                          <div className="relative w-28 h-28 rounded-2xl bg-black/50 backdrop-blur-md border-2 border-white/30 flex flex-col items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+                            {/* Numéro atomique en haut */}
+                            <span className="absolute top-2 left-2 text-[10px] font-mono text-white/50">
+                              {universe.atomicNumber}
+                            </span>
+                            
+                            {/* Symbole central */}
+                            <span className={`text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br ${style.gradient}`}>
+                              {universe.symbol}
+                            </span>
+                            
+                            {/* Nom de l'élément en bas */}
+                            <span className="absolute bottom-2 text-[10px] font-medium text-white/50 uppercase tracking-wider">
+                              {universe.title}
+                            </span>
+                          </div>
+                        </motion.div>
+                      </div>
+
+                      {/* Description */}
+                      <p className="text-white/70 text-sm leading-relaxed mb-6">
+                        {universe.description}
+                      </p>
+
+                      {/* Sous-catégories avec design périodique amélioré */}
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          {subcats.slice(0, 4).map((subcat, idx) => (
+                            <Link
+                              key={subcat.slug}
+                              to={`/rubrique/${universe.slug.current}/${subcat.slug}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="group/sub"
+                            >
+                              <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: isSelected ? idx * 0.05 : 0 }}
+                                whileHover={{ scale: 1.05 }}
+                                className={`
+                                  relative p-3 rounded-xl ${style.subBg} 
+                                  border border-white/10 hover:border-white/30
+                                  transition-all overflow-hidden
+                                `}
+                              >
+                                {/* Mini symbole périodique */}
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center">
+                                    <span className={`text-xs font-bold text-transparent bg-clip-text bg-gradient-to-br ${style.gradient}`}>
+                                      {subcat.symbol}
+                                    </span>
+                                  </div>
+                                  <span className="text-xs text-white/80 font-medium flex-1">
+                                    {subcat.title}
+                                  </span>
+                                  <ArrowUpRight className="w-3 h-3 text-white/40 opacity-0 group-hover/sub:opacity-100 transition-opacity" />
+                                </div>
+                              </motion.div>
+                            </Link>
+                          ))}
+                        </div>
+
+                        {/* 5ème sous-catégorie en pleine largeur si existe */}
+                        {subcats[4] && (
+                          <Link
+                            to={`/rubrique/${universe.slug.current}/${subcats[4].slug}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="group/sub block"
+                          >
+                            <motion.div
+                              whileHover={{ scale: 1.02 }}
+                              className={`
+                                relative p-3 rounded-xl ${style.subBg}
+                                border border-white/10 hover:border-white/30
+                                transition-all
+                              `}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center">
+                                  <span className={`text-xs font-bold text-transparent bg-clip-text bg-gradient-to-br ${style.gradient}`}>
+                                    {subcats[4].symbol}
+                                  </span>
+                                </div>
+                                <span className="text-xs text-white/80 font-medium flex-1">
+                                  {subcats[4].title}
+                                </span>
+                                <ArrowUpRight className="w-3 h-3 text-white/40 opacity-0 group-hover/sub:opacity-100 transition-opacity" />
+                              </div>
+                            </motion.div>
+                          </Link>
+                        )}
+                      </div>
+
+                      {/* CTA principal */}
+                      <Link
+                        to={`/rubrique/${universe.slug.current}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-2 mt-6 text-white font-medium hover:gap-3 transition-all"
+                      >
+                        <span>Explorer tout l'univers</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+
+                    {/* Barre de progression colorée en bas */}
+                    {(isSelected || isHovered) && (
+                      <motion.div
+                        layoutId="active-indicator"
+                        className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${style.gradient}`}
+                      />
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
 
-          {/* Stats Section - Plus cohérentes */}
+          {/* Indicateurs de navigation colorés */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-16"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="flex justify-center gap-3 mt-12"
           >
-            <div className="max-w-4xl mx-auto bg-gradient-to-r from-purple-500/5 to-violet-500/5 rounded-3xl border border-purple-500/10 p-8">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">500+</div>
-                  <div className="text-sm text-gray-400">Articles publiés</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">50K+</div>
-                  <div className="text-sm text-gray-400">Lecteurs actifs</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">4</div>
-                  <div className="text-sm text-gray-400">Univers thématiques</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">98%</div>
-                  <div className="text-sm text-gray-400">Satisfaction</div>
-                </div>
-              </div>
-            </div>
+            {universes.map((universe) => {
+              const isActive = selectedUniverse === universe.slug.current;
+              const style = getStyle(universe.slug.current);
+              
+              return (
+                <button
+                  key={universe._id}
+                  onClick={() => setSelectedUniverse(universe.slug.current)}
+                  className={`
+                    relative px-4 py-2 rounded-full font-mono text-xs transition-all
+                    ${isActive 
+                      ? `bg-gradient-to-r ${style.gradient} text-white shadow-lg` 
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                    }
+                  `}
+                >
+                  {universe.symbol}
+                </button>
+              );
+            })}
           </motion.div>
-
-          {/* CTA amélioré */}
-          <div className="text-center">
-            <Link 
-              to="/articles" 
-              className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-500 to-violet-500 rounded-full text-white font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 hover:scale-105"
-            >
-              <BookOpenCheck size={20} />
-              <span>Explorer tous nos articles</span>
-              <ArrowRight size={20} className="transform group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <p className="mt-4 text-gray-500 text-sm">
-              Plus de 500 articles pour nourrir votre ambition
-            </p>
-          </div>
         </div>
       </section>
     </ErrorBoundary>

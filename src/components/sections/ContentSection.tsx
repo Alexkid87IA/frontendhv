@@ -324,14 +324,13 @@ const ContentSection: React.FC<ContentSectionProps> = ({
                   className="block h-full"
                 >
                   <div className="relative h-full bg-neutral-900 rounded-xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-[1.02]">
-                    {/* Image */}
+                    {/* Image SANS OVERLAY */}
                     <div className="relative aspect-[16/9] overflow-hidden">
                       <SafeImage
                         source={item.mainImage}
                         alt={item.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
                       
                       {/* Badge type pour les émissions */}
                       {sectionType === 'emission' && (
