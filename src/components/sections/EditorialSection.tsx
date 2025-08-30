@@ -232,7 +232,7 @@ export const EditorialSection = () => {
             </p>
           </motion.div>
 
-          {/* Grille principale avec design coloré */}
+          {/* Grille principale avec design coloré - CORRECTION ICI */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto">
             {universes.map((universe, index) => {
               const isSelected = selectedUniverse === universe.slug.current;
@@ -252,12 +252,12 @@ export const EditorialSection = () => {
                   onClick={() => setSelectedUniverse(
                     selectedUniverse === universe.slug.current ? null : universe.slug.current
                   )}
-                  className="group cursor-pointer"
+                  className="group cursor-pointer h-full" 
                 >
                   <div className={`
                     relative overflow-hidden rounded-3xl transition-all duration-500
                     ${style.cardBg} ${isSelected || isHovered ? style.activeBorder : style.border}
-                    border-2 backdrop-blur-sm
+                    border-2 backdrop-blur-sm h-full flex flex-col
                     ${isSelected || isHovered ? 'shadow-2xl' : 'shadow-lg'}
                   `}>
                     {/* Effet de brillance animé */}
@@ -272,7 +272,7 @@ export const EditorialSection = () => {
                       )}
                     </div>
 
-                    <div className="relative p-8">
+                    <div className="relative p-8 flex flex-col h-full">
                       {/* Header avec symbole périodique stylisé */}
                       <div className="flex items-start justify-between mb-6">
                         <div className="flex-1">
@@ -298,7 +298,7 @@ export const EditorialSection = () => {
                         
                         {/* Symbole périodique géant avec effet 3D */}
                         <motion.div
-                          className="relative"
+                          className="relative flex-shrink-0"
                           animate={{ rotateY: isHovered ? 10 : 0 }}
                         >
                           {/* Ombre portée pour créer de la profondeur */}
@@ -327,13 +327,13 @@ export const EditorialSection = () => {
                         </motion.div>
                       </div>
 
-                      {/* Description */}
-                      <p className="text-white/70 text-sm leading-relaxed mb-6">
+                      {/* Description - CORRECTION: hauteur minimale fixe */}
+                      <p className="text-white/70 text-sm leading-relaxed mb-6 min-h-[60px] line-clamp-3">
                         {universe.description}
                       </p>
 
-                      {/* Sous-catégories avec design périodique amélioré */}
-                      <div className="space-y-3">
+                      {/* Sous-catégories avec design périodique amélioré - CORRECTION: flex-grow */}
+                      <div className="space-y-3 flex-grow flex flex-col">
                         <div className="grid grid-cols-2 gap-2">
                           {subcats.slice(0, 4).map((subcat, idx) => (
                             <Link
@@ -355,15 +355,15 @@ export const EditorialSection = () => {
                               >
                                 {/* Mini symbole périodique */}
                                 <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center">
+                                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0">
                                     <span className={`text-xs font-bold text-transparent bg-clip-text bg-gradient-to-br ${style.gradient}`}>
                                       {subcat.symbol}
                                     </span>
                                   </div>
-                                  <span className="text-xs text-white/80 font-medium flex-1">
+                                  <span className="text-xs text-white/80 font-medium flex-1 line-clamp-1">
                                     {subcat.title}
                                   </span>
-                                  <ArrowUpRight className="w-3 h-3 text-white/40 opacity-0 group-hover/sub:opacity-100 transition-opacity" />
+                                  <ArrowUpRight className="w-3 h-3 text-white/40 opacity-0 group-hover/sub:opacity-100 transition-opacity flex-shrink-0" />
                                 </div>
                               </motion.div>
                             </Link>
@@ -386,7 +386,7 @@ export const EditorialSection = () => {
                               `}
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0">
                                   <span className={`text-xs font-bold text-transparent bg-clip-text bg-gradient-to-br ${style.gradient}`}>
                                     {subcats[4].symbol}
                                   </span>
@@ -394,18 +394,21 @@ export const EditorialSection = () => {
                                 <span className="text-xs text-white/80 font-medium flex-1">
                                   {subcats[4].title}
                                 </span>
-                                <ArrowUpRight className="w-3 h-3 text-white/40 opacity-0 group-hover/sub:opacity-100 transition-opacity" />
+                                <ArrowUpRight className="w-3 h-3 text-white/40 opacity-0 group-hover/sub:opacity-100 transition-opacity flex-shrink-0" />
                               </div>
                             </motion.div>
                           </Link>
                         )}
+                        
+                        {/* Spacer pour pousser le CTA en bas */}
+                        <div className="flex-grow"></div>
                       </div>
 
-                      {/* CTA principal */}
+                      {/* CTA principal - CORRECTION: mt-auto au lieu de mt-6 */}
                       <Link
                         to={`/rubrique/${universe.slug.current}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-2 mt-6 text-white font-medium hover:gap-3 transition-all"
+                        className="inline-flex items-center gap-2 mt-auto pt-6 text-white font-medium hover:gap-3 transition-all"
                       >
                         <span>Explorer tout l'univers</span>
                         <ArrowRight className="w-4 h-4" />
