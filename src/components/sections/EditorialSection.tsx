@@ -232,7 +232,7 @@ export const EditorialSection = () => {
             </p>
           </motion.div>
 
-          {/* Grille principale avec design coloré - CORRECTION ICI */}
+          {/* Grille principale avec design coloré */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto">
             {universes.map((universe, index) => {
               const isSelected = selectedUniverse === universe.slug.current;
@@ -241,189 +241,190 @@ export const EditorialSection = () => {
               const subcats = subcategories[universe.slug.current] || [];
               
               return (
-                <motion.div
+                <Link
                   key={universe._id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
-                  onMouseEnter={() => setHoveredUniverse(universe.slug.current)}
-                  onMouseLeave={() => setHoveredUniverse(null)}
-                  onClick={() => setSelectedUniverse(
-                    selectedUniverse === universe.slug.current ? null : universe.slug.current
-                  )}
-                  className="group cursor-pointer h-full" 
+                  to={`/rubrique/${universe.slug.current}`}
+                  className="group block h-full"
                 >
-                  <div className={`
-                    relative overflow-hidden rounded-3xl transition-all duration-500
-                    ${style.cardBg} ${isSelected || isHovered ? style.activeBorder : style.border}
-                    border-2 backdrop-blur-sm h-full flex flex-col
-                    ${isSelected || isHovered ? 'shadow-2xl' : 'shadow-lg'}
-                  `}>
-                    {/* Effet de brillance animé */}
-                    <div className="absolute inset-0 opacity-50">
-                      <div className={`absolute inset-0 bg-gradient-to-br ${style.lightGradient}`} />
-                      {(isSelected || isHovered) && (
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
-                          animate={{ x: [-200, 200] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
-                        />
-                      )}
-                    </div>
-
-                    <div className="relative p-8 flex flex-col h-full">
-                      {/* Header avec symbole périodique stylisé */}
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="flex-1">
-                          {/* Badge numéro atomique */}
-                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 backdrop-blur-sm mb-4">
-                            <span className="text-xs font-mono text-white/60">Element</span>
-                            <span className="text-xs font-bold text-white">{universe.atomicNumber}</span>
-                          </div>
-                          
-                          {/* Titre XXL */}
-                          <h3 className="text-4xl md:text-5xl font-bold text-white mb-2">
-                            {universe.title}
-                          </h3>
-                          
-                          {/* Subtitle avec stats */}
-                          <div className="flex items-center gap-3">
-                            <p className="text-white/90 font-medium">{universe.subtitle}</p>
-                            <span className="text-xs px-2 py-1 rounded-full bg-white/20 text-white/80">
-                              {universe.stats}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        {/* Symbole périodique géant avec effet 3D */}
-                        <motion.div
-                          className="relative flex-shrink-0"
-                          animate={{ rotateY: isHovered ? 10 : 0 }}
-                        >
-                          {/* Ombre portée pour créer de la profondeur */}
-                          <div className="absolute -inset-2 bg-black/30 rounded-3xl blur-xl" />
-                          
-                          {/* Glow coloré */}
-                          <div className={`absolute -inset-4 bg-gradient-to-br ${style.gradient} opacity-30 rounded-3xl blur-2xl`} />
-                          
-                          {/* Carte principale avec élévation */}
-                          <div className="relative w-28 h-28 rounded-2xl bg-black/50 backdrop-blur-md border-2 border-white/30 flex flex-col items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
-                            {/* Numéro atomique en haut */}
-                            <span className="absolute top-2 left-2 text-[10px] font-mono text-white/50">
-                              {universe.atomicNumber}
-                            </span>
-                            
-                            {/* Symbole central */}
-                            <span className={`text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br ${style.gradient}`}>
-                              {universe.symbol}
-                            </span>
-                            
-                            {/* Nom de l'élément en bas */}
-                            <span className="absolute bottom-2 text-[10px] font-medium text-white/50 uppercase tracking-wider">
-                              {universe.title}
-                            </span>
-                          </div>
-                        </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    onMouseEnter={() => setHoveredUniverse(universe.slug.current)}
+                    onMouseLeave={() => setHoveredUniverse(null)}
+                    className="h-full"
+                  >
+                    <div className={`
+                      relative overflow-hidden rounded-3xl transition-all duration-500
+                      ${style.cardBg} ${isSelected || isHovered ? style.activeBorder : style.border}
+                      border-2 backdrop-blur-sm h-full flex flex-col
+                      ${isSelected || isHovered ? 'shadow-2xl' : 'shadow-lg'}
+                    `}>
+                      {/* Effet de brillance animé */}
+                      <div className="absolute inset-0 opacity-50">
+                        <div className={`absolute inset-0 bg-gradient-to-br ${style.lightGradient}`} />
+                        {(isSelected || isHovered) && (
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
+                            animate={{ x: [-200, 200] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                          />
+                        )}
                       </div>
 
-                      {/* Description - CORRECTION: hauteur minimale fixe */}
-                      <p className="text-white/70 text-sm leading-relaxed mb-6 min-h-[60px] line-clamp-3">
-                        {universe.description}
-                      </p>
+                      <div className="relative p-8 flex flex-col h-full">
+                        {/* Header avec symbole périodique stylisé */}
+                        <div className="flex items-start justify-between mb-6">
+                          <div className="flex-1">
+                            {/* Badge numéro atomique */}
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 backdrop-blur-sm mb-4">
+                              <span className="text-xs font-mono text-white/60">Element</span>
+                              <span className="text-xs font-bold text-white">{universe.atomicNumber}</span>
+                            </div>
+                            
+                            {/* Titre XXL */}
+                            <h3 className="text-4xl md:text-5xl font-bold text-white mb-2">
+                              {universe.title}
+                            </h3>
+                            
+                            {/* Subtitle avec stats */}
+                            <div className="flex items-center gap-3">
+                              <p className="text-white/90 font-medium">{universe.subtitle}</p>
+                              <span className="text-xs px-2 py-1 rounded-full bg-white/20 text-white/80">
+                                {universe.stats}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {/* Symbole périodique géant avec effet 3D */}
+                          <motion.div
+                            className="relative flex-shrink-0"
+                            animate={{ rotateY: isHovered ? 10 : 0 }}
+                          >
+                            {/* Ombre portée pour créer de la profondeur */}
+                            <div className="absolute -inset-2 bg-black/30 rounded-3xl blur-xl" />
+                            
+                            {/* Glow coloré */}
+                            <div className={`absolute -inset-4 bg-gradient-to-br ${style.gradient} opacity-30 rounded-3xl blur-2xl`} />
+                            
+                            {/* Carte principale avec élévation */}
+                            <div className="relative w-28 h-28 rounded-2xl bg-black/50 backdrop-blur-md border-2 border-white/30 flex flex-col items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+                              {/* Numéro atomique en haut */}
+                              <span className="absolute top-2 left-2 text-[10px] font-mono text-white/50">
+                                {universe.atomicNumber}
+                              </span>
+                              
+                              {/* Symbole central */}
+                              <span className={`text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br ${style.gradient}`}>
+                                {universe.symbol}
+                              </span>
+                              
+                              {/* Nom de l'élément en bas */}
+                              <span className="absolute bottom-2 text-[10px] font-medium text-white/50 uppercase tracking-wider">
+                                {universe.title}
+                              </span>
+                            </div>
+                          </motion.div>
+                        </div>
 
-                      {/* Sous-catégories avec design périodique amélioré - CORRECTION: flex-grow */}
-                      <div className="space-y-3 flex-grow flex flex-col">
-                        <div className="grid grid-cols-2 gap-2">
-                          {subcats.slice(0, 4).map((subcat, idx) => (
+                        {/* Description */}
+                        <p className="text-white/70 text-sm leading-relaxed mb-6 min-h-[60px] line-clamp-3">
+                          {universe.description}
+                        </p>
+
+                        {/* Sous-catégories avec design périodique amélioré */}
+                        <div className="space-y-3 flex-grow flex flex-col">
+                          <div className="grid grid-cols-2 gap-2">
+                            {subcats.slice(0, 4).map((subcat, idx) => (
+                              <Link
+                                key={subcat.slug}
+                                to={`/rubrique/${universe.slug.current}/${subcat.slug}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="group/sub"
+                              >
+                                <motion.div
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: isSelected ? idx * 0.05 : 0 }}
+                                  whileHover={{ scale: 1.05 }}
+                                  className={`
+                                    relative p-3 rounded-xl ${style.subBg} 
+                                    border border-white/10 hover:border-white/30
+                                    transition-all overflow-hidden
+                                  `}
+                                >
+                                  {/* Mini symbole périodique */}
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0">
+                                      <span className={`text-xs font-bold text-transparent bg-clip-text bg-gradient-to-br ${style.gradient}`}>
+                                        {subcat.symbol}
+                                      </span>
+                                    </div>
+                                    <span className="text-xs text-white/80 font-medium flex-1 line-clamp-1">
+                                      {subcat.title}
+                                    </span>
+                                    <ArrowUpRight className="w-3 h-3 text-white/40 opacity-0 group-hover/sub:opacity-100 transition-opacity flex-shrink-0" />
+                                  </div>
+                                </motion.div>
+                              </Link>
+                            ))}
+                          </div>
+
+                          {/* 5ème sous-catégorie en pleine largeur si existe */}
+                          {subcats[4] && (
                             <Link
-                              key={subcat.slug}
-                              to={`/rubrique/${universe.slug.current}/${subcat.slug}`}
+                              to={`/rubrique/${universe.slug.current}/${subcats[4].slug}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="group/sub"
+                              className="group/sub block"
                             >
                               <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: isSelected ? idx * 0.05 : 0 }}
-                                whileHover={{ scale: 1.05 }}
+                                whileHover={{ scale: 1.02 }}
                                 className={`
-                                  relative p-3 rounded-xl ${style.subBg} 
+                                  relative p-3 rounded-xl ${style.subBg}
                                   border border-white/10 hover:border-white/30
-                                  transition-all overflow-hidden
+                                  transition-all
                                 `}
                               >
-                                {/* Mini symbole périodique */}
                                 <div className="flex items-center gap-3">
                                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0">
                                     <span className={`text-xs font-bold text-transparent bg-clip-text bg-gradient-to-br ${style.gradient}`}>
-                                      {subcat.symbol}
+                                      {subcats[4].symbol}
                                     </span>
                                   </div>
-                                  <span className="text-xs text-white/80 font-medium flex-1 line-clamp-1">
-                                    {subcat.title}
+                                  <span className="text-xs text-white/80 font-medium flex-1">
+                                    {subcats[4].title}
                                   </span>
                                   <ArrowUpRight className="w-3 h-3 text-white/40 opacity-0 group-hover/sub:opacity-100 transition-opacity flex-shrink-0" />
                                 </div>
                               </motion.div>
                             </Link>
-                          ))}
+                          )}
+                          
+                          {/* Spacer pour pousser le CTA en bas */}
+                          <div className="flex-grow"></div>
                         </div>
 
-                        {/* 5ème sous-catégorie en pleine largeur si existe */}
-                        {subcats[4] && (
-                          <Link
-                            to={`/rubrique/${universe.slug.current}/${subcats[4].slug}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="group/sub block"
-                          >
-                            <motion.div
-                              whileHover={{ scale: 1.02 }}
-                              className={`
-                                relative p-3 rounded-xl ${style.subBg}
-                                border border-white/10 hover:border-white/30
-                                transition-all
-                              `}
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0">
-                                  <span className={`text-xs font-bold text-transparent bg-clip-text bg-gradient-to-br ${style.gradient}`}>
-                                    {subcats[4].symbol}
-                                  </span>
-                                </div>
-                                <span className="text-xs text-white/80 font-medium flex-1">
-                                  {subcats[4].title}
-                                </span>
-                                <ArrowUpRight className="w-3 h-3 text-white/40 opacity-0 group-hover/sub:opacity-100 transition-opacity flex-shrink-0" />
-                              </div>
-                            </motion.div>
-                          </Link>
-                        )}
-                        
-                        {/* Spacer pour pousser le CTA en bas */}
-                        <div className="flex-grow"></div>
+                        {/* CTA principal */}
+                        <div 
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-2 mt-auto pt-6 text-white font-medium hover:gap-3 transition-all"
+                        >
+                          <span>Explorer tout l'univers</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
                       </div>
 
-                      {/* CTA principal - CORRECTION: mt-auto au lieu de mt-6 */}
-                      <Link
-                        to={`/rubrique/${universe.slug.current}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-2 mt-auto pt-6 text-white font-medium hover:gap-3 transition-all"
-                      >
-                        <span>Explorer tout l'univers</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
+                      {/* Barre de progression colorée en bas */}
+                      {(isSelected || isHovered) && (
+                        <motion.div
+                          layoutId="active-indicator"
+                          className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${style.gradient}`}
+                        />
+                      )}
                     </div>
-
-                    {/* Barre de progression colorée en bas */}
-                    {(isSelected || isHovered) && (
-                      <motion.div
-                        layoutId="active-indicator"
-                        className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${style.gradient}`}
-                      />
-                    )}
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </Link>
               );
             })}
           </div>
