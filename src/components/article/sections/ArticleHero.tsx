@@ -30,43 +30,21 @@ const ArticleHero: React.FC<ArticleHeroProps> = ({ article, colors }) => {
   const hotspot = article.mainImage?.hotspot;
   const imagePosition = getHotspotPosition(hotspot);
   
-  // Position différente pour mobile si nécessaire
-  // On peut ajuster légèrement pour mobile
-  const mobileImagePosition = hotspot 
-    ? `${Math.round(hotspot.x * 100)}% ${Math.round(hotspot.y * 100 * 0.9)}%` // Légèrement plus haut sur mobile
-    : 'center 20%'; // Fallback pour mobile
-  
   return (
     <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-end overflow-hidden bg-gradient-to-br from-gray-900 to-black">
       {/* Container de l'image avec hotspot */}
       <div className="absolute inset-0">
         {article.mainImage && article.mainImage.asset && article.mainImage.asset._ref ? (
           <>
-            {/* Image principale avec hotspot dynamique - Desktop */}
+            {/* Image unique avec hotspot pour desktop et mobile */}
             <img 
               src={buildSanityImageUrl(article.mainImage.asset._ref)}
               alt={article.title}
-              className="absolute inset-0 w-full h-full object-cover hidden md:block"
+              className="absolute inset-0 w-full h-full object-cover"
               style={{ 
                 opacity: 0.9,
                 // Utilise la position du hotspot définie dans Sanity
                 objectPosition: imagePosition
-              }}
-              onError={(e) => {
-                console.error("Erreur chargement image:", e);
-                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80";
-              }}
-            />
-            
-            {/* Version mobile avec position ajustée */}
-            <img 
-              src={buildSanityImageUrl(article.mainImage.asset._ref)}
-              alt={article.title}
-              className="absolute inset-0 w-full h-full object-cover md:hidden"
-              style={{ 
-                opacity: 0.9,
-                // Position adaptée pour mobile
-                objectPosition: mobileImagePosition
               }}
               onError={(e) => {
                 console.error("Erreur chargement image:", e);
