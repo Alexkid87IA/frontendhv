@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown, Bell, Search, ArrowRight } from 'lucide-react';
+import { Menu, X, ChevronDown, Bell, Search, ArrowRight, Clock, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
+import { getAllArticles } from '../../utils/sanityAPI';
 
 // Import de tous les logos
 import logoMedia from '../../assets/logos/LOGO_HV_MEDIA.svg';
@@ -11,11 +12,39 @@ import logoMental from '../../assets/logos/LOGO_HV_PSYCHO.svg';
 import logoSociety from '../../assets/logos/LOGO_HV_SOCIETY.svg';
 import logoStory from '../../assets/logos/LOGO_HV_STORY.svg';
 
+// Mock articles pour fallback
+const mockRecentArticles = [
+  {
+    _id: '1',
+    title: "Comment développer un mindset d'exception",
+    slug: { current: 'mindset-exception' },
+    publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // Il y a 2h
+    categories: [{ title: 'Mental' }]
+  },
+  {
+    _id: '2',
+    title: "Les 5 stratégies de croissance des licornes",
+    slug: { current: 'strategies-croissance' },
+    publishedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // Il y a 5h
+    categories: [{ title: 'Business' }]
+  },
+  {
+    _id: '3',
+    title: "L'art du pivot entrepreneurial",
+    slug: { current: 'art-du-pivot' },
+    publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // Hier
+    categories: [{ title: 'Story' }]
+  }
+];
+
 export const ResponsiveNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [recentArticles, setRecentArticles] = useState(mockRecentArticles);
+  const [hasNewArticles, setHasNewArticles] = useState(true);
   const location = useLocation();
   const { visible } = useScrollDirection();
   const { scrollY } = useScroll();
@@ -39,6 +68,57 @@ export const ResponsiveNavbar = () => {
     return logoMedia;
   };
 
+  // Charger les articles récents
+  useEffect(() => {
+    const fetchRecentArticles = async () => {
+      try {
+        const articles = await getAllArticles();
+        if (articles && articles.length > 0) {
+          setRecentArticles(articles.slice(0, 3));
+          // Vérifier s'il y a de nouveaux articles (moins de 24h)
+          const hasNew = articles.some(article => {
+            const publishDate = new Date(article.publishedAt);
+            const now = new Date();
+            const diffHours = (now.getTime() - publishDate.getTime()) / (1000 * 60 * 60);
+            return diffHours < 24;
+          });
+          setHasNewArticles(hasNew);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des articles:', error);
+      }
+    };
+
+    fetchRecentArticles();
+    // Rafraîchir toutes les 5 minutes
+    const interval = setInterval(fetchRecentArticles, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Fonction pour formater le temps
+  const formatTimeAgo = (date: string) => {
+    const now = new Date();
+    const publishDate = new Date(date);
+    const diffInMinutes = Math.floor((now.getTime() - publishDate.getTime()) / (1000 * 60));
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    
+    if (diffInMinutes < 60) return `Il y a ${diffInMinutes} min`;
+    if (diffInHours < 24) return `Il y a ${diffInHours}h`;
+    return publishDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  };
+
+  // Couleurs des catégories
+  const getCategoryColor = (category: string) => {
+    const colors: { [key: string]: string } = {
+      'Story': 'bg-amber-500',
+      'Business': 'bg-blue-500',
+      'Mental': 'bg-purple-500',
+      'Society': 'bg-emerald-500',
+      'Mindset': 'bg-purple-500'
+    };
+    return colors[category] || 'bg-gray-500';
+  };
+
   // Navigation avec sous-catégories
   const menuItems = [
     { 
@@ -50,7 +130,8 @@ export const ResponsiveNavbar = () => {
         { label: 'Parcours inspirants', path: '/rubrique/story/parcours' },
         { label: 'Success stories', path: '/rubrique/story/success' },
         { label: 'Échecs formateurs', path: '/rubrique/story/echecs' },
-        { label: 'Transformations', path: '/rubrique/story/transformations' }
+        { label: 'Transformations', path: '/rubrique/story/transformations' },
+        { label: 'Entrepreneuriat', path: '/rubrique/story/entrepreneuriat' }
       ]
     },
     { 
@@ -290,9 +371,9 @@ export const ResponsiveNavbar = () => {
                                           whileHover={{ scale: 1.02, x: 3 }}
                                           className="relative p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300"
                                         >
-                                          {/* Numéro stylisé */}
-                                          <div className={`absolute top-3 right-3 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br ${gradient} opacity-20 group-hover:opacity-40 transition-opacity`}>
-                                            0{idx + 1}
+                                          {/* Numéro stylisé avec couleur plus visible */}
+                                          <div className={`absolute top-3 right-3 text-3xl font-black bg-gradient-to-br ${gradient} bg-clip-text text-transparent`}>
+                                            {(idx + 1).toString().padStart(2, '0')}
                                           </div>
                                           
                                           {/* Contenu */}
@@ -321,7 +402,7 @@ export const ResponsiveNavbar = () => {
                                           whileHover={{ scale: 1.02, x: 3 }}
                                           className="relative p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300"
                                         >
-                                          <div className={`absolute top-3 right-3 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br ${gradient} opacity-20 group-hover:opacity-40 transition-opacity`}>
+                                          <div className={`absolute top-3 right-3 text-3xl font-black bg-gradient-to-br ${gradient} bg-clip-text text-transparent`}>
                                             05
                                           </div>
                                           <div className="relative z-10">
@@ -401,15 +482,110 @@ export const ResponsiveNavbar = () => {
                   <Search className="w-4 h-4 text-gray-300" />
                 </motion.button>
 
-                {/* Notification */}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="relative p-2.5 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 hover:bg-white/10 transition-all"
-                >
-                  <Bell className="w-4 h-4 text-gray-300" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full" />
-                </motion.button>
+                {/* Notification avec dropdown d'articles récents - AJOUT */}
+                <div className="relative">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="relative p-2.5 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 hover:bg-white/10 transition-all"
+                  >
+                    <Bell className="w-4 h-4 text-gray-300" />
+                    {hasNewArticles && (
+                      <span className="absolute top-1 right-1 w-2 h-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full animate-pulse" />
+                    )}
+                  </motion.button>
+
+                  {/* Dropdown des articles récents - AJOUT */}
+                  <AnimatePresence>
+                    {showNotifications && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full right-0 mt-2 w-96 z-50"
+                      >
+                        <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-white/20 to-white/5">
+                          <div className="bg-black/95 backdrop-blur-2xl rounded-2xl overflow-hidden">
+                            {/* Header */}
+                            <div className="p-4 border-b border-white/10">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                                    <span className="text-xs font-bold text-white uppercase tracking-wider">
+                                      Derniers articles
+                                    </span>
+                                  </div>
+                                  <span className="text-xs text-gray-500">
+                                    Live
+                                  </span>
+                                </div>
+                                <TrendingUp className="w-4 h-4 text-orange-500" />
+                              </div>
+                            </div>
+
+                            {/* Liste des articles */}
+                            <div className="max-h-[400px] overflow-y-auto">
+                              {recentArticles.map((article, index) => (
+                                <Link
+                                  key={article._id}
+                                  to={`/article/${article.slug.current}`}
+                                  onClick={() => setShowNotifications(false)}
+                                  className="block p-4 hover:bg-white/5 transition-all border-b border-white/5 last:border-0"
+                                >
+                                  <div className="flex items-start gap-3">
+                                    {/* Timestamp */}
+                                    <div className="flex-shrink-0 text-xs text-gray-500 min-w-[60px]">
+                                      {formatTimeAgo(article.publishedAt)}
+                                    </div>
+                                    
+                                    {/* Contenu */}
+                                    <div className="flex-grow">
+                                      {/* Catégorie */}
+                                      {article.categories?.[0] && (
+                                        <span className={`inline-block px-2 py-0.5 text-[10px] font-bold uppercase rounded ${getCategoryColor(article.categories[0].title)} text-white mb-2`}>
+                                          {article.categories[0].title}
+                                        </span>
+                                      )}
+                                      
+                                      {/* Titre */}
+                                      <h4 className="text-sm font-medium text-white hover:text-cyan-400 transition-colors line-clamp-2">
+                                        {article.title}
+                                      </h4>
+                                    </div>
+
+                                    {/* Indicateur nouveau */}
+                                    {index === 0 && (
+                                      <span className="flex-shrink-0 px-2 py-0.5 bg-cyan-400 text-black text-[10px] font-bold rounded">
+                                        NEW
+                                      </span>
+                                    )}
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+
+                            {/* Footer */}
+                            <div className="p-4 border-t border-white/10">
+                              <Link
+                                to="/articles"
+                                onClick={() => setShowNotifications(false)}
+                                className="flex items-center justify-between text-xs group"
+                              >
+                                <span className="text-gray-400 group-hover:text-white transition-colors">
+                                  Voir tous les articles
+                                </span>
+                                <ArrowRight className="w-3 h-3 text-gray-400 group-hover:text-white transition-all group-hover:translate-x-1" />
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
                 {/* CTA Principal ULTRA PREMIUM */}
                 <motion.div
