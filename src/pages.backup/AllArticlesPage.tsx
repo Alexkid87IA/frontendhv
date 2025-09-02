@@ -27,10 +27,9 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 import { Footer } from '../components/layout/Footer';
 import SafeImage from '../components/common/SafeImage';
-// import { getAllArticles } from '../utils/sanityAPI';
+import { getAllArticles } from '../utils/sanityAPI';
 import { SanityArticle } from '../types/sanity';
 import { Link } from 'react-router-dom';
-import { useData } from '../context/DataContext';
 
 // Configuration des catégories avec leurs couleurs
 const categoryStyles = {
@@ -103,7 +102,7 @@ export const AllArticlesPage = () => {
         setIsLoading(true);
         setError(null);
         
-//         const sanityArticles = await getAllArticles(); - Using DataContext
+        const sanityArticles = await getAllArticles();
         
         if (sanityArticles && sanityArticles.length > 0) {
           setArticles(sanityArticles);

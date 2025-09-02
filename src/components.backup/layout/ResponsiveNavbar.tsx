@@ -3,7 +3,7 @@ import { Menu, X, ChevronDown, Bell, Search, ArrowRight, Clock, TrendingUp } fro
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
-// import { getAllArticles } from '../../utils/sanityAPI';
+import { getAllArticles } from '../../utils/sanityAPI';
 
 // Import de tous les logos
 import logoMedia from '../../assets/logos/LOGO_HV_MEDIA.svg';
@@ -11,7 +11,6 @@ import logoBusiness from '../../assets/logos/LOGO_HV_BUSINESS.svg';
 import logoMental from '../../assets/logos/LOGO_HV_PSYCHO.svg';
 import logoSociety from '../../assets/logos/LOGO_HV_SOCIETY.svg';
 import logoStory from '../../assets/logos/LOGO_HV_STORY.svg';
-import { useData } from '../context/DataContext';
 
 // Mock articles pour fallback
 const mockRecentArticles = [
@@ -73,7 +72,7 @@ export const ResponsiveNavbar = () => {
   useEffect(() => {
     const fetchRecentArticles = async () => {
       try {
-//         const articles = await getAllArticles(); - Using DataContext
+        const articles = await getAllArticles();
         if (articles && articles.length > 0) {
           setRecentArticles(articles.slice(0, 3));
           // Vérifier s'il y a de nouveaux articles (moins de 24h)

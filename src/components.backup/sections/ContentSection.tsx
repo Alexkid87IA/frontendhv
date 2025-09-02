@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, PlayCircle, TrendingUp, Users, Clock, Eye, Calendar } from 'lucide-react';
-// import { getAllArticles } from '../../utils/sanityAPI';
+import { getAllArticles } from '../../utils/sanityAPI';
 import { SanityArticle } from '../../types/sanity';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
-import { useData } from '../context/DataContext';
 
 interface ContentSectionProps {
   title?: string;
@@ -139,7 +138,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
         setIsLoading(true);
         console.log(`🔍 Récupération des contenus pour la section: ${sectionType}`);
         
-//         const sanityArticles = await getAllArticles(); - Using DataContext
+        const sanityArticles = await getAllArticles();
         
         // Si on a des articles depuis Sanity
         if (sanityArticles && sanityArticles.length > 0) {

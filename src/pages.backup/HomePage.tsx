@@ -9,8 +9,7 @@ import { EssentialArticlesSection } from '../components/sections/EssentialArticl
 import { ClubSection } from '../components/sections/ClubSection';
 import { Footer } from '../components/layout/Footer';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
-// import { getAllArticles } from '../utils/sanityAPI';
-import { useData } from '../context/DataContext';
+import { getAllArticles } from '../utils/sanityAPI';
 
 const mockArticles = [
   {
@@ -226,7 +225,7 @@ const mockArticles = [
 ];
 
 export const HomePage = () => {
-  const { recentArticles: articles, isLoading } = useData();
+  const [articles, setArticles] = useState(mockArticles);
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState('mock');
 
@@ -234,7 +233,7 @@ export const HomePage = () => {
     const fetchArticles = async () => {
       try {
         setIsLoading(true);
-//         const sanityArticles = await getAllArticles(); - Using DataContext
+        const sanityArticles = await getAllArticles();
         
         if (sanityArticles && sanityArticles.length > 0) {
           setArticles(sanityArticles.slice(0, 6));
