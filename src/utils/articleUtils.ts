@@ -131,10 +131,20 @@ export const generateTableOfContents = (article: SanityArticle | null): TableOfC
           subheadings: []
         };
         headings.push(currentH2);
-      } else if (heading.style === 'h3' && currentH2) {
-        currentH2.subheadings.push({ id, text });
+      } else if (heading.style === 'h3') {
+        // Si on a un H3 sans H2 parent, on le traite comme un heading principal
+        if (!currentH2) {
+          headings.push({
+            id,
+            text,
+            subheadings: []
+          });
+        } else {
+          // Sinon on l'ajoute comme sous-heading du H2 courant
+          currentH2.subheadings.push({ id, text });
+        }
       }
     });
 
-  return headings;
+  return headings.length > 0 ? headings : null;
 };

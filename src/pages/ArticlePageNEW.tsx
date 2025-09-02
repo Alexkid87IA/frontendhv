@@ -40,6 +40,7 @@ const ArticlePageNEW: React.FC<{ isEmission?: boolean }> = ({ isEmission = false
   // États principaux
   const [article, setArticle] = useState<SanityArticle | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<SanityArticle[]>([]);
+  const [latestArticles, setLatestArticles] = useState<SanityArticle[]>([]); // NOUVEAU
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -164,6 +165,19 @@ const ArticlePageNEW: React.FC<{ isEmission?: boolean }> = ({ isEmission = false
             }
             
             setRelatedArticles(filtered || []);
+            
+            // NOUVEAU : Charger les derniers articles publiés
+            const allArticlesSorted = cleanedArticles
+              .filter((a: any) => a._id !== fetchedArticle._id) // Exclure l'article actuel
+              .sort((a: any, b: any) => {
+                const dateA = new Date(a.publishedAt || a._createdAt).getTime();
+                const dateB = new Date(b.publishedAt || b._createdAt).getTime();
+                return dateB - dateA; // Plus récent en premier
+              })
+              .slice(0, 6); // Prendre les 6 derniers
+            
+            setLatestArticles(allArticlesSorted);
+            
           } catch (err) {
             console.error("Erreur chargement articles liés:", err);
           }
@@ -214,8 +228,7 @@ const ArticlePageNEW: React.FC<{ isEmission?: boolean }> = ({ isEmission = false
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareTitle = article?.title || '';
   const shareText = article?.excerpt || '';
-
-  // États de chargement et d'erreur
+  
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -319,25 +332,11 @@ const ArticlePageNEW: React.FC<{ isEmission?: boolean }> = ({ isEmission = false
         )}
 
         {/* Container principal avec layout 2 colonnes */}
-        <div className="container mx-auto px-4 py-16 max-w-full overflow-hidden">
-          <div className="relative">
-            {/* Sidebar fixe sur desktop - en dehors du flux */}
-            <div className="hidden lg:block absolute right-0 top-0 w-[400px] xl:w-[420px]">
-              <div className="sticky top-6">
-                <ArticleSidebar
-                  article={article}
-                  relatedArticles={relatedArticles}
-                  headings={headings}
-                  activeSection={activeSection}
-                  scrollProgress={scrollProgress}
-                  colors={colors}
-                  onShare={handleShare}
-                />
-              </div>
-            </div>
+        <div className="container mx-auto px-4 py-16 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
             
-            {/* Contenu principal avec marge à droite pour la sidebar */}
-            <div className="lg:mr-[440px] xl:mr-[460px]">
+            {/* Colonne principale qui contient le contenu et les éléments mobile */}
+            <div className="lg:col-span-8">
               {/* Encart Auteur - Version mobile uniquement */}
               {article.author && (
                 <ArticleAuthor 
@@ -357,6 +356,20 @@ const ArticlePageNEW: React.FC<{ isEmission?: boolean }> = ({ isEmission = false
 
               {/* CTA Club Élite - Version mobile */}
               <ArticleCTA colors={colors} variant="mobile" />
+            </div>
+
+            {/* Sidebar droite - Desktop uniquement */}
+            <div className="hidden lg:block lg:col-span-4">
+              <ArticleSidebar
+                article={article}
+                relatedArticles={relatedArticles}
+                latestArticles={latestArticles} // NOUVEAU
+                headings={headings}
+                activeSection={activeSection}
+                scrollProgress={scrollProgress}
+                colors={colors}
+                onShare={handleShare}
+              />
             </div>
           </div>
         </div>

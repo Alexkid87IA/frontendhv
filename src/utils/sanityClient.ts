@@ -1,6 +1,25 @@
 import { createClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
-import type { SanityImage } from "../pages/ArticlePage";
+
+// Définition locale du type SanityImage
+export interface SanityImage {
+  asset?: {
+    _ref?: string;
+    _type?: string;
+  };
+  hotspot?: {
+    x?: number;
+    y?: number;
+    height?: number;
+    width?: number;
+  };
+  crop?: {
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+  };
+}
 
 // Client public pour les contenus publiés
 export const sanityClient = createClient({
@@ -27,7 +46,7 @@ export const previewClient = createClient({
 // Logs de débogage pour vérifier le preview
 console.log("🔑 Token preview chargé:", !!import.meta.env.VITE_SANITY_PREVIEW_TOKEN);
 console.log("📋 Preview client configuré avec perspective:", previewClient.config().perspective);
-console.log("🏗️ Dataset utilisé:", previewClient.config().dataset);
+console.log("🗂️ Dataset utilisé:", previewClient.config().dataset);
 
 // Create a reusable image builder instance
 const builder = imageUrlBuilder(sanityClient);

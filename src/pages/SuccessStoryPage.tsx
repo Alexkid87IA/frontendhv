@@ -1,8 +1,8 @@
 import React from 'react';
-import { ArticlePage } from './ArticlePage';
+import ArticlePageNEW from './ArticlePageNEW';
 
 export const SuccessStoryPage = () => {
-  return <ArticlePage />;
+  return <ArticlePageNEW />;
 };
 
 export default SuccessStoryPage;

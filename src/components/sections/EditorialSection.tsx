@@ -213,22 +213,14 @@ export const EditorialSection = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 mb-6"
-            >
-              <Zap className="w-6 h-6 text-white" />
-            </motion.div>
-            
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              <span className="text-white">Système périodique </span>
+              <span className="text-white">Explore nos </span>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400">
-                High Value
+                4 univers
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-3xl mx-auto">
-              4 éléments fondamentaux, 20 isotopes thématiques pour transformer ta vision
+              Story, Business, Mental et Society - Choisis ta verticale pour transformer ta vision
             </p>
           </motion.div>
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SEO } from '../components/common/SEO';
 import { staticSEO } from '../utils/seo.config';
 import { HeroSection } from '../components/sections/HeroSection';
+import { RecentArticlesSection } from '../components/sections/RecentArticlesSection';
 import { EditorialSection } from '../components/sections/EditorialSection';
 import ContentSection from '../components/sections/ContentSection';
 import { EssentialArticlesSection } from '../components/sections/EssentialArticlesSection';
@@ -136,6 +137,90 @@ const mockArticles = [
         slug: { current: 'business' }
       }
     ]
+  },
+  {
+    _id: '7',
+    title: "La méthode des micro-habitudes pour transformer sa vie",
+    slug: { _type: "slug", current: 'micro-habitudes-transformation' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'https://picsum.photos/400/300?random=7',
+        _type: "reference"
+      }
+    },
+    excerpt: "Comment de petits changements quotidiens peuvent mener à des résultats extraordinaires.",
+    publishedAt: "2024-03-14",
+    categories: [
+      {
+        _id: 'cat4',
+        title: 'Mental',
+        slug: { current: 'mental' }
+      }
+    ]
+  },
+  {
+    _id: '8',
+    title: "Négociation avancée : Les tactiques des meilleurs dealmakers",
+    slug: { _type: "slug", current: 'negociation-avancee-dealmakers' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'https://picsum.photos/400/300?random=8',
+        _type: "reference"
+      }
+    },
+    excerpt: "Les stratégies de négociation utilisées par les plus grands entrepreneurs pour conclure des deals.",
+    publishedAt: "2024-03-13",
+    categories: [
+      {
+        _id: 'cat2',
+        title: 'Business',
+        slug: { current: 'business' }
+      }
+    ]
+  },
+  {
+    _id: '9',
+    title: "Construire une marque personnelle authentique en 2024",
+    slug: { _type: "slug", current: 'marque-personnelle-authentique' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'https://picsum.photos/400/300?random=9',
+        _type: "reference"
+      }
+    },
+    excerpt: "Le guide complet pour développer votre personal branding sans perdre votre authenticité.",
+    publishedAt: "2024-03-12",
+    categories: [
+      {
+        _id: 'cat5',
+        title: 'Story',
+        slug: { current: 'story' }
+      }
+    ]
+  },
+  {
+    _id: '10',
+    title: "Les nouvelles règles du leadership post-pandémie",
+    slug: { _type: "slug", current: 'leadership-post-pandemie' },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: 'https://picsum.photos/400/300?random=10',
+        _type: "reference"
+      }
+    },
+    excerpt: "Comment les meilleurs leaders adaptent leur style de management aux nouvelles réalités du travail.",
+    publishedAt: "2024-03-11",
+    categories: [
+      {
+        _id: 'cat3',
+        title: 'Society',
+        slug: { current: 'society' }
+      }
+    ]
   }
 ];
 
@@ -190,8 +275,13 @@ export const HomePage = () => {
           {/* 1. Hero avec article à la une + 6 articles récents + CTA */}
           <HeroSection />
           
-          {/* 3. Navigation thématique + stats + CTA */}
-          <EditorialSection />
+          {/* 2. Section des derniers articles publiés */}
+          <RecentArticlesSection articles={articles} />
+          
+          {/* 3. Articles essentiels */}
+          <section className="py-20 overflow-hidden">
+            <EssentialArticlesSection />
+          </section>
           
           {/* 4. Nos formats : Podcasts */}
           <section className="py-20 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent overflow-hidden">
@@ -220,10 +310,8 @@ export const HomePage = () => {
             />
           </section>
           
-          {/* 7. Articles essentiels (différents du Hero) */}
-          <section className="py-20 overflow-hidden">
-            <EssentialArticlesSection />
-          </section>
+          {/* 7. Navigation thématique + stats + CTA */}
+          <EditorialSection />
           
           {/* 8. Proposition premium - SANS WRAPPER */}
           <ClubSection />
