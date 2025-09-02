@@ -21,11 +21,24 @@ export interface SanityImage {
   };
 }
 
+// Configuration depuis les variables d'environnement
+const projectId = import.meta.env.VITE_SANITY_PROJECT_ID || "z9wsynas";
+const dataset = import.meta.env.VITE_SANITY_DATASET || "production";
+const apiVersion = import.meta.env.VITE_SANITY_API_VERSION || "2024-05-13";
+
+// Log de vérification de la configuration
+console.log("🔧 Configuration Sanity:", { 
+  projectId, 
+  dataset, 
+  apiVersion,
+  hasToken: !!import.meta.env.VITE_SANITY_PREVIEW_TOKEN 
+});
+
 // Client public pour les contenus publiés
 export const sanityClient = createClient({
-  projectId: "z9wsynas",
-  dataset: "production",
-  apiVersion: "2024-05-13",
+  projectId,
+  dataset,
+  apiVersion,
   useCdn: true,
   perspective: "published",
   cors: true
@@ -33,13 +46,13 @@ export const sanityClient = createClient({
 
 // Client preview pour les brouillons (avec token)
 export const previewClient = createClient({
-  projectId: "z9wsynas",
-  dataset: "production",
-  apiVersion: "2024-05-13",
+  projectId,
+  dataset,
+  apiVersion,
   useCdn: false, // Pas de CDN pour le preview
-  perspective: "raw", // CHANGÉ : "raw" permet de voir tous les documents (publiés et brouillons)
+  perspective: "raw", // "raw" permet de voir tous les documents (publiés et brouillons)
   cors: true,
-  token: import.meta.env.VITE_SANITY_PREVIEW_TOKEN || import.meta.env.VITE_SANITY_TOKEN || process.env.VITE_SANITY_TOKEN,
+  token: import.meta.env.VITE_SANITY_PREVIEW_TOKEN,
   ignoreBrowserTokenWarning: true
 });
 
