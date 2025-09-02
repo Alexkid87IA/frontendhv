@@ -11,22 +11,46 @@ interface ArticleHeroProps {
   colors: VerticalColors;
 }
 
+// Fonction pour calculer la position de l'image basée sur le hotspot
+const getHotspotPosition = (hotspot: any) => {
+  if (!hotspot) {
+    // Position par défaut si pas de hotspot
+    return 'center center';
+  }
+  
+  // Convertir les coordonnées du hotspot (0-1) en pourcentages CSS
+  const x = Math.round(hotspot.x * 100);
+  const y = Math.round(hotspot.y * 100);
+  
+  return `${x}% ${y}%`;
+};
+
 const ArticleHero: React.FC<ArticleHeroProps> = ({ article, colors }) => {
+  // Récupérer le hotspot s'il existe
+  const hotspot = article.mainImage?.hotspot;
+  const imagePosition = getHotspotPosition(hotspot);
+  
+  // Position différente pour mobile si nécessaire
+  // On peut ajuster légèrement pour mobile
+  const mobileImagePosition = hotspot 
+    ? `${Math.round(hotspot.x * 100)}% ${Math.round(hotspot.y * 100 * 0.9)}%` // Légèrement plus haut sur mobile
+    : 'center 20%'; // Fallback pour mobile
+  
   return (
     <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-end overflow-hidden bg-gradient-to-br from-gray-900 to-black">
-      {/* Container de l'image avec meilleur cadrage */}
+      {/* Container de l'image avec hotspot */}
       <div className="absolute inset-0">
         {article.mainImage && article.mainImage.asset && article.mainImage.asset._ref ? (
           <>
-            {/* Image principale avec object-position amélioré */}
+            {/* Image principale avec hotspot dynamique - Desktop */}
             <img 
               src={buildSanityImageUrl(article.mainImage.asset._ref)}
               alt={article.title}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover hidden md:block"
               style={{ 
                 opacity: 0.9,
-                // Position intelligente : privilégie le haut de l'image (visages)
-                objectPosition: 'center 20%' // Montre plus le haut de l'image
+                // Utilise la position du hotspot définie dans Sanity
+                objectPosition: imagePosition
               }}
               onError={(e) => {
                 console.error("Erreur chargement image:", e);
@@ -34,17 +58,28 @@ const ArticleHero: React.FC<ArticleHeroProps> = ({ article, colors }) => {
               }}
             />
             
-            {/* Version mobile avec cadrage différent */}
+            {/* Version mobile avec position ajustée */}
             <img 
               src={buildSanityImageUrl(article.mainImage.asset._ref)}
               alt={article.title}
               className="absolute inset-0 w-full h-full object-cover md:hidden"
               style={{ 
                 opacity: 0.9,
-                // Sur mobile, on montre encore plus le haut pour les portraits
-                objectPosition: 'center 15%'
+                // Position adaptée pour mobile
+                objectPosition: mobileImagePosition
+              }}
+              onError={(e) => {
+                console.error("Erreur chargement image:", e);
+                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80";
               }}
             />
+            
+            {/* Debug info - À enlever en production */}
+            {process.env.NODE_ENV === 'development' && hotspot && (
+              <div className="absolute top-4 right-4 bg-black/70 text-white text-xs p-2 rounded">
+                Hotspot: {Math.round(hotspot.x * 100)}% x {Math.round(hotspot.y * 100)}%
+              </div>
+            )}
           </>
         ) : (
           <img 
@@ -66,7 +101,7 @@ const ArticleHero: React.FC<ArticleHeroProps> = ({ article, colors }) => {
       </div>
 
       {/* Contenu Hero avec plus d'espace */}
-      <div className="relative container mx-auto px-4 pb-16 pt-48">{/* Plus d'espace en bas */}
+      <div className="relative container mx-auto px-4 pb-16 pt-48">
         {/* Breadcrumb plus visible avec meilleur contraste */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -107,8 +142,6 @@ const ArticleHero: React.FC<ArticleHeroProps> = ({ article, colors }) => {
         >
           {article.title}
         </motion.h1>
-
-        {/* PAS D'EXCERPT ICI - Il sera dans le corps de l'article */}
 
         {/* Meta info simplifiée - seulement date */}
         <motion.div 

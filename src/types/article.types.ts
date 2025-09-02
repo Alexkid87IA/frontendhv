@@ -1,5 +1,31 @@
 // src/types/article.types.ts
 
+// Type pour le hotspot d'image Sanity
+export interface SanityImageHotspot {
+  x: number; // Valeur entre 0 et 1
+  y: number; // Valeur entre 0 et 1
+  height: number;
+  width: number;
+}
+
+// Type pour le crop d'image Sanity
+export interface SanityImageCrop {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
+// Type pour l'image Sanity avec hotspot
+export interface SanityImage {
+  asset: {
+    _ref: string;
+    _type?: string;
+  };
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+}
+
 // Types pour les données Sanity
 export interface SanityArticle {
   _id: string;
@@ -8,11 +34,11 @@ export interface SanityArticle {
   excerpt?: string;
   body?: any[];
   content?: any[];
-  mainImage?: any;
+  mainImage?: SanityImage; // Utilise le nouveau type avec hotspot
   publishedAt?: string;
   author?: {
     name: string;
-    image?: any;
+    image?: SanityImage; // L'image de l'auteur peut aussi avoir un hotspot
     bio?: string;
   };
   categories?: Array<{
