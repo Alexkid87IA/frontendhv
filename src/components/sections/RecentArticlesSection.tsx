@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, ArrowRight, RefreshCw, TrendingUp } from 'lucide-react';
+import { Clock, ArrowRight, RefreshCw } from 'lucide-react';
 
 export const RecentArticlesSection = ({ articles = [] }) => {
   // On prend les 10 derniers articles
@@ -22,19 +22,61 @@ export const RecentArticlesSection = ({ articles = [] }) => {
   };
 
   const formatTimeAgo = (date) => {
-    const now = new Date();
     const publishDate = new Date(date);
-    const diffInMinutes = Math.floor((now.getTime() - publishDate.getTime()) / (1000 * 60));
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    const diffInDays = Math.floor(diffInHours / 24);
     
-    if (diffInMinutes < 60) return `${diffInMinutes}min`;
-    if (diffInHours < 24) return `${diffInHours}h`;
-    
+    // Toujours afficher au format JJ/MM/AAAA
     const day = publishDate.getDate().toString().padStart(2, '0');
     const month = (publishDate.getMonth() + 1).toString().padStart(2, '0');
     const year = publishDate.getFullYear();
+    
     return `${day}/${month}/${year}`;
+  };
+
+  // Fonction pour obtenir l'URL de l'image depuis Sanity
+  const getImageUrl = (article) => {
+    // Fonction helper pour construire l'URL Sanity
+    const buildSanityImageUrl = (imageRef) => {
+      if (!imageRef || !imageRef.asset || !imageRef.asset._ref) return null;
+      
+      // Extraire les parties de la référence d'image
+      // Format typique: image-{id}-{dimensions}-{format}
+      const refParts = imageRef.asset._ref.split('-');
+      if (refParts.length < 4) return null;
+      
+      const id = refParts[1];
+      const dimensions = refParts[2];
+      const format = refParts[3];
+      
+      // Construire l'URL CDN de Sanity avec votre Project ID
+      const projectId = 'z9wsynas'; // Votre ID de projet Sanity
+      const dataset = 'production'; // Ou 'development' selon votre configuration
+      
+      return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${format}?w=200&h=200&fit=crop`;
+    };
+    
+    // Vérifier si l'article a une image principale (mainImage)
+    if (article.mainImage) {
+      const url = buildSanityImageUrl(article.mainImage);
+      if (url) return url;
+    }
+    
+    // Si pas d'image principale, vérifier s'il y a une image de couverture (coverImage)
+    if (article.coverImage) {
+      const url = buildSanityImageUrl(article.coverImage);
+      if (url) return url;
+    }
+    
+    // Alternative: si l'image a déjà une URL directe
+    if (article.mainImage?.url) {
+      return article.mainImage.url;
+    }
+    
+    if (article.coverImage?.url) {
+      return article.coverImage.url;
+    }
+    
+    // Si pas d'image, retourner une image par défaut
+    return '/images/default-article.jpg'; // Assurez-vous d'avoir cette image dans votre dossier public
   };
 
   return (
@@ -117,6 +159,7 @@ export const RecentArticlesSection = ({ articles = [] }) => {
             {recentArticles.map((article, index) => {
               const categoryStyle = getCategoryStyle(article.categories?.[0]?.title);
               const isFirst = index === 0;
+              const imageUrl = getImageUrl(article);
               
               return (
                 <motion.article
@@ -131,15 +174,17 @@ export const RecentArticlesSection = ({ articles = [] }) => {
                     ${index !== recentArticles.length - 1 ? 'border-b border-gray-900' : ''}
                     hover:bg-white/[0.02] transition-all duration-200
                   `}
+                  onClick={() => window.location.href = `/article/${article.slug?.current}`}
+                  style={{ cursor: 'pointer' }}
                 >
                   {/* Timeline Point - Desktop only */}
                   <div className="hidden lg:block absolute left-[29px] top-8 w-3 h-3 bg-gray-800 rounded-full border-2 border-black z-10" />
                   
                   {/* Mobile Layout: Stack vertically */}
                   <div className="p-4 lg:pl-16">
-                    {/* Top Row: Time + Category + NEW badge */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs text-gray-500 min-w-[45px]">
+                    {/* Top Row: Time + Category */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-xs text-gray-500 min-w-[85px]">
                         {formatTimeAgo(article.publishedAt)}
                       </span>
                       
@@ -151,51 +196,57 @@ export const RecentArticlesSection = ({ articles = [] }) => {
                           {article.categories[0].title}
                         </span>
                       )}
-                      
-                      {isFirst && (
-                        <span className="px-2 py-0.5 bg-cyan-400 text-black text-[10px] font-bold rounded uppercase">
-                          NEW
-                        </span>
-                      )}
                     </div>
 
                     {/* Main Content Row */}
                     <div className="flex gap-3">
-                      {/* Thumbnail */}
+                      {/* Thumbnail - Utilisation de l'image Sanity */}
                       <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-gray-900">
-                        <img
-                          src={article.mainImage?.asset?._ref || `https://picsum.photos/100/100?random=${index}`}
-                          alt={article.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-
-                      {/* Title + Action */}
-                      <div className="flex-1 min-w-0 flex flex-col justify-between">
-                        <h3 className="text-white font-medium text-base sm:text-lg leading-tight line-clamp-2 group-hover:text-cyan-400 transition-colors">
-                          {article.title}
-                        </h3>
-                        
-                        {/* Mobile: Inline button */}
-                        <div className="mt-2 sm:mt-0">
-                          <a 
-                            href={`/article/${article.slug?.current}`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 rounded-full text-white text-xs font-medium transition-colors"
-                          >
-                            <span>Lire</span>
-                            <ArrowRight className="w-3 h-3" />
-                          </a>
-                        </div>
-                      </div>
-
-                      {/* Desktop: Trending indicator */}
-                      {index < 3 && (
-                        <div className="hidden sm:flex items-center justify-center flex-shrink-0">
-                          <div className="p-2 bg-orange-500/20 rounded-full">
-                            <TrendingUp className="w-4 h-4 text-orange-500" />
+                        {imageUrl ? (
+                          <img
+                            src={imageUrl}
+                            alt={article.title}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                            onError={(e) => {
+                              // Si l'image ne charge pas, utiliser une image par défaut
+                              e.currentTarget.src = '/images/default-article.jpg';
+                            }}
+                          />
+                        ) : (
+                          // Placeholder si pas d'image
+                          <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                            <span className="text-gray-600 text-xs">No image</span>
                           </div>
+                        )}
+                      </div>
+
+                      {/* Title + Excerpt */}
+                      <div className="flex-1 min-w-0 flex flex-col justify-between">
+                        <div>
+                          <h3 className="text-white font-medium text-base sm:text-lg leading-tight line-clamp-2 group-hover:text-cyan-400 transition-colors">
+                            {article.title}
+                          </h3>
+                          {/* Ajout de l'extrait court */}
+                          {article.excerpt && (
+                            <p className="text-gray-400 text-sm mt-1 line-clamp-2">
+                              {article.excerpt}
+                            </p>
+                          )}
                         </div>
-                      )}
+                      </div>
+                    </div>
+
+                    {/* Bouton Lire plus aligné à droite */}
+                    <div className="flex justify-end mt-3">
+                      <a 
+                        href={`/article/${article.slug?.current}`}
+                        className="inline-flex items-center gap-1 px-4 py-1.5 bg-orange-500 hover:bg-orange-600 rounded-full text-white text-xs font-medium transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <span>Lire plus</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </a>
                     </div>
                   </div>
                 </motion.article>
