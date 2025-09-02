@@ -26,9 +26,20 @@ const getHotspotPosition = (hotspot: any) => {
 };
 
 const ArticleHero: React.FC<ArticleHeroProps> = ({ article, colors }) => {
+  // Debug : afficher ce qu'on reçoit
+  console.log('ArticleHero - mainImage data:', {
+    mainImage: article.mainImage,
+    hasHotspot: !!article.mainImage?.hotspot,
+    hotspotValues: article.mainImage?.hotspot,
+    hasCrop: !!article.mainImage?.crop,
+    cropValues: article.mainImage?.crop
+  });
+  
   // Récupérer le hotspot s'il existe
   const hotspot = article.mainImage?.hotspot;
   const imagePosition = getHotspotPosition(hotspot);
+  
+  console.log('ArticleHero - Calculated position:', imagePosition);
   
   return (
     <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-end overflow-hidden bg-gradient-to-br from-gray-900 to-black">

@@ -54,8 +54,15 @@ export const getAllArticles = async (): Promise<SanityArticle[]> => {
         _id,
         title,
         slug,
-        contentType,  // AJOUT IMPORTANT : récupération du contentType
-        mainImage,
+        contentType,
+        mainImage {
+          asset->{
+            _ref,
+            _type
+          },
+          hotspot,
+          crop
+        },
         excerpt,
         publishedAt,
         keyPoints,
@@ -85,7 +92,14 @@ export const getAllArticles = async (): Promise<SanityArticle[]> => {
         author->{
           _id,
           name,
-          image
+          image {
+            asset->{
+              _ref,
+              _type
+            },
+            hotspot,
+            crop
+          }
         }
       }`;
       
@@ -130,7 +144,14 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         title,
         slug,
         contentType,
-        mainImage,
+        mainImage {
+          asset->{
+            _ref,
+            _type
+          },
+          hotspot,
+          crop
+        },
         body,
         excerpt,
         publishedAt,
@@ -161,7 +182,14 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         author->{
           _id,
           name,
-          image,
+          image {
+            asset->{
+              _ref,
+              _type
+            },
+            hotspot,
+            crop
+          },
           bio
         }
       }`;
@@ -191,7 +219,14 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
           title,
           slug,
           contentType,
-          mainImage,
+          mainImage {
+            asset->{
+              _ref,
+              _type
+            },
+            hotspot,
+            crop
+          },
           body,
           excerpt,
           publishedAt,
@@ -222,7 +257,14 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
           author->{
             _id,
             name,
-            image,
+            image {
+              asset->{
+                _ref,
+                _type
+              },
+              hotspot,
+              crop
+            },
             bio
           }
         }`;
@@ -257,7 +299,14 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         title,
         slug,
         contentType,
-        mainImage,
+        mainImage {
+          asset->{
+            _ref,
+            _type
+          },
+          hotspot,
+          crop
+        },
         body,
         excerpt,
         publishedAt,
@@ -288,13 +337,21 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         author->{
           _id,
           name,
-          image,
+          image {
+            asset->{
+              _ref,
+              _type
+            },
+            hotspot,
+            crop
+          },
           bio
         }
       }`;
       
       const result = await sanityClient.fetch(query, { slug });
       console.log("📋 Article récupéré avec contentType:", result?.contentType);
+      console.log("🎯 Hotspot data:", result?.mainImage?.hotspot);
       return result;
     } catch (error) {
       console.error(`Erreur lors de la récupération de l'article ${slug}:`, error);
@@ -322,7 +379,14 @@ export const getArticlesByCategory = async (categorySlug: string): Promise<Sanit
         title,
         slug,
         contentType,
-        mainImage,
+        mainImage {
+          asset->{
+            _ref,
+            _type
+          },
+          hotspot,
+          crop
+        },
         excerpt,
         publishedAt,
         keyPoints,
@@ -390,13 +454,20 @@ export const getAmuseBouches = async (limit = 5): Promise<any[]> => {
         _id,
         title,
         slug,
-        mainImage,
+        mainImage {
+          asset->{
+            _ref,
+            _type
+          },
+          hotspot,
+          crop
+        },
         "description": excerpt,
-        "coverImage": mainImage,  // AmuseBoucheSection utilise coverImage
+        "coverImage": mainImage,
         excerpt,
         publishedAt,
         keyPoints,
-        "duration": coalesce(duration, readingTime, "3 min"),  // Utiliser duration si disponible
+        "duration": coalesce(duration, readingTime, "3 min"),
         "videoUrl": videoUrl
       }`;
       
@@ -566,7 +637,14 @@ export const getContentItems = async (contentType: string, limit = 5): Promise<a
         title,
         slug,
         contentType,
-        mainImage,
+        mainImage {
+          asset->{
+            _ref,
+            _type
+          },
+          hotspot,
+          crop
+        },
         excerpt,
         publishedAt,
         keyPoints,
@@ -622,7 +700,14 @@ export const getArticlesBySubcategory = async (subcategorySlug: string): Promise
         title,
         slug,
         contentType,
-        mainImage,
+        mainImage {
+          asset->{
+            _ref,
+            _type
+          },
+          hotspot,
+          crop
+        },
         excerpt,
         publishedAt,
         keyPoints,
