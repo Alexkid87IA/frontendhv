@@ -7,7 +7,7 @@ import { Analytics } from './components/common/Analytics';
 import { ChatWidget } from './components/chat/ChatWidget';
 import { DataProvider } from './context/DataContext';
 import { HomePage } from './pages/HomePage';
-import { ArticlePage } from './pages/ArticlePage';
+import ArticlePageNEW from './pages/ArticlePageNEW'; // Utilisation de la version refactorisée
 import { CategoryPage } from './pages/CategoryPage';
 import { SubcategoryPage } from './pages/SubcategoryPage';
 import { PodcastPage } from './pages/PodcastPage';
@@ -37,7 +37,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/articles" element={<AllArticlesPage />} />
-                <Route path="/article/:slug" element={<ArticlePage />} />
+                <Route path="/article/:slug" element={<ArticlePageNEW />} />
                 <Route path="/business-ideas" element={<BusinessIdeasPage />} />
                 <Route path="/business-idea/:slug" element={<BusinessIdeaPage />} />
                 <Route path="/success-story/:slug" element={<SuccessStoryPage />} />
