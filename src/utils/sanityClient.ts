@@ -24,14 +24,25 @@ export interface SanityImage {
 // Configuration depuis les variables d'environnement
 const projectId = import.meta.env.VITE_SANITY_PROJECT_ID || "z9wsynas";
 const dataset = import.meta.env.VITE_SANITY_DATASET || "production";
-const apiVersion = import.meta.env.VITE_SANITY_API_VERSION || "2024-05-13";
+const apiVersion = import.meta.env.VITE_SANITY_API_VERSION || "2024-01-01"; // Aligné avec votre .env
 
-// Log de vérification de la configuration
+// Chargement du token depuis les variables d'environnement
+const previewToken = import.meta.env.VITE_SANITY_PREVIEW_TOKEN;
+
+// Vérification du chargement
+if (!previewToken) {
+  console.warn("⚠️ VITE_SANITY_PREVIEW_TOKEN non trouvé dans les variables d'environnement");
+  console.warn("Assurez-vous que la variable est configurée dans Netlify ou votre .env local");
+}
+
+// Logs de vérification de la configuration
 console.log("🔧 Configuration Sanity:", { 
   projectId, 
   dataset, 
   apiVersion,
-  hasToken: !!import.meta.env.VITE_SANITY_PREVIEW_TOKEN 
+  hasToken: !!previewToken,
+  tokenLength: previewToken?.length,
+  tokenStart: previewToken?.substring(0, 10) + "..." // Pour debug
 });
 
 // Client public pour les contenus publiés
@@ -49,17 +60,32 @@ export const previewClient = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: false, // Pas de CDN pour le preview
-  perspective: "raw", // "raw" permet de voir tous les documents (publiés et brouillons)
+  useCdn: false, // IMPORTANT: Pas de CDN pour le preview
+  perspective: "raw", // IMPORTANT: "raw" permet de voir TOUS les documents
   cors: true,
-  token: import.meta.env.VITE_SANITY_PREVIEW_TOKEN,
+  token: previewToken,
   ignoreBrowserTokenWarning: true
 });
 
-// Logs de débogage pour vérifier le preview
-console.log("🔑 Token preview chargé:", !!import.meta.env.VITE_SANITY_PREVIEW_TOKEN);
-console.log("📋 Preview client configuré avec perspective:", previewClient.config().perspective);
-console.log("🗂️ Dataset utilisé:", previewClient.config().dataset);
+// Logs de débogage détaillés pour vérifier le preview
+console.log("🔑 Token preview chargé:", !!previewToken);
+console.log("📋 Preview client configuré:");
+console.log("  - Perspective:", previewClient.config().perspective);
+console.log("  - Dataset:", previewClient.config().dataset);
+console.log("  - UseCDN:", previewClient.config().useCdn);
+console.log("  - API Version:", previewClient.config().apiVersion);
+
+// Test de connexion au preview (optionnel - commentez en production)
+if (import.meta.env.DEV && previewToken) {
+  previewClient
+    .fetch(`*[_type == "article" && _id in path("drafts.*")][0...1]{_id, title}`)
+    .then(result => {
+      console.log("✅ Test preview client - Brouillons accessibles:", result?.length > 0);
+    })
+    .catch(err => {
+      console.error("❌ Erreur test preview client:", err.message);
+    });
+}
 
 // Create a reusable image builder instance
 const builder = imageUrlBuilder(sanityClient);
@@ -142,3 +168,15 @@ export function urlFor(source: SanityImage | string | undefined) {
 
 // Export the builder for cases where direct access is needed
 export { builder as imageBuilder };
+
+// Fonction helper pour vérifier si on est en mode preview
+export function isPreviewMode(): boolean {
+  if (typeof window === 'undefined') return false;
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('preview') === 'true';
+}
+
+// Fonction helper pour obtenir le bon client selon le contexte
+export function getClient(preview = false) {
+  return preview ? previewClient : sanityClient;
+}
