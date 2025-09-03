@@ -226,37 +226,34 @@ const mockArticles = [
 ];
 
 export const HomePage = () => {
-  const { recentArticles: articles, isLoading } = useData();
-  const [isLoading, setIsLoading] = useState(true);
+  // CORRECTION: Utilisation correcte du contexte et ajout des états locaux manquants
+  const { recentArticles, isLoading: contextLoading } = useData();
+  const [articles, setArticles] = useState(mockArticles);
+  const [isLoading, setIsLoading] = useState(false);
   const [dataSource, setDataSource] = useState('mock');
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        setIsLoading(true);
-//         const sanityArticles = await getAllArticles(); - Using DataContext
-        
-        if (sanityArticles && sanityArticles.length > 0) {
-          setArticles(sanityArticles.slice(0, 6));
-          setDataSource('sanity');
-          console.log('✅ Articles récupérés depuis Sanity CMS');
-        } else {
-          setArticles(mockArticles);
-          setDataSource('mock');
-          console.log('📦 Utilisation des articles mockés (fallback)');
-        }
-      } catch (error) {
-        console.error('❌ Erreur lors de la récupération des articles:', error);
-        setArticles(mockArticles);
-        setDataSource('mock');
-        console.log('📦 Utilisation des articles mockés suite à une erreur');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // Utilisation directe des données du contexte si disponibles
+    if (recentArticles && recentArticles.length > 0) {
+      setArticles(recentArticles.slice(0, 10));
+      setDataSource('sanity');
+      console.log('✅ Articles récupérés depuis le contexte DataContext');
+    } else {
+      // Fallback sur les données mockées
+      setArticles(mockArticles);
+      setDataSource('mock');
+      console.log('📦 Utilisation des articles mockés (fallback)');
+    }
+  }, [recentArticles]);
 
-    fetchArticles();
-  }, []);
+  // Afficher le spinner si le contexte est en chargement
+  if (contextLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <>
