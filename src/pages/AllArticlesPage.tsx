@@ -27,10 +27,9 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 import { Footer } from '../components/layout/Footer';
 import SafeImage from '../components/common/SafeImage';
-// import { getAllArticles } from '../utils/sanityAPI';
+import { getAllArticles } from '../utils/sanityAPI'; // Import direct
 import { SanityArticle } from '../types/sanity';
 import { Link } from 'react-router-dom';
-import { useData } from '../context/DataContext';
 
 // Configuration des catégories avec leurs couleurs
 const categoryStyles = {
@@ -84,6 +83,44 @@ const generateTopicsFromArticles = (articles: SanityArticle[]) => {
     .slice(0, 6); // Garder les 6 plus populaires
 };
 
+// Fonction pour générer des articles mock
+const generateMockArticles = (): SanityArticle[] => {
+  const titles = [
+    "Comment j'ai transformé mon échec en opportunité millionnaire",
+    "Les 5 stratégies pour lever 1M€ en 2024",
+    "De 0 à 100k followers : ma méthode en 30 jours",
+    "Pourquoi j'ai quitté Google pour créer ma startup",
+    "Le mindset qui m'a permis de x10 mon chiffre d'affaires",
+    "L'IA au service de votre croissance : guide complet"
+  ];
+
+  return titles.map((title, i) => ({
+    _id: `mock-${i}`,
+    title,
+    slug: { _type: "slug", current: `article-${i}` },
+    mainImage: {
+      _type: "image",
+      asset: {
+        _ref: `https://picsum.photos/800/600?random=${i}`,
+        _type: "reference"
+      }
+    },
+    excerpt: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    publishedAt: new Date(Date.now() - i * 86400000).toISOString(),
+    categories: [{
+      _id: 'cat1',
+      title: ['Story', 'Business', 'Mental', 'Society'][i % 4],
+      slug: { current: ['story', 'business', 'mental', 'society'][i % 4] }
+    }],
+    author: {
+      _id: 'author1',
+      name: `Auteur ${i + 1}`,
+      slug: { current: `author-${i}` }
+    },
+    readingTime: Math.floor(Math.random() * 10) + 3
+  }));
+};
+
 export const AllArticlesPage = () => {
   const [articles, setArticles] = useState<SanityArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -103,13 +140,16 @@ export const AllArticlesPage = () => {
         setIsLoading(true);
         setError(null);
         
-//         const sanityArticles = await getAllArticles(); - Using DataContext
+        // Récupérer les articles depuis Sanity
+        const sanityArticles = await getAllArticles();
         
         if (sanityArticles && sanityArticles.length > 0) {
+          console.log(`✅ ${sanityArticles.length} articles récupérés depuis Sanity`);
           setArticles(sanityArticles);
           // Générer les topics à partir des articles récupérés
           setPopularTopics(generateTopicsFromArticles(sanityArticles));
         } else {
+          console.log('⚠️ Aucun article depuis Sanity, utilisation des données de démonstration');
           // Articles de démonstration
           const mockArticles = generateMockArticles();
           setArticles(mockArticles);
@@ -118,7 +158,11 @@ export const AllArticlesPage = () => {
         }
       } catch (err) {
         setError('Une erreur est survenue lors du chargement des articles.');
-        console.error('Erreur:', err);
+        console.error('❌ Erreur:', err);
+        // En cas d'erreur, utiliser les données de démonstration
+        const mockArticles = generateMockArticles();
+        setArticles(mockArticles);
+        setPopularTopics(generateTopicsFromArticles(mockArticles));
       } finally {
         setIsLoading(false);
       }
@@ -137,43 +181,6 @@ export const AllArticlesPage = () => {
   useEffect(() => {
     localStorage.setItem('bookmarkedArticles', JSON.stringify(bookmarkedArticles));
   }, [bookmarkedArticles]);
-
-  const generateMockArticles = (): SanityArticle[] => {
-    const titles = [
-      "Comment j'ai transformé mon échec en opportunité millionnaire",
-      "Les 5 stratégies pour lever 1M€ en 2024",
-      "De 0 à 100k followers : ma méthode en 30 jours",
-      "Pourquoi j'ai quitté Google pour créer ma startup",
-      "Le mindset qui m'a permis de x10 mon chiffre d'affaires",
-      "L'IA au service de votre croissance : guide complet"
-    ];
-
-    return titles.map((title, i) => ({
-      _id: `mock-${i}`,
-      title,
-      slug: { _type: "slug", current: `article-${i}` },
-      mainImage: {
-        _type: "image",
-        asset: {
-          _ref: `https://picsum.photos/800/600?random=${i}`,
-          _type: "reference"
-        }
-      },
-      excerpt: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      publishedAt: new Date(Date.now() - i * 86400000).toISOString(),
-      categories: [{
-        _id: 'cat1',
-        title: ['Story', 'Business', 'Mental', 'Society'][i % 4],
-        slug: { current: ['story', 'business', 'mental', 'society'][i % 4] }
-      }],
-      author: {
-        _id: 'author1',
-        name: `Auteur ${i + 1}`,
-        slug: { current: `author-${i}` }
-      },
-      readingTime: Math.floor(Math.random() * 10) + 3
-    }));
-  };
 
   const handleBookmark = (slug: string) => {
     setBookmarkedArticles(prev => 
@@ -256,7 +263,7 @@ export const AllArticlesPage = () => {
     categories: new Set(articles.flatMap(a => a.categories?.map(c => c._id) || [])).size
   };
 
-  if (error) {
+  if (error && articles.length === 0) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <ErrorMessage message={error} />

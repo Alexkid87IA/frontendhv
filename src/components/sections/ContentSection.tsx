@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, PlayCircle, TrendingUp, Users, Clock, Eye, Calendar } from 'lucide-react';
-// import { getAllArticles } from '../../utils/sanityAPI';
+import { ArrowRight, PlayCircle, TrendingUp, Users, Clock, Eye, Calendar, Sparkles, Zap, Trophy } from 'lucide-react';
+import { getAllArticles } from '../../utils/sanityAPI'; // CORRECTION: Import direct
 import { SanityArticle } from '../../types/sanity';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import SafeImage from '../common/SafeImage';
 import ErrorBoundary from '../common/ErrorBoundary';
-import { useData } from '../context/DataContext';
 
 interface ContentSectionProps {
   title?: string;
@@ -15,7 +14,7 @@ interface ContentSectionProps {
   sectionType?: 'emission' | 'business-idea' | 'success-story';
 }
 
-// Données mockées pour fallback
+// Données mockées pour fallback (inchangées)
 const mockItems = {
   emission: [
     {
@@ -27,7 +26,9 @@ const mockItems = {
         asset: { _ref: 'https://picsum.photos/600/400?random=10' }
       },
       publishedAt: '2024-03-20',
-      categories: [{ title: 'Podcast' }]
+      categories: [{ title: 'Podcast' }],
+      guest: 'Roger Ormières',
+      duration: '45 min'
     },
     {
       _id: '2',
@@ -38,7 +39,9 @@ const mockItems = {
         asset: { _ref: 'https://picsum.photos/600/400?random=11' }
       },
       publishedAt: '2024-03-19',
-      categories: [{ title: 'Podcast' }]
+      categories: [{ title: 'Podcast' }],
+      guest: 'Sarah Chen',
+      duration: '38 min'
     },
     {
       _id: '3',
@@ -49,7 +52,9 @@ const mockItems = {
         asset: { _ref: 'https://picsum.photos/600/400?random=12' }
       },
       publishedAt: '2024-03-18',
-      categories: [{ title: 'Podcast' }]
+      categories: [{ title: 'Podcast' }],
+      guest: 'Marc Dubois',
+      duration: '52 min'
     }
   ],
   'business-idea': [
@@ -62,7 +67,8 @@ const mockItems = {
         asset: { _ref: 'https://picsum.photos/600/400?random=13' }
       },
       publishedAt: '2024-03-20',
-      categories: [{ title: 'Business' }]
+      categories: [{ title: 'Business' }],
+      readingTime: 8
     },
     {
       _id: '2',
@@ -73,7 +79,8 @@ const mockItems = {
         asset: { _ref: 'https://picsum.photos/600/400?random=14' }
       },
       publishedAt: '2024-03-19',
-      categories: [{ title: 'Business' }]
+      categories: [{ title: 'Business' }],
+      readingTime: 12
     },
     {
       _id: '3',
@@ -84,7 +91,8 @@ const mockItems = {
         asset: { _ref: 'https://picsum.photos/600/400?random=15' }
       },
       publishedAt: '2024-03-18',
-      categories: [{ title: 'Business' }]
+      categories: [{ title: 'Business' }],
+      readingTime: 10
     }
   ],
   'success-story': [
@@ -97,7 +105,8 @@ const mockItems = {
         asset: { _ref: 'https://picsum.photos/600/400?random=16' }
       },
       publishedAt: '2024-03-20',
-      categories: [{ title: 'Parcours' }]
+      categories: [{ title: 'Parcours' }],
+      readingTime: 15
     },
     {
       _id: '2',
@@ -108,7 +117,8 @@ const mockItems = {
         asset: { _ref: 'https://picsum.photos/600/400?random=17' }
       },
       publishedAt: '2024-03-19',
-      categories: [{ title: 'Parcours' }]
+      categories: [{ title: 'Parcours' }],
+      readingTime: 12
     },
     {
       _id: '3',
@@ -119,34 +129,97 @@ const mockItems = {
         asset: { _ref: 'https://picsum.photos/600/400?random=18' }
       },
       publishedAt: '2024-03-18',
-      categories: [{ title: 'Parcours' }]
+      categories: [{ title: 'Parcours' }],
+      readingTime: 18
     }
   ]
 };
 
 const ContentSection: React.FC<ContentSectionProps> = ({
-  title = "Découvrez nos contenus",
-  description = "Explorer notre sélection de contenus exclusifs",
+  title,
+  description,
   sectionType = 'emission'
 }) => {
   const [items, setItems] = useState<SanityArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<'cms' | 'mock'>('cms');
 
+  // Configuration selon le type avec design amélioré
+  const getTypeConfig = () => {
+    switch (sectionType) {
+      case 'emission':
+        return {
+          icon: PlayCircle,
+          accentIcon: Sparkles,
+          color: 'violet',
+          gradient: 'from-violet-500 to-purple-600',
+          bgGradient: 'from-violet-900/20 via-purple-900/10 to-transparent',
+          borderColor: 'border-violet-500/20',
+          link: '/emissions',
+          label: 'Podcasts & Émissions',
+          title: title || 'Nos émissions exclusives',
+          description: description || 'Interviews inspirantes avec les leaders qui transforment le monde',
+          emptyMessage: 'Nouvelles émissions en préparation'
+        };
+      case 'business-idea':
+        return {
+          icon: TrendingUp,
+          accentIcon: Zap,
+          color: 'blue',
+          gradient: 'from-blue-500 to-cyan-500',
+          bgGradient: 'from-blue-900/20 via-cyan-900/10 to-transparent',
+          borderColor: 'border-blue-500/20',
+          link: '/business-ideas',
+          label: 'Études de cas',
+          title: title || 'Business Ideas qui cartonnent',
+          description: description || 'Décryptage des stratégies gagnantes des entreprises qui dominent leur marché',
+          emptyMessage: 'Nouvelles analyses en cours'
+        };
+      case 'success-story':
+        return {
+          icon: Users,
+          accentIcon: Trophy,
+          color: 'emerald',
+          gradient: 'from-emerald-500 to-green-500',
+          bgGradient: 'from-emerald-900/20 via-green-900/10 to-transparent',
+          borderColor: 'border-emerald-500/20',
+          link: '/success-stories',
+          label: 'Success Stories',
+          title: title || 'Parcours extraordinaires',
+          description: description || 'Les histoires inspirantes de ceux qui ont défié l\'impossible',
+          emptyMessage: 'Nouvelles histoires bientôt'
+        };
+      default:
+        return {
+          icon: PlayCircle,
+          accentIcon: Sparkles,
+          color: 'blue',
+          gradient: 'from-blue-500 to-cyan-500',
+          bgGradient: 'from-blue-900/20 via-cyan-900/10 to-transparent',
+          borderColor: 'border-blue-500/20',
+          link: '/articles',
+          label: 'Articles',
+          title: title || 'Nos derniers articles',
+          description: description || 'Analyses et insights pour votre croissance',
+          emptyMessage: 'Aucun article disponible'
+        };
+    }
+  };
+
+  const config = getTypeConfig();
+  const Icon = config.icon;
+  const AccentIcon = config.accentIcon;
+
   useEffect(() => {
     const fetchContent = async () => {
       try {
         setIsLoading(true);
-        console.log(`🔍 Récupération des contenus pour la section: ${sectionType}`);
+        console.log(`📊 Récupération des contenus pour: ${sectionType}`);
         
-//         const sanityArticles = await getAllArticles(); - Using DataContext
+        // CORRECTION: Récupération directe depuis Sanity
+        const sanityArticles = await getAllArticles();
         
-        // Si on a des articles depuis Sanity
         if (sanityArticles && sanityArticles.length > 0) {
-          // CORRECTION : Filtrer par contentType au lieu de la répartition mathématique
-          let filteredItems: SanityArticle[] = [];
-          
-          // Mapping des types de section vers les valeurs de contentType dans Sanity
           const contentTypeMapping: Record<string, string> = {
             'emission': 'emission',
             'business-idea': 'case-study',
@@ -154,38 +227,27 @@ const ContentSection: React.FC<ContentSectionProps> = ({
           };
           
           const targetContentType = contentTypeMapping[sectionType];
-          console.log(`🎯 Recherche d'articles avec contentType: ${targetContentType}`);
           
-          // Filtrer les articles par contentType
-          filteredItems = sanityArticles
+          const filteredItems = sanityArticles
             .filter(article => article.contentType === targetContentType)
-            .slice(0, 3); // Limiter à 3 articles
+            .slice(0, 3);
           
-          console.log(`✅ ${filteredItems.length} articles trouvés pour ${sectionType} (contentType: ${targetContentType})`);
+          console.log(`✅ ${filteredItems.length} articles trouvés pour ${sectionType}`);
           
-          // Si on a trouvé des articles après filtrage, les utiliser
           if (filteredItems.length > 0) {
             setItems(filteredItems);
             setDataSource('cms');
-            console.log(`📊 Utilisation de ${filteredItems.length} articles depuis Sanity pour ${sectionType}`);
           } else {
-            // Sinon utiliser les données mockées
-            console.log(`⚠️ Aucun article avec contentType "${targetContentType}" trouvé, utilisation des données mockées`);
+            console.log(`⚠️ Utilisation des données mockées pour ${sectionType}`);
             setItems(mockItems[sectionType] || []);
             setDataSource('mock');
-            
-            // Log pour debug : afficher les contentTypes disponibles
-            const availableContentTypes = [...new Set(sanityArticles.map(a => a.contentType))];
-            console.log('📋 ContentTypes disponibles dans Sanity:', availableContentTypes);
           }
         } else {
-          // Pas d'articles du tout, utiliser les données mockées
-          console.log(`⚠️ Aucun article dans Sanity, utilisation des données mockées pour ${sectionType}`);
           setItems(mockItems[sectionType] || []);
           setDataSource('mock');
         }
       } catch (error) {
-        console.error('❌ Erreur lors de la récupération des articles:', error);
+        console.error('❌ Erreur:', error);
         setItems(mockItems[sectionType] || []);
         setDataSource('mock');
       } finally {
@@ -204,62 +266,20 @@ const ContentSection: React.FC<ContentSectionProps> = ({
     );
   }
 
-  // Configuration selon le type
-  const getTypeConfig = () => {
-    switch (sectionType) {
-      case 'emission':
-        return {
-          icon: PlayCircle,
-          color: 'violet',
-          gradient: 'from-violet-500 to-purple-500',
-          link: '/emissions',
-          label: 'Podcast',
-          emptyMessage: 'Aucune émission disponible pour le moment'
-        };
-      case 'business-idea':
-        return {
-          icon: TrendingUp,
-          color: 'blue',
-          gradient: 'from-blue-500 to-cyan-500',
-          link: '/business-ideas',
-          label: 'Étude de cas',
-          emptyMessage: 'Aucune étude de cas disponible pour le moment'
-        };
-      case 'success-story':
-        return {
-          icon: Users,
-          color: 'emerald',
-          gradient: 'from-emerald-500 to-green-500',
-          link: '/success-stories',
-          label: 'Parcours',
-          emptyMessage: 'Aucune success story disponible pour le moment'
-        };
-      default:
-        return {
-          icon: PlayCircle,
-          color: 'blue',
-          gradient: 'from-blue-500 to-cyan-500',
-          link: '/articles',
-          label: 'Article',
-          emptyMessage: 'Aucun article disponible pour le moment'
-        };
-    }
-  };
-
-  const config = getTypeConfig();
-  const Icon = config.icon;
-
-  // Si aucun article n'est disponible
   if (items.length === 0) {
     return (
       <section className="relative py-16 overflow-hidden">
         <div className="container">
           <div className="text-center py-12">
-            <div className="inline-flex items-center justify-center p-3 rounded-xl bg-gradient-to-r ${config.gradient} mb-4">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className={`inline-flex items-center justify-center p-4 rounded-2xl bg-gradient-to-r ${config.gradient} mb-4`}
+            >
               <Icon className="w-8 h-8 text-white" />
-            </div>
+            </motion.div>
             <h3 className="text-xl font-semibold text-gray-400 mb-2">{config.emptyMessage}</h3>
-            <p className="text-gray-500">De nouveaux contenus arrivent bientôt !</p>
+            <p className="text-gray-500">Revenez bientôt pour découvrir nos nouveaux contenus</p>
           </div>
         </div>
       </section>
@@ -268,168 +288,182 @@ const ContentSection: React.FC<ContentSectionProps> = ({
 
   return (
     <ErrorBoundary>
-      <section className="relative py-16 overflow-hidden">
-        {/* Background très subtil */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent" />
+      <section className="relative py-20 overflow-hidden">
+        {/* Background amélioré avec gradient subtil */}
+        <div className={`absolute inset-0 bg-gradient-to-b ${config.bgGradient} pointer-events-none`} />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent,rgba(0,0,0,0.5))] pointer-events-none" />
         
         <div className="container relative">
-          {/* Header de section amélioré */}
+          {/* Header redesigné */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-12"
+            className="mb-16"
           >
-            {/* Badge et label du type */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className={`p-2.5 rounded-xl bg-gradient-to-r ${config.gradient} shadow-lg`}>
-                <Icon className="w-6 h-6 text-white" />
+            <div className="flex items-start justify-between mb-8">
+              <div className="flex-1 max-w-3xl">
+                {/* Badge animé */}
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  className="inline-flex items-center gap-2 mb-6"
+                >
+                  <div className={`p-2 rounded-xl bg-gradient-to-r ${config.gradient} shadow-xl`}>
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                    {config.label}
+                  </span>
+                  <AccentIcon className={`w-4 h-4 text-${config.color}-400`} />
+                </motion.div>
+                
+                {/* Titre avec effet */}
+                <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                  <span className="text-white">{config.title}</span>
+                </h2>
+                
+                <p className="text-lg text-gray-400 leading-relaxed">
+                  {config.description}
+                </p>
               </div>
-              <div>
-                <span className={`text-xs font-medium text-${config.color}-400 uppercase tracking-wider`}>
-                  {config.label}
-                </span>
-                <span className="text-xs text-gray-500 ml-2">
-                  • {items.length} nouveaux contenus
-                  {dataSource === 'mock' && ' (données d\'exemple)'}
-                </span>
-              </div>
-            </div>
-            
-            {/* Titre et description avec meilleure hiérarchie */}
-            <div className="max-w-3xl">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-                  {title}
-                </span>
-              </h2>
-              <p className="text-lg text-gray-400 leading-relaxed">
-                {description}
-              </p>
+
+              {/* Indicateur live si données CMS */}
+              {dataSource === 'cms' && (
+                <motion.div
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full"
+                >
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                  <span className="text-xs text-green-400 font-medium">Live</span>
+                </motion.div>
+              )}
             </div>
           </motion.div>
 
-          {/* Grille de contenu */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {/* Grille redesignée avec meilleur spacing */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {items.map((item, index) => (
               <motion.article
                 key={item._id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ 
+                  delay: index * 0.15,
+                  type: "spring",
+                  stiffness: 100
+                }}
                 className="group"
               >
                 <Link 
-                  to={`/${sectionType}/${item.slug?.current}`}
+                  to={`/article/${item.slug?.current}`}
                   className="block h-full"
                 >
-                  <div className="relative h-full bg-neutral-900 rounded-xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-[1.02]">
-                    {/* Image SANS OVERLAY */}
+                  <div className={`relative h-full bg-gradient-to-b from-gray-900/50 to-black/50 backdrop-blur-sm rounded-2xl overflow-hidden border ${config.borderColor} hover:border-white/30 transition-all duration-500 hover:shadow-2xl hover:shadow-${config.color}-500/20 hover:-translate-y-1`}>
+                    
+                    {/* Image avec overlay amélioré */}
                     <div className="relative aspect-[16/9] overflow-hidden">
                       <SafeImage
                         source={item.mainImage}
                         alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
                       />
                       
-                      {/* Badge type pour les émissions */}
+                      {/* Gradient overlay subtil */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60" />
+                      
+                      {/* Play button pour émissions */}
                       {sectionType === 'emission' && (
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="p-4 rounded-full bg-black/60 backdrop-blur-sm">
-                            <PlayCircle className="w-12 h-12 text-white" />
+                        <motion.div 
+                          initial={{ scale: 0 }}
+                          whileHover={{ scale: 1.1 }}
+                          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+                        >
+                          <div className={`p-5 rounded-full bg-gradient-to-r ${config.gradient} shadow-2xl`}>
+                            <PlayCircle className="w-10 h-10 text-white" />
                           </div>
-                        </div>
+                        </motion.div>
                       )}
                       
-                      {/* Durée pour les émissions */}
-                      {sectionType === 'emission' && item.duration && (
-                        <div className="absolute top-3 right-3 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-md">
-                          <span className="text-xs text-white font-medium">{item.duration}</span>
+                      {/* Badge durée/temps */}
+                      {(item.duration || item.readingTime) && (
+                        <div className="absolute top-4 right-4">
+                          <div className="px-3 py-1.5 bg-black/80 backdrop-blur-md rounded-lg border border-white/10">
+                            <span className="text-xs text-white font-medium flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {item.duration || `${item.readingTime} min`}
+                            </span>
+                          </div>
                         </div>
                       )}
                     </div>
 
-                    {/* Contenu */}
-                    <div className="p-6">
-                      {/* Invité pour les émissions */}
-                      {sectionType === 'emission' && item.guest && (
-                        <div className="text-xs text-violet-400 font-medium mb-2">
-                          Avec {item.guest}
+                    {/* Contenu amélioré */}
+                    <div className="p-6 space-y-4">
+                      {/* Guest/Category */}
+                      {(item.guest || item.categories?.[0]) && (
+                        <div className={`text-xs font-semibold text-${config.color}-400 uppercase tracking-wider`}>
+                          {item.guest ? `Avec ${item.guest}` : item.categories[0].title}
                         </div>
                       )}
                       
-                      <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-accent-cyan transition-colors">
+                      {/* Titre avec hover effect */}
+                      <h3 className="text-xl font-bold text-white line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all">
                         {item.title}
                       </h3>
                       
-                      <p className="text-gray-400 text-sm line-clamp-2 mb-4">
+                      {/* Description */}
+                      <p className="text-gray-400 text-sm line-clamp-3 leading-relaxed">
                         {item.excerpt}
                       </p>
 
-                      {/* Meta info */}
-                      <div className="flex items-center justify-between text-xs text-gray-500">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            <time>
-                              {new Date(item.publishedAt || '').toLocaleDateString('fr-FR', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric'
-                              })}
-                            </time>
-                          </div>
-                          
-                          {/* Stats pour les émissions */}
-                          {sectionType === 'emission' && item.stats && (
-                            <>
-                              {item.stats.views > 0 && (
-                                <div className="flex items-center gap-1">
-                                  <Eye className="w-3 h-3" />
-                                  <span>{item.stats.views}</span>
-                                </div>
-                              )}
-                            </>
-                          )}
-                          
-                          {/* Temps de lecture pour les articles */}
-                          {sectionType !== 'emission' && item.readingTime && (
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              <span>{item.readingTime} min</span>
-                            </div>
-                          )}
-                        </div>
+                      {/* Footer avec meta */}
+                      <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                        <time className="text-xs text-gray-500">
+                          {new Date(item.publishedAt || '').toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'long'
+                          })}
+                        </time>
                         
-                        <span className="flex items-center gap-1">
-                          {sectionType === 'emission' ? 'Écouter' : 'Lire'} 
-                          <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
-                        </span>
+                        <motion.span 
+                          className={`flex items-center gap-2 text-xs font-medium text-${config.color}-400`}
+                          whileHover={{ x: 5 }}
+                        >
+                          {sectionType === 'emission' ? 'Écouter' : 'Découvrir'} 
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </motion.span>
                       </div>
                     </div>
 
-                    {/* Ligne colorée au hover */}
-                    <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${config.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
+                    {/* Accent line animée */}
+                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${config.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left`} />
                   </div>
                 </Link>
               </motion.article>
             ))}
           </div>
 
-          {/* CTA plus discret mais élégant */}
+          {/* CTA redesigné */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="flex justify-end"
+            className="flex justify-center"
           >
             <Link
               to={config.link}
-              className="group inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+              className={`group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r ${config.gradient} rounded-xl font-semibold text-white shadow-xl hover:shadow-2xl hover:shadow-${config.color}-500/30 transition-all duration-300 hover:-translate-y-0.5`}
             >
-              <span className="text-sm">Explorer tous les {config.label.toLowerCase()}s</span>
-              <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+              <span>Voir tous les {config.label.toLowerCase()}</span>
+              <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
+              
+              {/* Shine effect */}
+              <div className="absolute inset-0 rounded-xl overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+              </div>
             </Link>
           </motion.div>
         </div>

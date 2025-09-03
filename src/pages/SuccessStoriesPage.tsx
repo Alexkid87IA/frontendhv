@@ -2,9 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Search, 
-  TrendingUp, 
+  Trophy, 
   ArrowRight,
-  Briefcase,
+  Star,
+  Award,
   Loader2,
   X,
   Hash
@@ -13,7 +14,7 @@ import { SEO } from '../components/common/SEO';
 import { Footer } from '../components/layout/Footer';
 import { sanityClient } from '../utils/sanityClient';
 
-export const BusinessIdeasPage = () => {
+export const SuccessStoriesPage = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'recent' | 'popular'>('recent');
@@ -31,9 +32,13 @@ export const BusinessIdeasPage = () => {
       try {
         setLoading(true);
         const query = `*[_type == "article" && (
-          contentType == "business-idea" || 
-          category->slug.current == "business" ||
-          "business" in tags[]
+          contentType == "success-story" || 
+          category->slug.current == "success" ||
+          category->slug.current == "story" ||
+          "success" in tags[] ||
+          "story" in tags[] ||
+          "parcours" in tags[] ||
+          "entrepreneur" in tags[]
         )] | order(publishedAt desc) {
           _id,
           title,
@@ -127,16 +132,16 @@ export const BusinessIdeasPage = () => {
   return (
     <>
       <SEO
-        title="Études de Cas Business | High Value Media"
-        description="Découvrez nos analyses approfondies et études de cas business. Des insights exclusifs pour entrepreneurs et professionnels ambitieux."
+        title="Success Stories | High Value Media"
+        description="Découvrez des parcours inspirants d'entrepreneurs et d'innovateurs qui ont transformé leur vision en réalité."
       />
       
       <div className="min-h-screen bg-black">
         {/* Hero Section */}
         <section className="relative pt-32 pb-20 overflow-hidden">
           <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-cyan-900/20 to-teal-900/20" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.3),transparent_50%)]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-pink-900/20 to-orange-900/20" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,0.3),transparent_50%)]" />
           </div>
 
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,23 +154,23 @@ export const BusinessIdeasPage = () => {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring" }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 backdrop-blur-sm rounded-full mb-6 border border-blue-500/20"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 backdrop-blur-sm rounded-full mb-6 border border-purple-500/20"
               >
-                <TrendingUp className="w-4 h-4 text-blue-400" />
-                <span className="text-sm font-medium text-blue-400">
-                  Analyses & Insights
+                <Award className="w-4 h-4 text-purple-400" />
+                <span className="text-sm font-medium text-purple-400">
+                  Parcours inspirants
                 </span>
               </motion.div>
 
               <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400">
-                  Études de cas business
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400">
+                  Success Stories
                 </span>
               </h1>
 
               <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                Des analyses approfondies pour comprendre les stratégies gagnantes
-                et les tendances qui façonnent le monde des affaires.
+                Des histoires authentiques d'entrepreneurs et d'innovateurs 
+                qui ont osé transformer leur vision en réalité.
               </p>
             </motion.div>
           </div>
@@ -184,8 +189,8 @@ export const BusinessIdeasPage = () => {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Rechercher une étude de cas..."
-                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all"
+                    placeholder="Rechercher une success story..."
+                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/50 focus:bg-white/10 transition-all"
                   />
                 </div>
 
@@ -193,7 +198,7 @@ export const BusinessIdeasPage = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-blue-500/50 appearance-none cursor-pointer"
+                  className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500/50 appearance-none cursor-pointer"
                 >
                   <option value="recent">Plus récents</option>
                   <option value="popular">Plus populaires</option>
@@ -233,13 +238,13 @@ export const BusinessIdeasPage = () => {
                           className={`
                             inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm transition-all
                             ${isSelected
-                              ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
+                              ? 'bg-purple-500/20 border-purple-500/50 text-purple-400'
                               : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
                             }
                           `}
                         >
                           <span className="capitalize">{tag}</span>
-                          <span className={`text-xs ${isSelected ? 'text-blue-400/70' : 'text-gray-500'}`}>
+                          <span className={`text-xs ${isSelected ? 'text-purple-400/70' : 'text-gray-500'}`}>
                             ({count})
                           </span>
                         </button>
@@ -256,7 +261,7 @@ export const BusinessIdeasPage = () => {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+              <Loader2 className="w-8 h-8 text-purple-400 animate-spin" />
             </div>
           ) : filteredArticles.length > 0 ? (
             <>
@@ -276,7 +281,7 @@ export const BusinessIdeasPage = () => {
                       href={`/article/${article.slug}`}
                       className="block h-full"
                     >
-                      <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 hover:border-blue-500/30 transition-all duration-300 h-full flex flex-col">
+                      <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300 h-full flex flex-col">
                         {/* Image */}
                         {article.mainImage && (
                           <div className="relative aspect-[16/10] overflow-hidden">
@@ -287,10 +292,10 @@ export const BusinessIdeasPage = () => {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
                             
-                            {/* Badge Business */}
+                            {/* Badge Success Story */}
                             <div className="absolute top-4 left-4">
-                              <span className="px-3 py-1 bg-blue-500/20 backdrop-blur-sm border border-blue-500/30 rounded-full text-xs font-medium text-blue-400">
-                                Business Case
+                              <span className="px-3 py-1 bg-purple-500/20 backdrop-blur-sm border border-purple-500/30 rounded-full text-xs font-medium text-purple-400">
+                                Success Story
                               </span>
                             </div>
                           </div>
@@ -298,7 +303,7 @@ export const BusinessIdeasPage = () => {
 
                         {/* Content */}
                         <div className="p-6 flex-1 flex flex-col">
-                          <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-blue-400 transition-colors">
+                          <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-purple-400 transition-colors">
                             {article.title}
                           </h3>
                           
@@ -341,7 +346,7 @@ export const BusinessIdeasPage = () => {
                                   key={tag} 
                                   className={`text-xs px-2 py-1 rounded-md transition-colors ${
                                     selectedTags.includes(tag.toLowerCase())
-                                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                                      ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
                                       : 'bg-white/5 text-gray-400'
                                   }`}
                                 >
@@ -353,8 +358,8 @@ export const BusinessIdeasPage = () => {
 
                           {/* Action */}
                           <div className="mt-4">
-                            <span className="inline-flex items-center gap-2 text-blue-400 text-sm font-medium group-hover:gap-3 transition-all">
-                              Lire l'article
+                            <span className="inline-flex items-center gap-2 text-purple-400 text-sm font-medium group-hover:gap-3 transition-all">
+                              Découvrir le parcours
                               <ArrowRight className="w-4 h-4" />
                             </span>
                           </div>
@@ -367,17 +372,17 @@ export const BusinessIdeasPage = () => {
             </>
           ) : (
             <div className="text-center py-20">
-              <Briefcase className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+              <Trophy className="w-12 h-12 text-gray-600 mx-auto mb-4" />
               <p className="text-gray-400">
                 {selectedTags.length > 0 || searchTerm 
-                  ? 'Aucune étude de cas ne correspond à vos critères'
-                  : 'Aucune étude de cas trouvée'
+                  ? 'Aucune success story ne correspond à vos critères'
+                  : 'Aucune success story trouvée'
                 }
               </p>
               {(selectedTags.length > 0 || searchTerm) && (
                 <button
                   onClick={clearFilters}
-                  className="mt-4 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                  className="mt-4 text-sm text-purple-400 hover:text-purple-300 transition-colors"
                 >
                   Effacer les filtres
                 </button>
@@ -392,4 +397,4 @@ export const BusinessIdeasPage = () => {
   );
 };
 
-export default BusinessIdeasPage;
+export default SuccessStoriesPage;

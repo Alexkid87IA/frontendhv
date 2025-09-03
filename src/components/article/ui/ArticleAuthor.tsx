@@ -9,6 +9,7 @@ interface ArticleAuthorProps {
   author: {
     name: string;
     image?: any;
+    imageUrl?: string;
     bio?: string;
   };
   publishedAt?: string;
@@ -35,25 +36,122 @@ const ArticleAuthor: React.FC<ArticleAuthorProps> = ({
     ? { width: 64, height: 64, iconSize: 24, className: "w-16 h-16" }
     : { width: 80, height: 80, iconSize: 32, className: "w-20 h-20" };
 
+  // Fonction pour obtenir l'URL de l'image - VERSION CORRIGÉE
+  const getAuthorImageUrl = React.useMemo(() => {
+    try {
+      // Debug amélioré - on log seulement une fois
+      if (import.meta.env.DEV) {
+        console.log('Author data:', {
+          name: author.name,
+          hasImage: !!author.image,
+          hasImageUrl: !!author.imageUrl,
+          imageStructure: author.image ? JSON.stringify(author.image, null, 2) : 'no image',
+          imageUrlValue: author.imageUrl || 'no imageUrl'
+        });
+      }
+      
+      // 1. Priorité à imageUrl s'il existe
+      if (author.imageUrl && typeof author.imageUrl === 'string' && author.imageUrl.length > 0) {
+        // Vérifier que c'est une URL valide
+        if (author.imageUrl.startsWith('http') || author.imageUrl.startsWith('//')) {
+          return author.imageUrl;
+        }
+      }
+      
+      // 2. Ensuite vérifier image avec différentes structures
+      if (author.image) {
+        // Si c'est directement une string URL
+        if (typeof author.image === 'string' && author.image.startsWith('http')) {
+          return author.image;
+        }
+        
+        // Si c'est un objet avec asset
+        if (author.image.asset) {
+          // Si asset est une string URL
+          if (typeof author.image.asset === 'string' && author.image.asset.startsWith('http')) {
+            return author.image.asset;
+          }
+          
+          // Si asset a _ref qui est une URL
+          if (author.image.asset._ref && 
+              typeof author.image.asset._ref === 'string' && 
+              author.image.asset._ref.startsWith('http')) {
+            return author.image.asset._ref;
+          }
+          
+          // Si c'est une vraie référence Sanity (format: image-xxx-xxx-xxx)
+          if (author.image.asset._ref && 
+              typeof author.image.asset._ref === 'string' && 
+              author.image.asset._ref.includes('image-')) {
+            try {
+              const url = urlFor(author.image)
+                .width(avatarSize.width * 2) // x2 pour la rétine
+                .height(avatarSize.height * 2)
+                .url();
+              
+              if (url && !url.includes('undefined')) {
+                return url;
+              }
+            } catch (e) {
+              console.error('Error with urlFor:', e);
+            }
+          }
+        }
+        
+        // Si image a directement une propriété url
+        if (author.image.url && typeof author.image.url === 'string') {
+          return author.image.url;
+        }
+      }
+      
+      // Pas d'image trouvée
+      return null;
+    } catch (error) {
+      console.error('Error in getAuthorImageUrl:', error);
+      return null;
+    }
+  }, [author.image, author.imageUrl, author.name, avatarSize.width, avatarSize.height]);
+
   return (
     <div className={containerStyles}>
       <div className={innerContainerStyles}>
         <div className={`flex ${variant === 'mobile' ? 'items-start' : 'items-center'} gap-4 ${variant === 'desktop' ? 'mb-4' : ''}`}>
-          {author.image ? (
+          {getAuthorImageUrl ? (
             <img 
-              src={urlFor(author.image).width(avatarSize.width).height(avatarSize.height).url()}
+              src={getAuthorImageUrl}
               alt={author.name}
-              className={`${avatarSize.className} rounded-full object-cover flex-shrink-0`}
-              style={{ border: `2px solid ${colors.borderColor}` }}
+              className={`${avatarSize.className} rounded-full object-cover flex-shrink-0 ring-2 ring-white/10`}
+              loading="lazy"
+              onError={(e) => {
+                // Remplacer l'image par le fallback en cas d'erreur
+                const target = e.currentTarget as HTMLImageElement;
+                target.style.display = 'none';
+                
+                // Afficher le fallback
+                const parent = target.parentElement;
+                if (parent && !parent.querySelector('.author-fallback')) {
+                  const fallback = document.createElement('div');
+                  fallback.className = `author-fallback ${avatarSize.className} rounded-full flex items-center justify-center flex-shrink-0 ring-2 ring-white/10`;
+                  fallback.style.background = colors.bgGradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                  fallback.innerHTML = `
+                    <svg width="${avatarSize.iconSize}" height="${avatarSize.iconSize}" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  `;
+                  parent.appendChild(fallback);
+                }
+              }}
             />
           ) : (
             <div 
-              className={`${avatarSize.className} rounded-full flex items-center justify-center flex-shrink-0`}
-              style={{ background: colors.bgGradient }}
+              className={`${avatarSize.className} rounded-full flex items-center justify-center flex-shrink-0 ring-2 ring-white/10`}
+              style={{ background: colors.bgGradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
             >
               <User size={avatarSize.iconSize} className="text-white" />
             </div>
           )}
+          
           <div className="flex-1 min-w-0">
             <p className={`${variant === 'mobile' ? 'text-xs' : 'text-xs'} text-gray-400 ${variant === 'mobile' ? 'mb-0.5' : 'mb-1'}`}>
               Écrit par
@@ -75,7 +173,7 @@ const ArticleAuthor: React.FC<ArticleAuthorProps> = ({
               </div>
             )}
             {variant === 'mobile' && author.bio && (
-              <p className="text-xs text-gray-300 leading-relaxed">
+              <p className="text-xs text-gray-300 leading-relaxed mt-2">
                 {author.bio}
               </p>
             )}
@@ -100,7 +198,7 @@ const ArticleAuthor: React.FC<ArticleAuthorProps> = ({
         {variant === 'desktop' && (
           <>
             {author.bio && (
-              <p className="text-sm text-gray-300 leading-relaxed">
+              <p className="text-sm text-gray-300 leading-relaxed mt-4">
                 {author.bio}
               </p>
             )}
@@ -109,14 +207,14 @@ const ArticleAuthor: React.FC<ArticleAuthorProps> = ({
                 to={`/auteur/${author.name.toLowerCase().replace(/\s+/g, '-')}`}
                 className="block w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors text-center"
                 style={{
-                  background: colors.bgLight,
-                  color: colors.textColor
+                  background: colors.bgLight || 'rgba(255, 255, 255, 0.05)',
+                  color: colors.textColor || '#fff'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = colors.bgMedium;
+                  e.currentTarget.style.background = colors.bgMedium || 'rgba(255, 255, 255, 0.1)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = colors.bgLight;
+                  e.currentTarget.style.background = colors.bgLight || 'rgba(255, 255, 255, 0.05)';
                 }}
               >
                 Voir tous ses articles

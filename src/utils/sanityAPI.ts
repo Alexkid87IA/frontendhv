@@ -46,7 +46,7 @@ export function clearCache(cacheKey?: string): void {
   }
 }
 
-// Récupérer tous les articles
+// Récupérer tous les articles - VERSION CORRIGÉE AVEC IMAGES
 export const getAllArticles = async (): Promise<SanityArticle[]> => {
   return getWithCache('allArticles', async () => {
     try {
@@ -58,7 +58,8 @@ export const getAllArticles = async (): Promise<SanityArticle[]> => {
         mainImage {
           asset->{
             _ref,
-            _type
+            _type,
+            url
           },
           hotspot,
           crop
@@ -92,14 +93,17 @@ export const getAllArticles = async (): Promise<SanityArticle[]> => {
         author->{
           _id,
           name,
+          "imageUrl": image.asset->url,
           image {
             asset->{
               _ref,
-              _type
+              _type,
+              url
             },
             hotspot,
             crop
-          }
+          },
+          bio
         }
       }`;
       
@@ -110,6 +114,8 @@ export const getAllArticles = async (): Promise<SanityArticle[]> => {
       if (articles && articles.length > 0) {
         const contentTypes = [...new Set(articles.map(a => a.contentType))];
         console.log('Types de contenu disponibles:', contentTypes);
+        // Debug pour voir la structure de l'image
+        console.log('Premier article mainImage:', articles[0].mainImage);
       }
       
       return articles || [];
@@ -147,7 +153,8 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         mainImage {
           asset->{
             _ref,
-            _type
+            _type,
+            url
           },
           hotspot,
           crop
@@ -182,10 +189,12 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         author->{
           _id,
           name,
+          "imageUrl": image.asset->url,
           image {
             asset->{
               _ref,
-              _type
+              _type,
+              url
             },
             hotspot,
             crop
@@ -222,7 +231,8 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
           mainImage {
             asset->{
               _ref,
-              _type
+              _type,
+              url
             },
             hotspot,
             crop
@@ -257,10 +267,12 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
           author->{
             _id,
             name,
+            "imageUrl": image.asset->url,
             image {
               asset->{
                 _ref,
-                _type
+                _type,
+                url
               },
               hotspot,
               crop
@@ -302,7 +314,8 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         mainImage {
           asset->{
             _ref,
-            _type
+            _type,
+            url
           },
           hotspot,
           crop
@@ -337,10 +350,12 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
         author->{
           _id,
           name,
+          "imageUrl": image.asset->url,
           image {
             asset->{
               _ref,
-              _type
+              _type,
+              url
             },
             hotspot,
             crop
@@ -360,7 +375,7 @@ export const getArticleBySlug = async (slug: string, preview = false): Promise<S
   });
 };
 
-// Récupérer les articles par catégorie
+// Récupérer les articles par catégorie - VERSION CORRIGÉE AVEC IMAGES
 export const getArticlesByCategory = async (categorySlug: string): Promise<SanityArticle[]> => {
   return getWithCache(`articles_category_${categorySlug}`, async () => {
     try {
@@ -382,7 +397,8 @@ export const getArticlesByCategory = async (categorySlug: string): Promise<Sanit
         mainImage {
           asset->{
             _ref,
-            _type
+            _type,
+            url
           },
           hotspot,
           crop
@@ -445,7 +461,7 @@ export const getCategoryBySlug = async (slug: string) => {
   });
 };
 
-// Récupérer les amuses-bouches
+// Récupérer les amuses-bouches - VERSION CORRIGÉE AVEC IMAGES
 export const getAmuseBouches = async (limit = 5): Promise<any[]> => {
   return getWithCache(`amuseBouches_${limit}`, async () => {
     try {
@@ -457,7 +473,8 @@ export const getAmuseBouches = async (limit = 5): Promise<any[]> => {
         mainImage {
           asset->{
             _ref,
-            _type
+            _type,
+            url
           },
           hotspot,
           crop
@@ -614,7 +631,7 @@ export const getClubPricing = async (): Promise<SanityClubPricing[]> => {
   });
 };
 
-// Récupérer les contenus par type (utilise contentType maintenant)
+// Récupérer les contenus par type (utilise contentType maintenant) - VERSION CORRIGÉE AVEC IMAGES
 export const getContentItems = async (contentType: string, limit = 5): Promise<any[]> => {
   return getWithCache(`contentItems_${contentType}_${limit}`, async () => {
     try {
@@ -640,7 +657,8 @@ export const getContentItems = async (contentType: string, limit = 5): Promise<a
         mainImage {
           asset->{
             _ref,
-            _type
+            _type,
+            url
           },
           hotspot,
           crop
@@ -681,7 +699,7 @@ export const getContentItems = async (contentType: string, limit = 5): Promise<a
 
 // ============= NOUVELLES FONCTIONS POUR LES SOUS-CATÉGORIES =============
 
-// Récupérer les articles par sous-catégorie
+// Récupérer les articles par sous-catégorie - VERSION CORRIGÉE AVEC IMAGES
 export const getArticlesBySubcategory = async (subcategorySlug: string): Promise<SanityArticle[]> => {
   return getWithCache(`articles_subcategory_${subcategorySlug}`, async () => {
     try {
@@ -703,7 +721,8 @@ export const getArticlesBySubcategory = async (subcategorySlug: string): Promise
         mainImage {
           asset->{
             _ref,
-            _type
+            _type,
+            url
           },
           hotspot,
           crop

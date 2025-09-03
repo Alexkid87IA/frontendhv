@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronRight, Calendar } from "lucide-react";
 import { SanityArticle, VerticalColors } from "../../../types/article.types";
-import { buildSanityImageUrl } from "../../../utils/articleUtils";
+import { urlFor } from "../../../utils/sanityClient";
 
 interface ArticleHeroProps {
   article: SanityArticle;
@@ -29,6 +29,9 @@ const ArticleHero: React.FC<ArticleHeroProps> = ({ article, colors }) => {
   // Debug : afficher ce qu'on reçoit
   console.log('ArticleHero - mainImage data:', {
     mainImage: article.mainImage,
+    hasAsset: !!article.mainImage?.asset,
+    assetUrl: article.mainImage?.asset?.url,
+    assetRef: article.mainImage?.asset?._ref,
     hasHotspot: !!article.mainImage?.hotspot,
     hotspotValues: article.mainImage?.hotspot,
     hasCrop: !!article.mainImage?.crop,
@@ -41,15 +44,48 @@ const ArticleHero: React.FC<ArticleHeroProps> = ({ article, colors }) => {
   
   console.log('ArticleHero - Calculated position:', imagePosition);
   
+  // Fonction pour obtenir l'URL de l'image
+  const getImageUrl = () => {
+    if (!article.mainImage || !article.mainImage.asset) {
+      return null;
+    }
+    
+    // 1. Si on a directement une URL
+    if (article.mainImage.asset.url) {
+      console.log('Using direct URL:', article.mainImage.asset.url);
+      return article.mainImage.asset.url;
+    }
+    
+    // 2. Si on a une référence Sanity
+    if (article.mainImage.asset._ref) {
+      try {
+        // Utiliser urlFor de Sanity
+        const url = urlFor(article.mainImage)
+          .width(1920)
+          .height(1080)
+          .quality(90)
+          .url();
+        console.log('Generated URL from ref:', url);
+        return url;
+      } catch (error) {
+        console.error('Error generating URL from ref:', error);
+      }
+    }
+    
+    return null;
+  };
+  
+  const imageUrl = getImageUrl();
+  
   return (
     <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-end overflow-hidden bg-gradient-to-br from-gray-900 to-black">
       {/* Container de l'image avec hotspot */}
       <div className="absolute inset-0">
-        {article.mainImage && article.mainImage.asset && article.mainImage.asset._ref ? (
+        {imageUrl ? (
           <>
             {/* Image unique avec hotspot pour desktop et mobile */}
             <img 
-              src={buildSanityImageUrl(article.mainImage.asset._ref)}
+              src={imageUrl}
               alt={article.title}
               className="absolute inset-0 w-full h-full object-cover"
               style={{ 
@@ -58,14 +94,14 @@ const ArticleHero: React.FC<ArticleHeroProps> = ({ article, colors }) => {
                 objectPosition: imagePosition
               }}
               onError={(e) => {
-                console.error("Erreur chargement image:", e);
+                console.error("Erreur chargement image:", imageUrl);
                 (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80";
               }}
             />
             
             {/* Debug info - À enlever en production */}
             {process.env.NODE_ENV === 'development' && hotspot && (
-              <div className="absolute top-4 right-4 bg-black/70 text-white text-xs p-2 rounded">
+              <div className="absolute top-4 right-4 bg-black/70 text-white text-xs p-2 rounded z-10">
                 Hotspot: {Math.round(hotspot.x * 100)}% x {Math.round(hotspot.y * 100)}%
               </div>
             )}

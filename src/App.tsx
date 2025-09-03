@@ -7,7 +7,7 @@ import { Analytics } from './components/common/Analytics';
 import { ChatWidget } from './components/chat/ChatWidget';
 import { DataProvider } from './context/DataContext';
 import { HomePage } from './pages/HomePage';
-import ArticlePageNEW from './pages/ArticlePageNEW'; // Utilisation de la version refactorisée
+import ArticlePageNEW from './pages/ArticlePageNEW';
 import { CategoryPage } from './pages/CategoryPage';
 import { SubcategoryPage } from './pages/SubcategoryPage';
 import { PodcastPage } from './pages/PodcastPage';
@@ -16,31 +16,35 @@ import { EmissionPage } from './pages/EmissionPage';
 import { CreateWithRogerPage } from './pages/CreateWithRogerPage';
 import { AboutPage } from './pages/AboutPage';
 import { AllArticlesPage } from './pages/AllArticlesPage';
-import { RecommendationsPage } from './pages/RecommendationsPage';
 import { CoachingPage } from './pages/CoachingPage';
-import { BusinessIdeasPage } from './pages/BusinessIdeasPage';
-import { BusinessIdeaPage } from './pages/BusinessIdeaPage';
-import { SuccessStoryPage } from './pages/SuccessStoryPage';
 import { ClubPage } from './pages/ClubPage';
 import { NotFound } from './pages/NotFound';
+
+// Import des nouvelles pages
+import SuccessStoriesPage from './pages/SuccessStoriesPage';
+import BusinessIdeasPage from './pages/BusinessIdeasPage';
+
+// Page de test simple
+const TestPage = () => {
+  return (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <h1 className="text-4xl">Page de Test</h1>
+    </div>
+  );
+};
 
 function App() {
   return (
     <Router>
       <DataProvider>
         <ErrorBoundary>
-          {/* CORRECTION: overflow-hidden et z-index ajustés */}
           <div className="relative min-h-screen bg-black overflow-x-hidden">
             <ResponsiveNavbar />
-            {/* CORRECTION: z-[1] au lieu de z-10, position relative */}
             <main className="relative z-[1]">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/articles" element={<AllArticlesPage />} />
                 <Route path="/article/:slug" element={<ArticlePageNEW />} />
-                <Route path="/business-ideas" element={<BusinessIdeasPage />} />
-                <Route path="/business-idea/:slug" element={<BusinessIdeaPage />} />
-                <Route path="/success-story/:slug" element={<SuccessStoryPage />} />
                 <Route path="/emission/:slug" element={<EmissionPage />} />
                 <Route path="/rubrique/:categorySlug" element={<CategoryPage />} />
                 <Route path="/rubrique/:categorySlug/:subcategorySlug" element={<SubcategoryPage />} />
@@ -50,7 +54,15 @@ function App() {
                 <Route path="/create-with-roger" element={<CreateWithRogerPage />} />
                 <Route path="/coaching" element={<CoachingPage />} />
                 <Route path="/about" element={<AboutPage />} />
-                <Route path="/recommendations" element={<RecommendationsPage />} />
+                
+                {/* Nouvelles routes */}
+                <Route path="/success-stories" element={<SuccessStoriesPage />} />
+                <Route path="/business-ideas" element={<BusinessIdeasPage />} />
+                
+                {/* Route de test */}
+                <Route path="/test" element={<TestPage />} />
+                
+                {/* Route 404 - DOIT ÊTRE EN DERNIER */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
