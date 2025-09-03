@@ -1,12 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, ArrowRight, RefreshCw } from 'lucide-react';
+import { sanityClient } from '../../utils/sanityClient';
 
 export const RecentArticlesSection = ({ articles = [] }) => {
-  // On prend les 10 derniers articles
-  const recentArticles = articles.slice(0, 10);
+  const [recentArticles, setRecentArticles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState('flash');
+  
+  useEffect(() => {
+    const fetchRecentArticles = async () => {
+      try {
+        setIsLoading(true);
+        // Requête directe pour récupérer les DERNIERS articles publiés
+        const query = `*[_type == "article"] | order(publishedAt desc)[0...10] {
+          _id,
+          title,
+          slug,
+          mainImage,
+          excerpt,
+          publishedAt,
+          categories[]->{
+            _id,
+            title,
+            slug
+          }
+        }`;
+        
+        const data = await sanityClient.fetch(query);
+        
+        if (data && data.length > 0) {
+          setRecentArticles(data);
+        } else {
+          // Fallback sur les articles passés en props s'il n'y a pas de données
+          const sortedArticles = [...articles].sort((a, b) => {
+            const dateA = new Date(a.publishedAt);
+            const dateB = new Date(b.publishedAt);
+            return dateB.getTime() - dateA.getTime();
+          });
+          setRecentArticles(sortedArticles.slice(0, 10));
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des derniers articles:', error);
+        // En cas d'erreur, utiliser les articles passés en props
+        const sortedArticles = [...articles].sort((a, b) => {
+          const dateA = new Date(a.publishedAt);
+          const dateB = new Date(b.publishedAt);
+          return dateB.getTime() - dateA.getTime();
+        });
+        setRecentArticles(sortedArticles.slice(0, 10));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchRecentArticles();
+  }, [articles]);
 
   const categoryColors = {
     'Story': { bg: 'bg-amber-500', text: 'text-white' },
