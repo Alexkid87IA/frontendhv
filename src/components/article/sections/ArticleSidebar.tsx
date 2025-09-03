@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { 
   Share2, ArrowRight, Clock, Sparkles, PenTool, Zap,
   TrendingUp, Hash, Users, Calendar, MessageCircle,
-  BookOpen, Award, Eye, ThumbsUp, Bookmark
+  BookOpen, Award, Eye, ThumbsUp, Bookmark, Instagram,
+  ChevronLeft, ChevronRight
 } from "lucide-react";
 import { SanityArticle, VerticalColors, TableOfContentsHeading } from "../../../types/article.types";
 import ArticleAuthor from "../ui/ArticleAuthor";
@@ -35,6 +36,31 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
   const [popularArticles, setPopularArticles] = useState<SanityArticle[]>([]);
   const [showMoreRelated, setShowMoreRelated] = useState(false);
   const [showMoreLatest, setShowMoreLatest] = useState(false);
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+  
+  // Citations inspirantes
+  const quotes = [
+    { quote: "Le succès c'est d'aller d'échec en échec sans perdre son enthousiasme.", author: "Winston Churchill" },
+    { quote: "Dans 20 ans, vous serez plus déçu par les choses que vous n'avez pas faites que par celles que vous avez faites.", author: "Mark Twain" },
+    { quote: "La meilleure façon de prédire l'avenir est de le créer.", author: "Peter Drucker" },
+    { quote: "Le seul endroit où le succès vient avant le travail, c'est dans le dictionnaire.", author: "Vidal Sassoon" },
+    { quote: "Les opportunités ne se présentent pas, elles se créent.", author: "Chris Grosser" },
+    { quote: "L'innovation distingue les leaders des suiveurs.", author: "Steve Jobs" },
+    { quote: "Ne rêvez pas votre vie, vivez vos rêves.", author: "Anonyme" },
+    { quote: "L'échec est le fondement de la réussite.", author: "Lao Tseu" },
+    { quote: "Celui qui déplace une montagne commence par déplacer de petites pierres.", author: "Confucius" },
+    { quote: "Le succès n'est pas final, l'échec n'est pas fatal : c'est le courage de continuer qui compte.", author: "Winston Churchill" },
+    { quote: "Votre temps est limité, ne le gâchez pas en vivant la vie de quelqu'un d'autre.", author: "Steve Jobs" },
+    { quote: "La différence entre l'ordinaire et l'extraordinaire, c'est ce petit extra.", author: "Jimmy Johnson" },
+    { quote: "Les gagnants trouvent des moyens, les perdants des excuses.", author: "Franklin D. Roosevelt" },
+    { quote: "N'attendez pas. Le moment ne sera jamais parfait.", author: "Napoleon Hill" },
+    { quote: "Le futur appartient à ceux qui croient en la beauté de leurs rêves.", author: "Eleanor Roosevelt" },
+    { quote: "Soit vous courez le jour, soit le jour vous court.", author: "Jim Rohn" },
+    { quote: "Le seul impossible est celui que l'on ne tente pas.", author: "Anonyme" },
+    { quote: "Chaque expert a d'abord été un débutant.", author: "Helen Hayes" },
+    { quote: "L'action est la clé fondamentale de tout succès.", author: "Pablo Picasso" },
+    { quote: "Si vous voulez quelque chose que vous n'avez jamais eu, faites quelque chose que vous n'avez jamais fait.", author: "Thomas Jefferson" }
+  ];
   
   // Fonction pour formater la date relative
   const getRelativeTime = (date: string) => {
@@ -57,6 +83,15 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
     setPopularArticles(relatedArticles.slice(0, 5));
   }, [relatedArticles]);
 
+  // Auto-rotation des citations
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentQuoteIndex((prev) => (prev + 1) % quotes.length);
+    }, 5000); // Change toutes les 5 secondes
+
+    return () => clearInterval(interval);
+  }, [quotes.length]);
+
   // Tags populaires mockés
   const popularTags = [
     { name: 'Innovation', count: 45, color: 'from-blue-400 to-cyan-400' },
@@ -68,14 +103,6 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
     { name: 'Tech', count: 20, color: 'from-yellow-400 to-orange-400' },
     { name: 'Culture', count: 18, color: 'from-teal-400 to-cyan-400' }
   ];
-
-  // Statistiques mockées
-  const siteStats = {
-    totalArticles: 342,
-    monthlyReaders: '25K+',
-    activeAuthors: 12,
-    categories: 4
-  };
   
   return (
     <div className="space-y-8">
@@ -101,47 +128,107 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
           />
         )}
 
-        {/* Encart Verticales */}
-        <div className="bg-gradient-to-br from-neutral-900 to-black rounded-2xl p-5 border border-white/10">
-          <div className="flex items-center gap-2 mb-4">
-            <Zap size={16} className="text-yellow-400" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              Nos 4 univers
-            </h3>
+        {/* Encart Verticales - NOUVEAU DESIGN */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6 border border-white/10">
+          {/* Effet de fond animé */}
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-purple-500/20 to-emerald-500/20 blur-3xl" />
           </div>
           
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { name: 'Story', slug: 'story', color: 'from-orange-500 to-red-500', symbol: 'St' },
-              { name: 'Business', slug: 'business', color: 'from-blue-500 to-cyan-500', symbol: 'Bu' },
-              { name: 'Mental', slug: 'mental', color: 'from-purple-500 to-violet-500', symbol: 'Mt' },
-              { name: 'Society', slug: 'society', color: 'from-green-500 to-emerald-500', symbol: 'Sc' }
-            ].map((vertical) => (
-              <Link
-                key={vertical.slug}
-                to={`/rubrique/${vertical.slug}`}
-                className="group relative overflow-hidden rounded-lg bg-white/5 p-3 hover:bg-white/10 transition-all"
-              >
-                <div className={`absolute inset-0 bg-gradient-to-br ${vertical.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
-                <div className="relative flex items-center gap-2">
-                  <div className={`w-8 h-8 rounded bg-gradient-to-br ${vertical.color} flex items-center justify-center`}>
-                    <span className="text-white text-xs font-bold">{vertical.symbol}</span>
-                  </div>
-                  <span className="text-sm font-medium text-white group-hover:text-opacity-100 text-opacity-80 transition-all">
-                    {vertical.name}
-                  </span>
-                </div>
-              </Link>
-            ))}
+          {/* Contenu */}
+          <div className="relative">
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-white">
+                NOS 4 UNIVERS
+              </h3>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { 
+                  name: 'Story', 
+                  slug: 'story', 
+                  gradient: 'from-orange-500 to-red-500',
+                  bgGradient: 'from-orange-500/10 to-red-500/10',
+                  icon: BookOpen,
+                  description: 'Récits inspirants'
+                },
+                { 
+                  name: 'Business', 
+                  slug: 'business', 
+                  gradient: 'from-blue-500 to-cyan-500',
+                  bgGradient: 'from-blue-500/10 to-cyan-500/10',
+                  icon: TrendingUp,
+                  description: 'Stratégies & succès'
+                },
+                { 
+                  name: 'Mental', 
+                  slug: 'mental', 
+                  gradient: 'from-purple-500 to-violet-500',
+                  bgGradient: 'from-purple-500/10 to-violet-500/10',
+                  icon: Sparkles,
+                  description: 'Mindset & bien-être'
+                },
+                { 
+                  name: 'Society', 
+                  slug: 'society', 
+                  gradient: 'from-green-500 to-emerald-500',
+                  bgGradient: 'from-green-500/10 to-emerald-500/10',
+                  icon: Users,
+                  description: 'Société & impact'
+                }
+              ].map((vertical) => {
+                const Icon = vertical.icon;
+                return (
+                  <Link
+                    key={vertical.slug}
+                    to={`/rubrique/${vertical.slug}`}
+                    className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105"
+                  >
+                    {/* Fond avec gradient subtil */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${vertical.bgGradient} opacity-50 group-hover:opacity-100 transition-opacity`} />
+                    
+                    {/* Bordure gradient */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${vertical.gradient} opacity-0 group-hover:opacity-100 transition-opacity`} 
+                         style={{ padding: '1px' }}>
+                      <div className="h-full w-full rounded-xl bg-black" />
+                    </div>
+                    
+                    {/* Contenu */}
+                    <div className="relative p-4 flex flex-col items-center text-center space-y-2">
+                      {/* Icône Lucide */}
+                      <div className={`p-2.5 rounded-lg bg-gradient-to-br ${vertical.gradient} mb-1`}>
+                        <Icon size={20} className="text-white" />
+                      </div>
+                      
+                      {/* Nom avec gradient */}
+                      <h4 className={`font-bold text-white bg-gradient-to-r ${vertical.gradient} bg-clip-text group-hover:text-transparent transition-all`}>
+                        {vertical.name}
+                      </h4>
+                      
+                      {/* Description */}
+                      <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
+                        {vertical.description}
+                      </p>
+                      
+                      {/* Indicateur de hover */}
+                      <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${vertical.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`} />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            
+            <Link
+              to="/articles"
+              className="mt-5 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-all group"
+            >
+              <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
+                Explorer tous les contenus
+              </span>
+              <ArrowRight size={14} className="text-gray-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
+            </Link>
           </div>
-          
-          <Link
-            to="/articles"
-            className="mt-3 flex items-center justify-center gap-1 text-xs text-gray-400 hover:text-white transition-colors"
-          >
-            <span>Explorer tous les contenus</span>
-            <ArrowRight size={12} />
-          </Link>
         </div>
 
         {/* Stats de l'article - Partage uniquement */}
@@ -431,32 +518,40 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
           </div>
         )}
 
-        {/* NOUVEAU : Statistiques du site */}
+        {/* QR Code Instagram - REMPLACE LA SECTION STATISTIQUES */}
         <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-6 border border-white/10">
           <div className="flex items-center gap-2 mb-4">
-            <Award size={18} className="text-gold-400" />
+            <Instagram size={18} className="text-pink-500" />
             <h3 className="text-lg font-semibold text-white">
-              High Value en chiffres
+              Suivez-nous sur Instagram
             </h3>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-3 bg-white/5 rounded-lg">
-              <div className="text-2xl font-bold text-white">{siteStats.totalArticles}</div>
-              <div className="text-xs text-gray-400">Articles</div>
+          <div className="flex flex-col items-center">
+            {/* QR Code avec l'image hébergée sur Imgur */}
+            <div className="bg-white p-4 rounded-xl mb-4">
+              <img 
+                src="https://i.imgur.com/DcSvEmy.png"
+                alt="QR Code Instagram High Value Media"
+                className="w-40 h-40 object-contain"
+              />
             </div>
-            <div className="text-center p-3 bg-white/5 rounded-lg">
-              <div className="text-2xl font-bold text-white">{siteStats.monthlyReaders}</div>
-              <div className="text-xs text-gray-400">Lecteurs/mois</div>
-            </div>
-            <div className="text-center p-3 bg-white/5 rounded-lg">
-              <div className="text-2xl font-bold text-white">{siteStats.activeAuthors}</div>
-              <div className="text-xs text-gray-400">Auteurs</div>
-            </div>
-            <div className="text-center p-3 bg-white/5 rounded-lg">
-              <div className="text-2xl font-bold text-white">{siteStats.categories}</div>
-              <div className="text-xs text-gray-400">Univers</div>
-            </div>
+            
+            {/* Username Instagram cliquable */}
+            <a 
+              href="https://www.instagram.com/highvalue.media" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-white hover:text-pink-400 transition-colors group"
+            >
+              <span className="text-sm font-medium">@highvalue.media</span>
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </a>
+            
+            {/* Texte descriptif */}
+            <p className="text-xs text-gray-400 text-center mt-3">
+              Scannez pour découvrir nos stories exclusives
+            </p>
           </div>
         </div>
 
@@ -503,6 +598,81 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
 
         {/* CTA Club Élite */}
         <ArticleCTA colors={colors} />
+
+        {/* Citation Inspirante avec Carrousel */}
+        <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl p-8 border border-white/10 min-h-[350px] h-[350px] flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <Sparkles size={18} className="text-amber-400" />
+              <h3 className="text-lg font-semibold text-white">
+                Dose d'inspiration
+              </h3>
+            </div>
+            <div className="flex items-center gap-0.5 max-w-[180px] overflow-hidden">
+              {quotes.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentQuoteIndex(index)}
+                  className={`rounded-full transition-all flex-shrink-0 ${
+                    index === currentQuoteIndex 
+                      ? 'bg-amber-400 w-3 h-1.5' 
+                      : 'bg-gray-600 hover:bg-gray-500 w-1 h-1'
+                  }`}
+                  style={{ margin: '0 1px' }}
+                />
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex-1 flex items-center justify-center relative px-4">
+            <div className="w-full">
+              <div className="relative">
+                {/* Guillemets décoratifs */}
+                <div className="absolute -top-6 -left-6">
+                  <span className="text-7xl text-amber-400/20 font-serif">"</span>
+                </div>
+                
+                {/* Citation avec hauteur fixe */}
+                <div className="min-h-[140px] flex flex-col justify-center">
+                  <blockquote className="text-center px-6">
+                    <p className="text-base md:text-lg text-white leading-relaxed mb-4 font-light">
+                      {quotes[currentQuoteIndex].quote}
+                    </p>
+                    <footer className="text-sm text-amber-400/90 font-medium">
+                      — {quotes[currentQuoteIndex].author}
+                    </footer>
+                  </blockquote>
+                </div>
+                
+                <div className="absolute -bottom-6 -right-6 rotate-180">
+                  <span className="text-7xl text-amber-400/20 font-serif">"</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Boutons de navigation */}
+            <button
+              onClick={() => setCurrentQuoteIndex((prev) => (prev - 1 + quotes.length) % quotes.length)}
+              className="absolute left-0 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all group"
+              aria-label="Citation précédente"
+            >
+              <ChevronLeft size={16} className="text-gray-400 group-hover:text-white" />
+            </button>
+            <button
+              onClick={() => setCurrentQuoteIndex((prev) => (prev + 1) % quotes.length)}
+              className="absolute right-0 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all group"
+              aria-label="Citation suivante"
+            >
+              <ChevronRight size={16} className="text-gray-400 group-hover:text-white" />
+            </button>
+          </div>
+          
+          <div className="text-center mt-4">
+            <p className="text-xs text-gray-500">
+              {currentQuoteIndex + 1} / {quotes.length}
+            </p>
+          </div>
+        </div>
     </div>
   );
 };

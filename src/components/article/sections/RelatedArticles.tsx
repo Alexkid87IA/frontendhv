@@ -14,6 +14,29 @@ interface RelatedArticlesProps {
 const RelatedArticles: React.FC<RelatedArticlesProps> = ({ articles, colors }) => {
   if (articles.length === 0) return null;
 
+  // Fonction pour obtenir l'URL de l'image depuis Sanity
+  const getImageUrl = (mainImage: any) => {
+    // D'abord vérifier si on a directement l'URL
+    if (mainImage?.asset?.url) {
+      return mainImage.asset.url;
+    }
+    
+    // Sinon, construire l'URL depuis la référence _ref
+    if (mainImage?.asset?._ref) {
+      const ref = mainImage.asset._ref;
+      const cleanRef = ref
+        .replace('image-', '')
+        .replace('-jpg', '.jpg')
+        .replace('-jpeg', '.jpeg')
+        .replace('-png', '.png')
+        .replace('-webp', '.webp');
+      
+      return `https://cdn.sanity.io/images/z9wsynas/production/${cleanRef}?w=400&h=250&fit=crop&auto=format`;
+    }
+    
+    return null;
+  };
+
   return (
     <section className="py-20 bg-gradient-to-b from-transparent via-gray-900/20 to-transparent">
       <div className="container mx-auto px-4">
@@ -79,6 +102,7 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = ({ articles, colors }) =
             };
             
             const cardColors = getCardColors();
+            const imageUrl = getImageUrl(related.mainImage);
             
             return (
               <motion.article 
@@ -102,43 +126,88 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = ({ articles, colors }) =
                       e.currentTarget.style.borderColor = cardColors.borderColor;
                     }}
                   >
-                    {related.mainImage && related.mainImage.asset && related.mainImage.asset._ref && (
-                      <div className="relative h-48 overflow-hidden">
-                        <img 
-                          src={`https://cdn.sanity.io/images/z9wsynas/production/${related.mainImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}?w=400&h=250&fit=crop&auto=format`}
-                          alt={related.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                        
-                        {/* Badge de catégorie avec gradient */}
-                        {related.categories && related.categories[0] && (
-                          <div className="absolute top-4 left-4">
-                            <span 
-                              className={`inline-block px-3 py-1 rounded-full text-xs font-medium text-white bg-gradient-to-r ${cardColors.gradient}`}
-                            >
-                              {related.categories[0].title}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    {/* Section Image */}
+                    <div className="relative h-48 overflow-hidden bg-gray-900">
+                      {imageUrl ? (
+                        <>
+                          <img 
+                            src={imageUrl}
+                            alt={related.title || 'Article image'}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            loading="lazy"
+                            onError={(e) => {
+                              // Si erreur, masquer l'image et afficher un fond coloré
+                              const target = e.currentTarget as HTMLImageElement;
+                              target.style.display = 'none';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        </>
+                      ) : (
+                        // Fallback gradient si pas d'image
+                        <div className={`w-full h-full bg-gradient-to-br ${cardColors.gradient} opacity-50`}>
+                          <div className="absolute inset-0 bg-black/40" />
+                        </div>
+                      )}
+                      
+                      {/* Badge de catégorie avec gradient */}
+                      {related.categories && related.categories[0] && (
+                        <div className="absolute top-4 left-4 z-10">
+                          <span 
+                            className={`inline-block px-3 py-1 rounded-full text-xs font-medium text-white bg-gradient-to-r ${cardColors.gradient} shadow-lg`}
+                          >
+                            {related.categories[0].title}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Temps de lecture si disponible */}
+                      {related.readingTime && (
+                        <div className="absolute top-4 right-4 z-10">
+                          <span className="inline-block px-2 py-1 rounded-full text-xs font-medium text-white bg-black/60 backdrop-blur">
+                            {related.readingTime} min
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Section Contenu */}
                     <div className="p-6">
-                      <h3 className="text-lg font-semibold text-white mt-2 mb-3 transition-colors line-clamp-2">
+                      <h3 className="text-lg font-semibold text-white mb-3 line-clamp-2 group-hover:text-opacity-90 transition-colors">
                         {related.title}
                       </h3>
-                      <p className="text-sm text-gray-400 line-clamp-2 mb-4">
-                        {related.excerpt}
-                      </p>
                       
-                      {/* Ligne de progression colorée au survol */}
-                      <div 
-                        className="absolute bottom-0 left-0 right-0 h-0.5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 bg-gradient-to-r"
-                        style={{
-                          background: `linear-gradient(to right, ${cardColors.primary}, ${cardColors.textColor})`
-                        }}
-                      />
+                      {related.excerpt && (
+                        <p className="text-sm text-gray-400 line-clamp-2 mb-4">
+                          {related.excerpt}
+                        </p>
+                      )}
+                      
+                      {/* Auteur et date */}
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        {related.author?.name && (
+                          <span className="truncate max-w-[60%]">
+                            Par {related.author.name}
+                          </span>
+                        )}
+                        {related.publishedAt && (
+                          <span>
+                            {new Date(related.publishedAt).toLocaleDateString('fr-FR', {
+                              day: 'numeric',
+                              month: 'short'
+                            })}
+                          </span>
+                        )}
+                      </div>
                     </div>
+                    
+                    {/* Ligne de progression colorée au survol */}
+                    <div 
+                      className="absolute bottom-0 left-0 right-0 h-0.5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
+                      style={{
+                        background: `linear-gradient(to right, ${cardColors.primary}, ${cardColors.textColor})`
+                      }}
+                    />
                   </div>
                 </Link>
               </motion.article>
@@ -149,7 +218,7 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = ({ articles, colors }) =
         <div className="text-center mt-12">
           <Link 
             to="/articles"
-            className={`inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${colors.gradient} hover:opacity-90 text-white rounded-lg font-medium transition-all`}
+            className={`inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${colors.gradient} hover:opacity-90 text-white rounded-lg font-medium transition-all transform hover:scale-105`}
           >
             Voir tous les articles
             <ArrowRight size={20} />
